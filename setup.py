@@ -14,12 +14,12 @@ DEV_REQUIRES = [
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'prototype_server=project_proposer.scripts.prototype_server:main'
+        'prototype_server=ypd.scripts.prototype_server:main'
     ]
 }
 
 setup(
-    name="project_proposer",
+    name="ycp_project_database",
     version="0.0.1",
     packages=find_packages("src"),
     author='abaldwin3, creynolds1, gholley, llewis9',
