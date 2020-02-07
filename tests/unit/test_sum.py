@@ -1,6 +1,6 @@
 from unittest import mock, TestCase
 
-from project_proposer import add
+from ypd import add
 
 class TestSum(TestCase):
     def test_sum_func(self):
