@@ -1,0 +1,15 @@
+<add>
+    <doc>
+        <field name="id">0</field>
+        <field name="title" boost="3.0">U.S. Constitution Preamble</field>
+        <field name="keywords" boost="2.0">legal document</field>
+        <field name="keywords" boost="2.0">Constitution</field>
+        <field name="description">
+            We the People of the United States, in Order to form a more perfect Union,\n
+            establish Justice, insure domestic Tranquility, provide for the common\n
+            defence, promote the general Welfare, and secure the Blessings of Liberty to\n
+            ourselves and our Posterity, do ordain and establish this Constitution for the\n
+            United States of America.
+        </field>
+    </doc>
+</add>

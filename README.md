@@ -61,6 +61,19 @@ You'll have to pip install each of these individually
 python3 -m pip install pytest rope pylint autopep8
 ```
 
+# Solr install instruction
+Download a binary solr 8.x release from https://lucene.apache.org/solr/downloads.html
+Unzip the file
+Add *your-solr_directory*/bin to your PATH environment variable
+In the command line, run ```configure_solr```
+Note: If this is the first time you have run configure_solr, you may see a few lines that look like
+```ERROR: Failed to delete core```
+This is normal
+
+Once you've run ```conifgure_solr```, you won't have to run it again unless you modify
+the collection or test_collection fields in config.ini, or modify sample_index.xml,
+test_index.xml, or solr_schema.json
+
 # Run the program
 setup.py has an 'ENTRY_POINTS' variable that defines python scripts that can be run. The one
 I've included is:

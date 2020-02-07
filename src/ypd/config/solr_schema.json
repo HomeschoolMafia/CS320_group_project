@@ -1,0 +1,29 @@
+{
+    "add-field": 
+    [
+        {
+            "name": "title",
+            "type": "text_en",
+            "stored": false,
+            "required": true
+        },
+        {
+            "name": "description",
+            "type": "text_en",
+            "stored": false,
+            "required": true
+        },
+        {
+            "name": "keywords",
+            "type": "text_en",
+            "stored": false,
+            "required": true,
+            "multiValued": true
+        },
+        {
+            "name": "organization",
+            "type": "text_en",
+            "stored": false
+        }
+    ]
+}
