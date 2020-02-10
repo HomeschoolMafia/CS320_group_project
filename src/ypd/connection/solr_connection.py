@@ -20,7 +20,7 @@ class SolrConnection:
     def __exit__(self, type, value, traceback):
         self._session.close()
 
-    def search(self, search_text, start_index, num_results):
+    def search(self, search_text, start_index=0, num_results=10):
         """Search solr index for the given text. 
         Returns results from [start_index:start_index+num_results]
         if start_index+num_results > total search results, returns
