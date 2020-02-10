@@ -2,7 +2,8 @@ from setuptools import find_packages, setup
 
 INSTALL_REQUIRES = [
     'sqlalchemy',
-    'flask'
+    'flask',
+    'requests'
 ]
 
 DEV_REQUIRES = [
