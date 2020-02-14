@@ -1,0 +1,115 @@
+html { 
+    font-family: 'Alfa Slab One'; 
+    overflow: auto;
+}
+body {
+    background-image:  url("backgroung.png");
+}
+
+.mainTitle {
+    font-size: 35px;
+    box-shadow: 8px 8px 10px gray;
+    border-radius: 5px;
+    background-color: RGBA(135,189,75,1);
+}
+
+.mainBody {
+    background-color: RGBA(255, 255, 255, 0.7);
+    margin-top: 100px;
+    box-shadow: 8px 8px 10px gray;
+    border-radius: 3px;
+    overflow-y: scroll;
+    height: 750px;
+    font-family: 'Rokkitt', serif;
+}
+
+.logo {
+    float: left;
+    margin-left: 20px;
+    padding-top: 6px;
+}
+
+.postBox {
+    font-size: 25px;
+    margin-top: 5px;
+    margin-bottom: 10px;
+}
+
+.postText {
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.postBar {
+    border-bottom: 2px solid #8A8A8A;
+    border-radius: 2px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.dot {
+    height: 35px;
+    width: 35px;
+    border: 2px solid black;
+    border-radius: 50%;
+    display: inline-block;
+    float: left;
+    margin-right: 10px;
+    margin-left: 5px;
+    margin-top: -3px;
+}
+
+.menuTab {
+    height: 30px;
+    width: 30px;
+    border: 3px solid black;
+}
+
+.bar {
+    width: 20px;
+    height: 2px;
+    background: black;
+    margin-top: 6px;
+}
+
+/* The container <div> - needed to position the dropdown content */
+.dropDown {
+    background-color: RGBA(0,0,0,0);
+    float: right;
+    margin-top: -42px;
+    margin-right: 8px;
+}
+
+/* Dropdown Content (Hidden by Default) */
+.dropDown-Content {
+    display: none;
+    position: absolute;
+    right: 0px;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px RGBA(0,0,0,0.2);
+    z-index: 1;
+    font-family: 'Rokkitt', serif;
+    font-size: 20px;
+}
+
+/* Links inside the dropdown */
+.dropDown-Content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+/* Change color of dropdown links on hover */
+.dropDown-Content a:hover {
+    background-color: RGB(176, 230, 115);
+}
+
+/* Show the dropdown menu on hover */
+.dropDown:hover .dropDown-Content {
+  display: block;
+}
+
