@@ -16,7 +16,6 @@ DEV_REQUIRES = [
 ENTRY_POINTS = {
     'console_scripts': [
         'prototype_server=ypd.scripts.prototype_server:main',
-        'configure_solr=ypd.scripts.configure_solr:main'
     ]
 }
 
