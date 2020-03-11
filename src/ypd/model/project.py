@@ -1,6 +1,6 @@
-import time
+from datetime import datetime
 
-from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, Boolean
 
 from . import Base, Session
 
@@ -12,7 +12,7 @@ class Project(Base):
     title = Column(String)
     description = Column(String)
     poster_id = Column(Integer) #TODO: Make this a foreign key
-    date = Column(BigInteger)
+    date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
 
@@ -21,7 +21,7 @@ class Project(Base):
         self.title = title
         self.description = description
         #TODO: self.poster_id = poster.id, when user class is finished
-        self.date = time.time() #we might want to only assign this when the project is approved
+        self.date = datetime.utcnow() #we might want to only assign this when the project is approved
         self.archived = False
         self.needsReview = False #TODO: When we implement the review workflow, we'll set this to True here
 
