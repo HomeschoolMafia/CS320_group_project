@@ -1,8 +1,10 @@
 import subprocess
 import platform
 
+from .. import relative_path
+
 def main():
     if platform.system() == 'Windows':
-        subprocess.run('set FLASK_APP=src/ypd/prototype_server.py && flask run', shell=True)
+        subprocess.run(f'set FLASK_APP={relative_path}/prototype_server.py && flask run', shell=True)
     else:
-        subprocess.run('export FLASK_APP=src/ypd/prototype_server.py && flask run', shell=True)
+        subprocess.run(f'export FLASK_APP={relative_path}/prototype_server.py && flask run', shell=True)
