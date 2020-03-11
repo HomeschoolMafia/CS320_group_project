@@ -13,4 +13,3 @@ class TestProject(TestCase):
         mock_session.add.assert_called_once_with(p)
         mock_session.commit.assert_called_once()
         mock_session.close.assert_called_once()
-        
