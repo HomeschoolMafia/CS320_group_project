@@ -1,6 +1,6 @@
 import time
 
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, BigInteger, String, ForeignKey, Boolean
 
 from . import Base, Session
 
@@ -12,7 +12,7 @@ class Project(Base):
     title = Column(String)
     description = Column(String)
     poster_id = Column(Integer) #TODO: Make this a foreign key
-    date = Column(Integer)
+    date = Column(BigInteger)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
 
