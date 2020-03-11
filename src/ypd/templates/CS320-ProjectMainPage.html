@@ -25,167 +25,28 @@
         </div>
         
         <div class="mainBody">
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                    test
+            <ul id="catalog">
+                <div class="postBox">
+                    <div class="logoIn"><div class="logoInPad"><img src="../static/Logo.png" alt="Logo" width="25" height="30"></div></div>
+                        <a href="#"><div class="postText">
+                            Company Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Title of Project
+                        </div></a>
+                    <div class="postBar"></div>
                 </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                    test
+            </ul>
+            <ul id="catalog">
+            {% for item in catalog %}
+                <div class="postBox">
+                    <div class="logoIn"><div class="logoInPad"><img src="{{ item.logo }}" alt="Logo" width="25" height="30"></div></div>
+                        <a href="{{ item.link}}">
+                            <div class="postText">
+                                {{ item.name }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                            </div>
+                        </a>
+                    <div class="postBar"></div>
                 </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                    test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
-            <div class="postBox">
-                <div class="dot"></div>
-                <div class="postText">
-                     test
-                </div>
-                <div class="postBar"></div>
-            </div>
+            {% endfor %}
+            </ul>
         </div>
     </body>
 </html>
