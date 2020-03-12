@@ -13,6 +13,8 @@ class TestProject(TestCase):
         self.session = Session()
 
     def tearDown(self):
+        self.session.query(project.Provided).delete()
+        self.session.commit()
         self.session.close()
 
     @patch.object(project, 'Session')
