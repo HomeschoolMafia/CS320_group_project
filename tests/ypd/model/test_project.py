@@ -1,8 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from ypd.model import project
-from ypd.model import engine, Base, Session
+from ypd.model import engine, Base, Session, project
 
 class TestProject(TestCase):
     
