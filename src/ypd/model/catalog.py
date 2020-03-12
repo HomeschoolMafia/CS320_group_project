@@ -1,6 +1,4 @@
-from sqlalchemy import Column, Integer, DateTime, String, ForeignKey, Boolean
-
-from . import Base, Session
+from . import Session
 from .project import Solicited, Provided
 
 class Catalog:
