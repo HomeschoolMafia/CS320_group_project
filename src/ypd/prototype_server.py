@@ -4,15 +4,13 @@ app = Flask(__name__)
 from flask_classy import FlaskView
 from .servlets.indexServlet import IndexView
 
-IndexView.register(app)
-
 from .model import engine, Base
 
-
+IndexView.register(app)
+Base.metadata.create_all(engine)
 
 @app.route('/')
 def do_something():
-    Base.metadata.create_all(engine)
     return 'Hello, world'
 
 
