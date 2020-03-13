@@ -29,6 +29,19 @@ class Project(Base):
         session.add(self)
         session.commit()
         session.close()
+        
+    @classmethod    
+    def get(cls, id):
+        """Gets projects from database"""
+        session = Session()
+
+        # Look for project ID in database
+        result = session.query(cls).filter_by(
+            id = id
+            ).one_or_none()
+
+        session.close()
+        return result
 
 class Provided(Project):
     """Class that represents a provided project"""
@@ -37,3 +50,4 @@ class Provided(Project):
 class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
+   
