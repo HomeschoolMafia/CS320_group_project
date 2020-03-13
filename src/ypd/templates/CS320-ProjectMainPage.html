@@ -35,14 +35,14 @@
                 </div>
             </ul>
             <ul id="catalog">
-            {% for item in catalog %}
+            {% for item in catlog.projects %}
                 <div class="postBox">
-                    <div class="logoIn"><div class="logoInPad"><img src="{{ item.logo }}" alt="Logo" width="25" height="30"></div></div>
-                        <a href="{{ item.link}}">
+                    <div class="logoIn"><div class="logoInPad"><!--<img src="{{ item.logo }}" alt="Logo" width="25" height="30">--></div></div>
+                        <!--<a href="{{ item.id }}">-->
                             <div class="postText">
-                                {{ item.name }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                                <!--{{ item.name }}--> Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
                             </div>
-                        </a>
+                        <!--</a>-->
                     <div class="postBar"></div>
                 </div>
             {% endfor %}
