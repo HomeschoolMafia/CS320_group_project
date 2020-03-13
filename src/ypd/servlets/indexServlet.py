@@ -4,7 +4,7 @@ from ..model.catalog import Catalog
 
 class IndexView(FlaskView):
     def get(self):
-        catlog = Catalog('', True)
-        catlog.apply()
-        return render_template('CS320-ProjectMainPage.html', catlog)
+        catalog = Catalog('', True)
+        catalog.apply()
+        return render_template('CS320-ProjectMainPage.html', catalog=catalog)
     
