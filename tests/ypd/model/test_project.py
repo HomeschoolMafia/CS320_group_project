@@ -1,8 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from ypd.model import project
-from ypd.model import engine, Base, Session
+from ypd.model import engine, Base, Session, project
 
 class TestProject(TestCase):
     
@@ -14,6 +13,8 @@ class TestProject(TestCase):
         self.session = Session()
 
     def tearDown(self):
+        self.session.query(project.Provided).delete()
+        self.session.commit()
         self.session.close()
 
     @patch.object(project, 'Session')
