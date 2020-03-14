@@ -1,21 +1,25 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 
 from . import Base, Session
+
 
 class User(Base):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String)
-    password = Column(String)
+    username = Column(String, unique=True)
+    password = Column(String, unique=True)
     bio = Column(String)
-    email = Column(String)
-    contact_info = Column(String)
-    name = Column(String)
+    email = Column(String, nullable=False)
+    contact_info = Column(String, nullable=False)
+    name = Column(String, nullable=False)
     needs_review = Column(Boolean)
     can_post_solicited = Column(Boolean)
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
+
+    # def __repr__(self):
+    #     return '<User %r>' % (self.username)
 
     def sign_up(self):
         """Create a new user entry in the database. In order to sign up a User,
@@ -36,7 +40,7 @@ class User(Base):
         session.close()
 
     @classmethod
-    def login(cls, username, password):
+    def login(cls, username, password, email):
         """Attempts to login a user with the given username and password
         
         Args:
@@ -53,19 +57,19 @@ class User(Base):
         session = Session()
 
         #try to log in
-        result = session.query(User).filter_by(
-            username=username, password=password, needs_review=False
-            ).one_or_none()
+        result = session.query(User).filter_by(username=username, password=password, email=email, needs_review=False).one_or_none()
 
         #If we don't suceed to log in, raise a useful error message
         if not result:
-            result = session.query(User).filter_by(
-            username=username, password=password
-            ).one_or_none()
+            result = session.query(User).filter_by(username=username, password=password, email=email).one_or_none()
             if result:
                 raise ValueError('User account requires review')
             else:
                 raise ValueError('Incorrect username or password')
-
         session.close()
         return result
+
+    def indexSearch(self):
+        session = Session()
+        results = User.query.all()
+        return results
