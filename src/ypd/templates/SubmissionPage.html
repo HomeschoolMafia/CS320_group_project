@@ -12,15 +12,9 @@
 		<form action={{ url_for('SubmissionView:post') }} method="POST">
 			<fieldset>
 				<p>
-				<label>Company Name:</label>
+				<label>Project Title</label>
 				<input type = "text"
-					   name = "companyName"
-					   value = " " >
-				</p>
-				<p>
-				<label> Contact Information:</label>
-				<input type = "text"
-					   name = "contactInfo"
+					   name = "title"
 					   value = " " >
 				</p>
 				<p>
@@ -28,6 +22,12 @@
 				<input type = "text"
 					   name = "projSummary"
 					   value = " " >
+				</p>
+				<p>
+					<label>Poster:</label>
+					<input type = "text"
+							name = "poster"
+							value = " " >
 				</p>
 				<p>
 				<input type = "radio" id = "provided" name = "projectType" value = "providedProject">

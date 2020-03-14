@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 from flask_classy import FlaskView
 from ..model.project import Provided, Solicited
 
@@ -8,17 +8,17 @@ class SubmissionView(FlaskView):
     
     # pull data from HTML form
     def post(self):
-        name = request.form['companyName']
-        contact = request.form['contactInfo']
+        title = request.form['title']
         description = request.form['projSummary']
+        poster = request.form['poster']
         projType = request.form.getlist('projectType')
         
     # post data to project database
-        if projType == providedProject:
-            provided = project.Provided()
-            provided.post(name, contact, description)
+        if projType == 'providedProject':
+            provided = Provided()
+            provided.post(title, description, poster)
         else:
-            solicited = project.Solicited()
-            solicited.post(name, contact, description)
+            solicited = Solicited()
+            solicited.post(title, description, poster)
         
-        return redirect(url_for('get'))
+        return redirect(url_for('SubmissionView:get'))
