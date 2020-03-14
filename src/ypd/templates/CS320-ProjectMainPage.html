@@ -14,21 +14,35 @@
                 <img src="../static/Logo.png" alt="Logo" width="30" height="35">
             </div>
             <center>YCP Project Database</center>
-                <div class="dropDown">
-                    <div class="menuTab"><center><div class="bar"></div><div class="bar"></div><div class="bar"></div></center></div>
-                        <div class="dropDown-Content">
-                            <a href="#">Link 1</a>
-                            <a href="#">Link 2</a>
-                            <a href="#">Link 3</a>
-                        </div>
+
+            <div class="dropDown">
+                <div class="menuTab"><center><div class="bar"></div><div class="bar"></div><div class="bar"></div></center></div>
+                <div class="dropDown-Content">
+                    <a href="{{ url_for('IndexView:get') }}">Main Page</a>
+                    <a href="{{ url_for('SubmissionView:submission') }}">Post A Project</a>
+                    <a href="{{ url_for('UserView:login') }}">Login/Sign Up</a>
                 </div>
+            </div>
         </div>
+        
+        <div class="searchBar">  
+            <form action="/search">
+                <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}"/>
+                <input type="submit" value="Search">
+            </form>
+        </div>
+       
         
         <div class="mainBody">
             {% for item in catalog.projects %}
                 <div class="postBox">
                     <div class="logoIn"><div class="logoInPad"><!--<img src="{{ item.logo }}" alt="Logo" width="25" height="30">--></div></div>
-                        <!--<a href="{{ item.id }}">-->
+                        <!--<a href="{{ item.id }}">
+                        
+                        /selectedproject/?id=#
+                        /selectedproject/?id=#&isProvided=True
+                        
+                        -->
                             <div class="postText">
                                 <!--{{ item.name }}--> TempName &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
                             </div>
