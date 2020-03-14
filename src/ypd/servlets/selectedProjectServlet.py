@@ -6,7 +6,7 @@ class SelectedProjectView(FlaskView):
     def get(self):
                 
         # Get project by id
-        isProvided =  request.args.get('isProvided', default = True, type = bool)
+        isProvided =  request.args.get('isProvided', default=False, type = bool)
         id         =  request.args.get('id', default = ' ', type=int)
         
         if isProvided:
@@ -15,5 +15,5 @@ class SelectedProjectView(FlaskView):
             s = Solicited.get(id)
             
         # Render HTML
-        return render_template('ProjectList.html')
+        return render_template('ProjectList.html', project = s)
     

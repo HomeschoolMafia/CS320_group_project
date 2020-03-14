@@ -13,10 +13,6 @@ Base.metadata.create_all(engine)
 @app.route('/')
 def do_something():
     return 'Hello, world'
-
-@app.route('/')
-def do_something():
-    return 'Hello, world!'
     
 SelectedProjectView.register(app)               # Imports the page after a project is selected
 SubmissionView.register(app)                    # Imports the page to submit a project
