@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, request
 from flask_classy import FlaskView
 from ..model.catalog import Catalog
 
