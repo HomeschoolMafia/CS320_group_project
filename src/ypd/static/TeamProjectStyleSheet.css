@@ -118,6 +118,17 @@ a {
 }
 
 .dropDown:hover .dropDown-Content {
-  display: block;
+    display: block;
 }
+
+.searchBar {
+    float: right;
+}
+
+
+
+
+
+
+
 

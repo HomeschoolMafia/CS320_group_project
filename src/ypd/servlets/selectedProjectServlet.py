@@ -18,5 +18,5 @@ class SelectedProjectView(FlaskView):
             s = Solicited.get(id)
             
         # Render HTML
-        return render_template('ProjectList.html', project = s)
+        return render_template('project.html', project = s)
     
