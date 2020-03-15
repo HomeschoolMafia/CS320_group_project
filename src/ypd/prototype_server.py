@@ -5,7 +5,8 @@ app = Flask(__name__)
 from .servlets.submissionServlet import SubmissionView
 from .servlets.selectedProjectServlet import SelectedProjectView
 from flask_classy import FlaskView
-from .model import engine, Base
+from .model import engine, Base, Session
+from .model.project import Provided, Solicited
 
 
 IndexView.register(app)
