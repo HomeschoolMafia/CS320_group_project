@@ -5,33 +5,45 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextField, SubmitField, RadioField
 from wtforms.validators import DataRequired
 
+SECRET_KEY = 'development'
+
 class SubmissionView(FlaskView):
-    def get(self):
-        return render_template('SubmissionPage.html')
+    #def get(self):
+     #   return render_template('SubmissionPage.html')
 
         # pull data from HTML form
+    @route ('/', methods =('GET', 'POST'))   
     def post(self):
         form = SubmissionForm()
-        projType = form.projType.data
-        title = form.title.data
-        description = form.description.data
-        poster = form.poster.data
+        # if form.validate_on_submit():
+        print(form.title)
+        print(form.description)
+        # else:
+            # print('you dumb fuck')
+        if request.method == 'POST':
+            projType = form.projType.data
+            title = form.title.data
+            description = form.description.data
+            poster = form.poster.data
+            print("This is a test")
+            print(form.projType)
+    #     if form.validate_on_submit():
+    # # post data to project database
+            #if projType == 'providedProject':
+            #    provided = Provided()
+            #    provided.post(title, description, poster)
+            #else:
+            #    solicited = Solicited()
+            #    solicited.post(title, description, poster)
+            return redirect(url_for('IndexView:get'))
 
-        if form.validate_on_submit():
-    # post data to project database
-            if projType == 'providedProject':
-                provided = Provided()
-                provided.post(title, description, poster)
-            else:
-                solicited = Solicited()
-                solicited.post(title, description, poster)
-            
-        return redirect(url_for('/submission', form=form))
+        return render_template('SubmissionPage.html', form=form)
 
 class SubmissionForm(FlaskForm):
     """Submission Form"""
-    title = StringField('title', [DataRequired()])
-    description = StringField('projSummary', [DataRequired()])
-    poster = StringField('poster', [DataRequired()])
-    projType = RadioField('projectType', [DataRequired()])
+    title = StringField('title')
+    description = StringField('projSummary')
+    poster = StringField('poster')
+    projType = RadioField('projectType', choices = [('providedProject', 'Provided Project'), 
+                                                    ('solicitedProject','Solicited Project')])
     submit = SubmitField('Submit')

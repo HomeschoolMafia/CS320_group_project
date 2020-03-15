@@ -9,32 +9,24 @@
 	<div>
 		<h1>Project Submission</h1>
 	</div>
-		<form action={{ url_for('SubmissionView:post') }} method="POST">
+		<form action="/submission" method="POST">
 			
 			<fieldset>
 				<p>
-				<label>Project Title</label>
-				<input type = "text"
-					   name = "title"
-					   value = " " >
+					<label>Project Title:</label>
+					{{ form.title}}
 				</p>
 				<p>
-				<label>Project Summary:</label>
-				<input type = "text"
-					   name = "projSummary"
-					   value = " " >
+					<label>Project Summary:</label>
+					{{form.description}}
 				</p>
 				<p>
 					<label>Poster:</label>
-					<input type = "text"
-							name = "poster"
-							value = " " >
+					{{form.poster}}
 				</p>
 				<p>
-				<input type = "radio" id = "provided" name = "projectType" value = "providedProject">
-				<label for = "provided">Provided Project</label>
-				<input type = "radio" id = "solicited" name = "projectType" value = "solicitedProject">
-				<label for = "solicited">Solicited Project</label>
+					{{form.hidden_tag()}}
+					{{form.projType}}
 				</p>
 				<p>
 				<input type = "submit" value = "Go" >
