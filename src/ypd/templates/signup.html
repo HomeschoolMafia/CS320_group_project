@@ -15,7 +15,7 @@
 <body>
     <div class="container">
         <h1>Welcome To YCP <br>Project Database</h1>
-        <form class="form" action="{{ url_for('UserView:signup') }}" method="POST">
+        <form class="form" action="{{ url_for('UserView:signup') }}" method="{{ url_for('UserView:signup') }}">
             <div class="form__items">
                 <fieldset>
                     <legend>Sign-Up</legend>
@@ -36,7 +36,7 @@
                     <label for="company">Company</label>
                 </fieldset>
                 <input type="submit" id="login" value="Sign Up">
-                <a href="/login">Have an account?</a>
+                <a href="{{ url_for('UserView:login') }}">Have an account?</a>
             </div>
         </form>
     </div>
