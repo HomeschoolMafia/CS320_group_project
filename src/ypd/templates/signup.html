@@ -9,13 +9,12 @@
     <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/login_Page.css')}}">
     <link rel="stylesheet" href="../static/styles/login_Page.css">
     <title>YCP Project Database</title>
-    <script defer src="script.js"></script>
 </head>
 
 <body>
     <div class="container">
         <h1>Welcome To YCP <br>Project Database</h1>
-        <form class="form" action="{{ url_for('UserView:signup') }}" method="{{ url_for('UserView:signup') }}">
+        <form class="form" action="{{ url_for('UserView:signup') }}" method="POST">
             <div class="form__items">
                 <fieldset>
                     <legend>Sign-Up</legend>
@@ -25,9 +24,9 @@
                     <label for="password" class="form__label" pattern="[A-z]+[0-9]+[@|#|$|%|&|!|.|-|_]+"><span>Password</span>
                         <input type="password" class="form__input" name="password" id="password" placeholder="Password" required/>
                     </label>
-                    <label for="email" class="form__label"><span>Email</span>
+                    <!-- <label for="email" class="form__label"><span>Email</span>
                         <input type="email" class="form__input" name="email" id="email" placeholder="Email" required/>
-                    </label>
+                    </label> -->
                     <input type="radio" id="student" name="user" value="student">
                     <label for="student">Student</label><br>
                     <input type="radio" id="faculty" name="user" value="faculty">

@@ -69,7 +69,4 @@ class User(Base):
         session.close()
         return result
 
-    def indexSearch(self):
-        session = Session()
-        results = User.query.all()
-        return results
+    
