@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- Submission Page for companies to make the job listing -->
+<html>
+	<head>
+		<title>Project Submission</title>
+	</head>
+
+	<body>
+	<div>
+		<h1>Project Submission</h1>
+	</div>
+		<form action="/submission" method="POST">
+			
+			<fieldset>
+				<p>
+					<label>Project Title:</label>
+					{{ form.title}}
+				</p>
+				<p>
+					<label>Project Summary:</label>
+					{{form.description}}
+				</p>
+				<p>
+					<label>Poster:</label>
+					{{form.poster}}
+				</p>
+				<p>
+					{{form.hidden_tag()}}
+					{{form.projType}}
+				</p>
+				<p>
+				<input type = "submit" value = "Go" >
+				</p>
+			</fieldset>
+		</form>
+	</body>
+</html>
