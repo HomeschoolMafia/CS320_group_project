@@ -11,6 +11,8 @@ from .model.project import Project
 from .model.user import User
 from .servlets.indexServlet import IndexView
 from .servlets.user_servlet import UserView
+from .servlets.submissionServlet import SubmissionView
+from .servlets.selectedProjectServlet import SelectedProjectView
 
 session = Session()
 
@@ -22,6 +24,8 @@ admin = Admin(app, name='CS320 Group Project', template_mode='bootstrap3')
 
 UserView.register(app)
 IndexView.register(app)
+SubmissionView.register(app)
+SelectedProjectView.register(app)
 Base.metadata.create_all(engine)
 admin.add_view(ModelView(User, session))
 #admin.add_view(ModelView(Project, session))
