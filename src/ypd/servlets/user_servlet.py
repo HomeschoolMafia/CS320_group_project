@@ -43,7 +43,7 @@ class UserView(FlaskView):
                     user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=False, is_admin=False)
                 elif option == 'Company':
                     user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=False, can_post_provided=True, is_admin=False)
-                user.signup()
+                user.sign_up()
             except Exception as e:
                 print(e)
             finally:
