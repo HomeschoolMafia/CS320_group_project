@@ -14,7 +14,6 @@ class TestProject(TestCase):
 
     def tearDown(self):
         self.session.query(project.Provided).delete()
-        self.session.query(project.Solicited).delete()
         self.session.commit()
         self.session.close()
 
