@@ -7,8 +7,8 @@ class User(Base):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    password = Column(String, unique=True, nullable=False)
+    username = Column(String)
+    password = Column(String)
     bio = Column(String)
     email = Column(String)
     contact_info = Column(String)
