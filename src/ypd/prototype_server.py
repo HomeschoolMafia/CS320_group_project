@@ -18,12 +18,13 @@ app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-admin = Admin(app, name='YCP Project', template_mode='bootstrap3')
+admin = Admin(app, name='CS320 Group Project', template_mode='bootstrap3')
 
 UserView.register(app)
 IndexView.register(app)
 Base.metadata.create_all(engine)
 admin.add_view(ModelView(User, session))
+#admin.add_view(ModelView(Project, session))
 
 if __name__=='__main__':
     app.run(debug=True)

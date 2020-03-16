@@ -8,17 +8,19 @@ from .indexServlet import IndexView
 from ypd.model.user import User
 from ypd.model import Session
 
+
+"""A class that represents User creation routes"""
 class UserView(FlaskView):
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
         if request.method == 'POST':
             username = request.form['username']
-            password_hash = generate_password_hash(request.form['password'], 'sha256')
+            password = generate_password_hash(request.form['password'], 'sha256')
             #email = request.form['email']
             try:
                 user = User()
-                user.login(username, password_hash, email)
+                user.login(username, password)
             except Exception as e:
                 print(e)
             finally:
@@ -35,7 +37,12 @@ class UserView(FlaskView):
             # email = request.form['email']
             option = request.form['user']
             try:
-                user = User(username=username, password=password_hash)
+                if option == 'Faculty':
+                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=True, is_admin=True)
+                elif option == 'Student':
+                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=False, is_admin=False)
+                elif option == 'Company':
+                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=False, can_post_provided=True, is_admin=False)
                 user.signup()
             except Exception as e:
                 print(e)
