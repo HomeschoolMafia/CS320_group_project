@@ -1,21 +1,34 @@
-from flask import Flask
-from .servlets.indexServlet import IndexView
+from flask import Flask, flash, redirect, render_template, request, url_for
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
+from werkzeug.security import generate_password_hash
+
+from flask_classy import FlaskView, route
 from ypd import relative_path
-app = Flask(__name__)
+
+from .model import Base, Session, engine
+from .model.project import Project
+from .model.user import User
+from .servlets.indexServlet import IndexView
+from .servlets.user_servlet import UserView
 from .servlets.submissionServlet import SubmissionView
 from .servlets.selectedProjectServlet import SelectedProjectView
-from flask_classy import FlaskView
-from .model import engine, Base, Session
-from .model.project import Provided, Solicited
 
+session = Session()
 
-IndexView.register(app)
-Base.metadata.create_all(engine)
+app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-@app.route('/')
-def do_something():
-    return 'Hello, world'
-    
-SelectedProjectView.register(app)               # Imports the page after a project is selected
-SubmissionView.register(app)                    # Imports the page to submit a project
+app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
+admin = Admin(app, name='CS320 Group Project', template_mode='bootstrap3')
+
+UserView.register(app)
+IndexView.register(app)
+SubmissionView.register(app)
+SelectedProjectView.register(app)
+Base.metadata.create_all(engine)
+admin.add_view(ModelView(User, session))
+#admin.add_view(ModelView(Project, session))
+
+if __name__=='__main__':
+    app.run(debug=True)

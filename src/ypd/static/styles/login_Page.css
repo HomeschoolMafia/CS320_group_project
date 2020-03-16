@@ -1,0 +1,85 @@
+* {
+    margin: 0;
+    padding: 0;
+    --background-color: #E3E3E3;
+    --border-size: 2px;
+}
+
+body {
+    background-image: radial-gradient(circle, white 25%, green 30%, silver 30%);
+}
+
+body * {
+    border-radius: 10px;
+}
+
+.container {
+    margin: 0 auto;
+    width: 320px;
+    margin-top: 25vh;
+    padding: 20px;
+    background-color: rgb(56, 196, 68, 0.8);
+    box-shadow: 5px 5px rgba(10, 10, 10, 0.2);
+}
+
+form {
+    width: 280px;
+    background-color: rgb(56, 146, 68, 0.6);
+    padding: 20px;
+}
+
+label,
+label span,
+input {
+    display: block;
+}
+
+label {
+    font-size: 1.3em;
+    text-align: center;
+}
+
+fieldset {
+    padding: 20px;
+}
+
+h1 {
+    line-height: 50px;
+    margin-bottom: 10px;
+}
+
+h1,
+legend {
+    text-align: center;
+}
+
+legend {
+    color: white;
+    padding: 0 5px 0 5px;
+    border-radius: 50px;
+    border: 2px solid rgba(10, 10, 10, 0.2);
+}
+
+input#password,
+input#username,
+input#email {
+    margin-top: 10px;
+    margin-bottom: 20px;
+    width: 200px;
+    padding: 10px;
+    color: black;
+    border: 2px solid gainsboro;
+    box-shadow: 5px 10px rgba(120, 120, 120, 0.2);
+}
+
+input#login,
+input#signup {
+    display: block;
+    padding: 5px;
+    color: black;
+    margin: 5px 0 0 100px;
+}
+
+input#login {
+    margin-left: 125px;
+}

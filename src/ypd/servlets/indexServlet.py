@@ -13,4 +13,3 @@ class IndexView(FlaskView):
     
     def is_provided_filter(self, project):
         return 1 if type(project) is Provided else 0
-
