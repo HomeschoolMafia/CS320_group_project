@@ -9,3 +9,5 @@ class IndexView(FlaskView):
         search_text = request.args.get('search_text', default='')
         return render_template('CS320-ProjectMainPage.html', catalog=catalog)
     
+    def is_provided_filter(self, project):
+        return 1 if type(project) is Provided else 0
