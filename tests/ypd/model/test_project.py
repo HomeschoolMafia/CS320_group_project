@@ -14,6 +14,7 @@ class TestProject(TestCase):
 
     def tearDown(self):
         self.session.query(project.Provided).delete()
+        self.session.query(project.Solicited).delete()
         self.session.commit()
         self.session.close()
 
@@ -40,3 +41,12 @@ class TestProject(TestCase):
         self.assertEqual(results[0].date, p.date)
         self.assertEqual(results[0].archived, False)
         self.assertEqual(results[0].needsReview, False)
+        
+    def test_selected_project_lookup(self):                                     # tests to see that get method works
+        s = project.Provided()
+        s.post('cookie', 'biscuit', 0)
+        
+        s = project.Provided.get(1)
+        self.assertIsNotNone(s)
+        self.assertTrue(s.title == 'cookie' and s.description == 'biscuit')
+        

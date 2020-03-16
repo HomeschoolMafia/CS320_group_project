@@ -19,8 +19,8 @@
                 <div class="menuTab"><center><div class="bar"></div><div class="bar"></div><div class="bar"></div></center></div>
                 <div class="dropDown-Content">
                     <a href="{{ url_for('IndexView:get') }}">Main Page</a>
-                    <!--<a href="{{ "url_for('SubmissionView:submission')" }}">Post A Project</a>
-                    <a href="{{ "url_for('UserView:login')" }}">Login/Sign Up</a>-->
+                    <a href="{{ url_for('SubmissionView:post') }}">Post A Project</a>
+                    <!-- <a href="{{ "url_for('UserView:login')" }}">Login/Sign Up</a> -->
                 </div>
             </div>
         </div>
@@ -37,16 +37,12 @@
             {% for item in catalog.projects %}
                 <div class="postBox">
                     <div class="logoIn"><div class="logoInPad"><!--<img src="{{ item.logo }}" alt="Logo" width="25" height="30">--></div></div>
-                        <!--<a href="{{ item.id }}">
-                        
-                        /selectedproject/?id=#
-                        /selectedproject/?id=#&isProvided=True
-                        
-                        -->
+                        <!-- <a href="selectedproject?id={{item.id}}{% if item is provided %}&isProvided=True{% endif %}"> -->
+                        <a href={{url_for('SelectedProjectView:get', id=item.id, is_provided=(item is provided))}}>
                             <div class="postText">
                                 <!--{{ item.name }}--> TempName &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
                             </div>
-                        <!--</a>-->
+                        </a>
                     <div class="postBar"></div>
                 </div>
             {% endfor %}
