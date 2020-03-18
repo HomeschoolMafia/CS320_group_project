@@ -3,7 +3,9 @@ from setuptools import find_packages, setup
 INSTALL_REQUIRES = [
     'sqlalchemy',
     'flask',
-    'requests'
+    'requests',
+    'flask-wtf',
+    'flask-admin'
 ]
 
 DEV_REQUIRES = [
