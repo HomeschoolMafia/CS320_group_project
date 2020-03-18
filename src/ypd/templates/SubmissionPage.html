@@ -3,35 +3,66 @@
 <html>
 	<head>
 		<title>Project Submission</title>
+        <link rel="icon" href="Logo.png" type="image/png">
+        <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Rokkitt&display=swap" rel="stylesheet">
+        <link href="../static/TeamProjectStyleSheet.css" rel="stylesheet" type="text/css">
 	</head>
 
 	<body>
-	<div>
-		<h1>Project Submission</h1>
-	</div>
-		<form action="/submission" method="POST">
-			
-			<fieldset>
-				<p>
-					<label>Project Title:</label>
-					{{ form.title}}
-				</p>
-				<p>
-					<label>Project Summary:</label>
-					{{form.description}}
-				</p>
-				<p>
-					<label>Poster:</label>
-					{{form.poster}}
-				</p>
-				<p>
-					{{form.hidden_tag()}}
-					{{form.projType}}
-				</p>
-				<p>
-				<input type = "submit" value = "Go" >
-				</p>
-			</fieldset>
-		</form>
+        <div class="mainTitle">
+        <div class="logo">
+            <img src="../static/Logo.png" alt="Logo" width="30" height="35">
+        </div>
+        <center>YCP Project Database</center>
+            <div class="dropDown">
+                <div class="menuTab">
+                    <center>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </center>
+                </div>
+                <div class="dropDown-Content">
+                    <a href="{{ url_for('IndexView:get') }}">Main Page</a>
+                    <a href="{{ url_for('SubmissionView:post') }}">Post A Project</a>
+                    <a href="{{ url_for( 'UserView:login') }}">Login/Sign Up</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="searchBar">
+            <form action="/search">
+                <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
+                <input type="submit" value="Search">
+            </form>
+        </div>
+        
+        <div class="submissionHeader">
+            <h1>Project Submission</h1>
+        </div>
+        <form action="/submission" method="POST">	
+            <fieldset>
+                <p>
+                    <label>Project Title:</label>
+                    {{ form.title}}
+                </p>
+                <p>
+                    <label>Project Summary:</label>
+                    {{form.description}}
+                </p>
+                <p>
+                    <label>Poster:</label>
+                    {{form.poster}}
+                </p>
+                <p>
+                    {{form.hidden_tag()}}
+                    {{form.projType}}
+                </p>
+                <p>
+                    <input type = "submit" value = "Go" >
+                </p>
+            </fieldset>
+        </form>
 	</body>
 </html>

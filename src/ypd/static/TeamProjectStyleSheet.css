@@ -125,7 +125,10 @@ a {
     float: right;
 }
 
-
+.submissionHeader{
+    margin-left: 100px;
+    border-bottom: 5px solid black;
+}
 
 
 
