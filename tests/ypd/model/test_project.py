@@ -1,20 +1,25 @@
-from unittest import TestCase
-from unittest.mock import patch
 import os
 import tempfile
+from unittest import TestCase
+from unittest.mock import patch
 
-import pytest
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-from ypd.model import engine, Base, Session, project
+from ypd.model import Base, project
+
 
 class TestProject(TestCase):
     
     @classmethod
     def setUpClass(self):
-        Base.metadata.create_all(engine)
+        self.engine = create_engine('sqlite:///')
+        Base.metadata.create_all(self.engine)
+        self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     def setUp(self):
-        self.session = Session()
+        self.session = self.Session(bind=self.engine)
+        project.Session = self.Session
 
     def tearDown(self):
         self.session.query(project.Provided).delete()
@@ -35,7 +40,7 @@ class TestProject(TestCase):
         p = project.Provided()
         p.post('foo', 'bar', 0)
 
-        results = Session().query(project.Provided).all()
+        results = self.session.query(project.Provided).all()
         self.assertEqual(len(results), 1)
 
         self.assertEqual(results[0].id, p.id)
