@@ -1,15 +1,22 @@
 from unittest import TestCase
 from unittest.mock import patch
 
-from ypd.model import engine, Base, Session, user
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+from ypd.model import Base, user
+
 
 class TestUser(TestCase):
     @classmethod
     def setUpClass(self):
-        Base.metadata.create_all(engine)
+        self.engine = create_engine('sqlite:///')
+        Base.metadata.create_all(self.engine)
+        self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     def setUp(self):
-        self.session = Session()
+        self.session = self.Session(bind=self.engine)
+        user.Session = self.Session
 
     def tearDown(self):
         self.session.query(user.User).delete()
@@ -20,7 +27,7 @@ class TestUser(TestCase):
         u = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
         u.sign_up()
 
-        results = Session().query(user.User).all()
+        results = self.session.query(user.User).all()
         self.assertEqual(len(results), 1)
 
         self.assertEqual(results[0].id, u.id)
@@ -38,7 +45,7 @@ class TestUser(TestCase):
             u2 = user.User(username='foo', password='baz')
             u2.sign_up()
 
-        results = Session().query(user.User).all()
+        results = self.session.query(user.User).all()
         self.assertEqual(len(results), 1)
 
         self.assertEqual(results[0].id, u1.id)
