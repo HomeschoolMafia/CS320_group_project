@@ -17,7 +17,7 @@ DEV_REQUIRES = [
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'prototype_server=ypd.scripts.prototype_server:main',
+        'ypd_server=ypd.scripts.server:main',
     ]
 }
 
