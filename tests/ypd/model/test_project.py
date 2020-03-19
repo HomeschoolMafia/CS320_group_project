@@ -5,8 +5,6 @@ import tempfile
 
 import pytest
 
-from flaskr import flaskr
-
 from ypd.model import engine, Base, Session, project
 
 class TestProject(TestCase):
@@ -22,15 +20,6 @@ class TestProject(TestCase):
         self.session.query(project.Provided).delete()
         self.session.commit()
         self.session.close()
-    
-    @patch.object(user, 'Session')
-    def test_user_signin_unit(self, mock_session):
-        mock_session.return_value = mock_session
-        account = user(username='JohnDimaggio', password='WhatIsSoFunnyAboutMe?')
-        s = account.sign_up()
-        mock_session.add.assert_called_once()
-        mock_session.commit.assert_called_once_with(s)
-        mock_session.close.assert_called_once()
 
     @patch.object(project, 'Session')
     def test_project_post_unit(self, mock_session):
@@ -63,4 +52,3 @@ class TestProject(TestCase):
         s = project.Provided.get(1)
         self.assertIsNotNone(s)
         self.assertTrue(s.title == 'cookie' and s.description == 'biscuit')
-        

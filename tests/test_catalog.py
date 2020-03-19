@@ -51,4 +51,3 @@ class TestProject(TestCase):
         self.assertEqual(len(catalog.projects), 1)
         self.assertEqual(catalog.projects[0].title, 'your')
         self.assertEqual(catalog.projects[0].description, 'mom')
-

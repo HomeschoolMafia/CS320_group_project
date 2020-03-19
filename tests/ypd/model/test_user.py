@@ -16,15 +16,6 @@ class TestUser(TestCase):
         self.session.commit()
         self.session.close()
 
-    @patch.object(user, 'Session')
-    def test_user_signin_unit(self, mock_session):
-        mock_session.return_value = mock_session
-        account = user(username='JohnDimaggio', password='WhatIsSoFunnyAboutMe?')
-        s = account.sign_up()
-        mock_session.add.assert_called_once()
-        mock_session.commit.assert_called_once_with(s)
-        mock_session.close.assert_called_once()
-
     def test_signup_successful(self):
         u = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
         u.sign_up()

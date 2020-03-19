@@ -7,7 +7,7 @@ from flask_classy import FlaskView, route
 from ypd import relative_path
 
 from .model import Base, Session, engine
-from .model.project import Project
+from .model.project import Project, Provided, Solicited
 from .model.user import User
 from .servlets.indexServlet import IndexView
 from .servlets.user_servlet import UserView
@@ -28,7 +28,9 @@ SubmissionView.register(app)
 SelectedProjectView.register(app)
 Base.metadata.create_all(engine)
 admin.add_view(ModelView(User, session))
-#admin.add_view(ModelView(Project, session))
+admin.add_view(ModelView(Project, session))
+admin.add_view(ModelView(Provided, session))
+admin.add_view(ModelView(Solicited, session))
 
 if __name__=='__main__':
     app.run(debug=True)
