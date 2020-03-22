@@ -1,5 +1,7 @@
 from . import Session
-from .project import Solicited, Provided
+from .project import Provided, Solicited
+from .user import User
+
 
 class Catalog:
     def __init__(self, search_term, select_provided, **kwargs):
@@ -24,3 +26,6 @@ class Catalog:
         session = Session()
         self.projects = session.query(self.table_to_search).all()
         session.close()
+
+        for project in self.projects:
+            project.poster = User.get(project.poster_id)

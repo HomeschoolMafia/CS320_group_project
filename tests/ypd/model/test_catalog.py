@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from ypd.model import Base, catalog, project
+from ypd.model.user import User
 
 class TestProject(TestCase):
     
@@ -31,9 +32,9 @@ class TestProject(TestCase):
         self.assertEqual(clg.projects, [])
 
     def test_apply_many_projects(self):
-        project.Provided().post('foo', 'bar', 0)
-        project.Provided().post('nobody expects', 'the spanish inquisition', 0)
-        project.Provided().post('sperm whale', 'bowl of petunias', 0)
+        project.Provided().post('foo', 'bar', User(id=1))
+        project.Provided().post('nobody expects', 'the spanish inquisition', User(id=1))
+        project.Provided().post('sperm whale', 'bowl of petunias', User(id=1))
         clg = catalog.Catalog('', True)
         clg.apply()
 
@@ -48,8 +49,8 @@ class TestProject(TestCase):
         self.assertTrue(('sperm whale', 'bowl of petunias') in projects)
 
     def test_apply_chooses_correct_table(self):
-        project.Provided().post('foo', 'bar', 0)
-        project.Solicited().post('your', 'mom', 0)
+        project.Provided().post('foo', 'bar', User(id=1))
+        project.Solicited().post('your', 'mom', User(id=1))
         clg = catalog.Catalog('', False)
         clg.apply()
 
