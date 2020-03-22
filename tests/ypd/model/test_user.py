@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from ypd.model import Base, user
+from ypd.model import decorator
 
 
 class TestUser(TestCase):
@@ -13,10 +14,10 @@ class TestUser(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
+        decorator.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        user.Session = self.Session
 
     def tearDown(self):
         self.session.query(user.User).delete()

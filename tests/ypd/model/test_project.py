@@ -6,7 +6,7 @@ from unittest.mock import patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ypd.model import Base, project
+from ypd.model import Base, decorator, project
 
 
 class TestProject(TestCase):
@@ -16,27 +16,17 @@ class TestProject(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
+        decorator.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        project.Session = self.Session
 
     def tearDown(self):
         self.session.query(project.Provided).delete()
         self.session.commit()
         self.session.close()
 
-    @patch.object(project, 'Session')
-    def test_project_post_unit(self, mock_session):
-        mock_session.return_value = mock_session
-        p = project.Provided()
-        p.post('foo', 'bar', 0)
-        mock_session.assert_called_once()
-        mock_session.add.assert_called_once_with(p)
-        mock_session.commit.assert_called_once()
-        mock_session.close.assert_called_once()
-
-    def test_project_post_integration(self):
+    def test_project_post(self):
         p = project.Provided()
         p.post('foo', 'bar', 0)
 

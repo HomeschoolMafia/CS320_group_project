@@ -1,5 +1,6 @@
 from . import Session
 from .project import Solicited, Provided
+from .decorator import with_session
 
 class Catalog:
     def __init__(self, search_term, select_provided, **kwargs):
@@ -17,11 +18,12 @@ class Catalog:
 
         self.table_to_search = Provided if select_provided else Solicited
     
-    def apply(self):
+    @with_session
+    def apply(self, session=None):
         """Apply the search and build the list of projects. 
         TODO: actually apply the search term and filters
-        """
-        session = Session()
-        self.projects = session.query(self.table_to_search).all()
-        session.close()
 
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.projects = session.query(self.table_to_search).all()

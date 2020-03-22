@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
 
 from . import Base, Session
+from .decorator import with_session
 
 
 class User(Base):
@@ -18,34 +19,36 @@ class User(Base):
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
 
-    # def __repr__(self):
-    #     return '<User %r>' % (self.username)
-
-    def sign_up(self):
+    @with_session
+    def sign_up(self, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
 
         Raises: 
             ValueError: If the username already exists in the database
         """
         #TODO: kick off the review process
-        session = Session()
         result = session.query(User).filter_by(username=self.username).one_or_none()
         if result:
             raise ValueError(f'user {self.username} already exists')
         self.needs_review = False #TODO: set this to true when we implement the review process
         session.add(self)
-        session.commit()
-        session.close()
 
     @classmethod
-    def login(cls, username, password):
+    @with_session
+    def login(cls, username, password, session=None):
         """Attempts to login a user with the given username and password
         
         Args:
             username (str): Username of user to log in
             password (str): Password of user to log in
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
 
         Returns:
             The User object
@@ -54,8 +57,6 @@ class User(Base):
             ValueError: If login fails due to incorrect username or password,
                         or if login fails due to user account requiring admin review
         """
-        session = Session()
-
         #try to log in
         result = session.query(User).filter_by(username=username, password=password, needs_review=False).one_or_none()
 
@@ -66,8 +67,4 @@ class User(Base):
                 raise ValueError('User account requires review')
             else:
                 raise ValueError('Incorrect username or password')
-        session.close()
         return result
-
-    def get_favorited():
-        session = Session
