@@ -56,8 +56,11 @@ class Project(Base):
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
         session.close()
-        result.poster = User.get(result.id)
         return result
+
+    def get_poster(self):
+        """Returns the user that posted this project"""
+        return User.get(self.id)
 
 class Provided(Project):
     """Class that represents a provided project"""
