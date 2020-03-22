@@ -1,6 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Integer, String, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base, Session
@@ -19,7 +20,8 @@ class Project(Base):
     needsReview = Column(Boolean)
 
     #This is a foreign key, but ForeignKey doesn't seem to work. ¯\_(ツ)_/¯
-    poster_id = Column(Integer) 
+    poster_id = Column(Integer, ForeignKey('user')) 
+    poster = relationship("User", back_populates='user')
 
     def post(self, title, description, poster):
         """Posts this project to the database"""

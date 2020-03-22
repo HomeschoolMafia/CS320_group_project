@@ -1,13 +1,11 @@
-from enum import Enum, auto
-
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
+from ..model.project import Provided, Solicited
 from flask_wtf import FlaskForm
-from wtforms import RadioField, StringField, SubmitField, TextField
+from wtforms import StringField, TextField, SubmitField, RadioField
 from wtforms.validators import DataRequired
 
-from ..model.project import Provided, Solicited
-from ..model.user import User
+from enum import Enum, auto
 
 PROVIDED = 0
 SOLICITED = 1
@@ -24,9 +22,9 @@ class SubmissionView(FlaskView):
             description = form.description.data
 
             if int(projType) == PROVIDED:
-                Provided().post(title, description, User(id=1))
+                Provided().post(title, description, 0)
             else:
-                Solicited().post(title, description, User(id=1))
+                Solicited().post(title, description, 0)
             return redirect(url_for('IndexView:get'))
 
         return render_template('SubmissionPage.html', form=form)
