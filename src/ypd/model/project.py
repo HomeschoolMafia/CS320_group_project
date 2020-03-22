@@ -1,14 +1,14 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base, Session
+from .mixin import HasUserMixin
 from .user import User
 
 
-class Project(Base):
+class Project(Base, HasUserMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True
@@ -19,9 +19,6 @@ class Project(Base):
     archived = Column(Boolean)
     needsReview = Column(Boolean)
 
-    #This is a foreign key, but ForeignKey doesn't seem to work. ¯\_(ツ)_/¯
-    poster_id = Column(Integer, ForeignKey('user')) 
-    poster = relationship("User", back_populates='user')
 
     def post(self, title, description, poster):
         """Posts this project to the database"""
@@ -59,10 +56,6 @@ class Project(Base):
             raise ValueError(f'No project found with id {id}') from e
         session.close()
         return result
-
-    def get_poster(self):
-        """Returns the user that posted this project"""
-        return User.get(self.id)
 
 class Provided(Project):
     """Class that represents a provided project"""

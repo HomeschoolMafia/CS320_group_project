@@ -1,6 +1,6 @@
 from sqlalchemy import Boolean, Column, Integer, String
 from sqlalchemy.orm.exc import NoResultFound
-
+from sqlalchemy.orm import relationship
 from . import Base, Session
 
 
