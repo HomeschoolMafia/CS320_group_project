@@ -1,18 +1,20 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
 from .decorator import with_session
+from .mixin import HasUserMixin
 
-class Project(Base):
+
+class Project(Base, HasUserMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    poster_id = Column(Integer) #TODO: Make this a foreign key
     date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
@@ -30,28 +32,35 @@ class Project(Base):
             session (Session): session to perform the query on. Supplied by decorator
         """
         self.title = title
+    
         self.description = description
-        #TODO: self.poster_id = poster.id, when user class is finished
+        self.poster_id = poster.id
         self.date = datetime.utcnow() #we might want to only assign this when the project is approved
         self.archived = False
         self.needsReview = False #TODO: When we implement the review workflow, we'll set this to True here
         session.add(self)
         
-    @classmethod
-    @with_session    
+    @classmethod  
+    @with_session  
     def get(cls, id, session=None):
-        """Gets projects from database
+        """Gets projects from database by id
         
         Args:
-            id (int): Id of the project to get
+            id (int): id of the project to get
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
+            
+        Returns:
+            The project with the given id
+            
+        Raises:
+            ValueError: If no project with the given id exists
         """
-        # Look for project ID in database
-        return session.query(cls).filter_by(
-            id = id
-            ).one()
+        try:
+            return session.query(cls).filter_by(id = id).one()
+        except NoResultFound as e:
+            raise ValueError(f'No project found with id {id}') from e
 
 class Provided(Project):
     """Class that represents a provided project"""

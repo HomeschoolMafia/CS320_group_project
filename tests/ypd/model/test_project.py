@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from ypd.model import Base, decorator, project
+from ypd.model.user import User
 
 
 class TestProject(TestCase):
@@ -28,7 +29,7 @@ class TestProject(TestCase):
 
     def test_project_post(self):
         p = project.Provided()
-        p.post('foo', 'bar', 0)
+        p.post('foo', 'bar', User(id=1))
 
         results = self.session.query(project.Provided).all()
         self.assertEqual(len(results), 1)
@@ -42,7 +43,7 @@ class TestProject(TestCase):
         
     def test_selected_project_lookup(self):                                     # tests to see that get method works
         s = project.Provided()
-        s.post('cookie', 'biscuit', 0)
+        s.post('cookie', 'biscuit', User(id=1))
         
         s = project.Provided.get(1)
         self.assertIsNotNone(s)
