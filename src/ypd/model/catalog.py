@@ -1,5 +1,7 @@
 from . import Session
-from .project import Solicited, Provided
+from .project import Provided, Solicited
+from .user import User
+
 
 class Catalog:
     def __init__(self, search_term, select_provided, **kwargs):

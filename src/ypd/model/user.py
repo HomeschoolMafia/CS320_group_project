@@ -68,5 +68,3 @@ class User(Base):
                 raise ValueError('Incorrect username or password')
         session.close()
         return result
-
-    

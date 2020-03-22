@@ -92,3 +92,4 @@ class TestUser(TestCase):
 
         with self.assertRaises(ValueError):
             user.User.login('foo', 'bar')
+

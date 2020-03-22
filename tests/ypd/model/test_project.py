@@ -7,6 +7,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from ypd.model import Base, project
+from ypd.model.user import User
 
 
 class TestProject(TestCase):
@@ -30,7 +31,7 @@ class TestProject(TestCase):
     def test_project_post_unit(self, mock_session):
         mock_session.return_value = mock_session
         p = project.Provided()
-        p.post('foo', 'bar', 0)
+        p.post('foo', 'bar', User(id=1))
         mock_session.assert_called_once()
         mock_session.add.assert_called_once_with(p)
         mock_session.commit.assert_called_once()
@@ -38,7 +39,7 @@ class TestProject(TestCase):
 
     def test_project_post_integration(self):
         p = project.Provided()
-        p.post('foo', 'bar', 0)
+        p.post('foo', 'bar', User(id=1))
 
         results = self.session.query(project.Provided).all()
         self.assertEqual(len(results), 1)
@@ -52,7 +53,7 @@ class TestProject(TestCase):
         
     def test_selected_project_lookup(self):                                     # tests to see that get method works
         s = project.Provided()
-        s.post('cookie', 'biscuit', 0)
+        s.post('cookie', 'biscuit', User(id=1))
         
         s = project.Provided.get(1)
         self.assertIsNotNone(s)
