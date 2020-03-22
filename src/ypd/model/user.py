@@ -69,4 +69,5 @@ class User(Base):
         session.close()
         return result
 
-    
+    def get_favorited():
+        session = Session
