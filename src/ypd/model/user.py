@@ -1,6 +1,5 @@
-from sqlalchemy import Boolean, Column, Integer, String
-from sqlalchemy.orm.exc import NoResultFound
-from sqlalchemy.orm import relationship
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+
 from . import Base, Session
 
 
@@ -19,6 +18,9 @@ class User(Base):
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
 
+    # def __repr__(self):
+    #     return '<User %r>' % (self.username)
+
     def sign_up(self):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
@@ -32,7 +34,6 @@ class User(Base):
         result = session.query(User).filter_by(username=self.username).one_or_none()
         if result:
             raise ValueError(f'user {self.username} already exists')
-        self.name = self.username
         self.needs_review = False #TODO: set this to true when we implement the review process
         session.add(self)
         session.commit()
@@ -43,10 +44,7 @@ class User(Base):
         """Attempts to login a user with the given username and password
         
         Args:
-            username (str): Username of user TODO: When we implement the review workflow, we'll set this to True here
-
-        session = Session()
-        session.add(self) to log in
+            username (str): Username of user to log in
             password (str): Password of user to log in
 
         Returns:
@@ -68,25 +66,5 @@ class User(Base):
                 raise ValueError('User account requires review')
             else:
                 raise ValueError('Incorrect username or password')
-        session.close()
-        return result
-
-    @classmethod
-    def get(cls, id):
-        """Get a user object by id
-        
-        Args:
-            id (int): id of the User object to find
-            
-        Returns: The found User object
-        
-        Raises:
-            ValueError: if no user with the given id is found
-        """
-        session = Session()
-        try:
-            result = session.query(User).filter_by(id=id).one()
-        except NoResultFound as e:
-            raise ValueError(f'No user with id {id} exists') from e
         session.close()
         return result

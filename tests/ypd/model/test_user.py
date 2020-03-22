@@ -93,12 +93,3 @@ class TestUser(TestCase):
         with self.assertRaises(ValueError):
             user.User.login('foo', 'bar')
 
-    def test_get_by_id(self):
-        u = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
-        u.sign_up()
-
-        result = user.User.get(u.id)
-
-        self.assertEqual(result.username, 'foo')
-        self.assertEqual(result.password, 'bar')
-
