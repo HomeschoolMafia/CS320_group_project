@@ -24,3 +24,4 @@ class Catalog:
         session = Session()
         self.projects = session.query(self.table_to_search).all()
         session.close()
+
