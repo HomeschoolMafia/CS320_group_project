@@ -1,9 +1,10 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
-
+from flask_login import UserMixin, login_user
+from ..server import login_manager
 from . import Base, Session
 
 
-class User(Base):
+class User(UserMixin, Base):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -17,9 +18,6 @@ class User(Base):
     can_post_solicited = Column(Boolean)
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
-
-    # def __repr__(self):
-    #     return '<User %r>' % (self.username)
 
     def sign_up(self):
         """Create a new user entry in the database. In order to sign up a User,
@@ -62,6 +60,7 @@ class User(Base):
         #If we don't suceed to log in, raise a useful error message
         if not result:
             result = session.query(User).filter_by(username=username, password=password).one_or_none()
+            login_user(result)
             if result:
                 raise ValueError('User account requires review')
             else:

@@ -1,39 +1,46 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
-from werkzeug.security import generate_password_hash
+from flask_login import current_user, logout_user
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from flask_classy import FlaskView, route
-from ypd.model.project import Project
-from .indexServlet import IndexView
-
-from ypd.model.user import User
 from ypd.model import Session
+from ypd.model.project import Project
+from ypd.model.user import User
 
+from . import Session
+from .indexServlet import IndexView
+from .server import login_manager
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
+        msg = ''
         if request.method == 'POST':
             username = request.form['username']
-            password = generate_password_hash(request.form['password'], 'sha256')
-            #email = request.form['email']
+            password = request.form['password']
             try:
-                user = User()
+                user = User.login
                 user.login(username, password)
             except Exception as e:
-                print(e)
+                msg = e
             finally:
-                flash('Welcome back {}!'.format(request.form.get('username')))
+                msg = 'Welcome back {}!'.format(current_user().name)
                 return redirect(url_for('IndexView:get'))
-        return render_template('login.html')
-
+        return render_template('login.html', msg = msg)
+    
+    @login_manager.user_loader
+    def load_user(self, user_id):
+        session = Session()
+        return session.query(User.name).filter_by(id=int(user_id)).one()
+    
     # Routes work
     @route('/signup/', methods=['POST', 'GET'])
     def signup(self):
         if request.method == 'POST':
             username = request.form['username']
-            password_hash = generate_password_hash(request.form['password'], 'sha256')
+            password_hash = generate_password_hash(request.form['password'], method='sha256')
             # email = request.form['email']
             option = request.form['user']
             try:
@@ -50,4 +57,3 @@ class UserView(FlaskView):
                 flash('Welcome to the YCP Database {}!'.format(username))
                 return redirect(url_for('IndexView:get'))
         return render_template('signup.html')
-    

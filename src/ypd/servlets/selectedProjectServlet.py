@@ -1,8 +1,13 @@
 from flask import Flask, render_template, request
+
 from flask_classy import FlaskView
+
 from ..model.project import Provided, Solicited
+from .indexServlet import login_required
+
 
 class SelectedProjectView(FlaskView):
+    @login_required
     def get(self):
         #whether the project is provided. Booleans are broken due to a bug within Flask, so we have
         #to use an integer instead. Instead of true and false, we'll use truthy and falsy values
@@ -19,4 +24,3 @@ class SelectedProjectView(FlaskView):
             
         # Render HTML
         return render_template('project.html', project = s)
-    

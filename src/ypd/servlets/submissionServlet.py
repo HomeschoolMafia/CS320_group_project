@@ -1,9 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_classy import FlaskView, route
+from ..model.flaskforms import SubmissionForm
 from ..model.project import Provided, Solicited
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextField, SubmitField, RadioField
-from wtforms.validators import DataRequired
 
 from enum import Enum, auto
 
@@ -28,10 +26,3 @@ class SubmissionView(FlaskView):
             return redirect(url_for('IndexView:get'))
 
         return render_template('SubmissionPage.html', form=form)
-
-class SubmissionForm(FlaskForm):
-    """Submission Form"""
-    title = StringField('title')
-    description = StringField('projSummary')
-    projType = RadioField('projectType', choices = [(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
-    submit = SubmitField('Submit')
