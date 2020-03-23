@@ -1,14 +1,23 @@
 from datetime import datetime
 
-from sqlalchemy import Boolean, Column, DateTime, Integer, String
+from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
 from .decorator import with_session
-from .mixin import HasUserMixin
 
+class HasPosterMixin:
+    @declared_attr.cascading
+    def poster_id(self):
+        return Column(Integer, ForeignKey('users.id'))
 
-class Project(Base, HasUserMixin):
+    @declared_attr.cascading
+    def poster(self):
+        return relationship("User", uselist=False, lazy='subquery')
+
+class Project(Base, HasPosterMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True

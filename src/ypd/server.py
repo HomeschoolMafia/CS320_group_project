@@ -5,7 +5,6 @@ from flask_admin.contrib.sqla import ModelView
 from .model import Base, Session, engine
 from .model.project import Project
 from .model.user import User
-from .model.favorited import Favorited
 from .servlets.indexServlet import IndexView
 from .servlets.selectedProjectServlet import SelectedProjectView
 from .servlets.submissionServlet import SubmissionView

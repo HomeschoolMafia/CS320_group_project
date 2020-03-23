@@ -3,7 +3,7 @@ from .project import Solicited, Provided
 from .decorator import with_session
 
 class Catalog:
-    def __init__(self, search_term, select_provided, **kwargs):
+    def __init__(self, search_term='', select_provided=True, **kwargs):
         """A catalog is a list of projects selected from all projects stored in the database.
 
         Args:
