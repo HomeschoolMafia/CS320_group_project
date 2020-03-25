@@ -11,19 +11,28 @@ from .project import Provided
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
     Column('users_id', Integer, ForeignKey('users.id')),
-    Column('provided_id', Integer, ForeignKey('provided.id')))       
+    Column('project_id', Integer, ForeignKey('provided.id')))       
 
     solicited_association = Table('solicited_association', Base.metadata,
         Column('users_id', Integer, ForeignKey('users.id')),
-        Column('solicited_id', Integer, ForeignKey('solicited.id')))
+        Column('project_id', Integer, ForeignKey('solicited.id')))
 
     @declared_attr
     def provided_favorites(self):
-        return relationship("Provided", secondary=self.provided_association, lazy='joined')
+        return relationship(
+            "Provided",
+            secondary=self.provided_association,
+            lazy='joined',
+            passive_deletes=True)
+
 
     @declared_attr
     def solicited_favorites(self):
-        return relationship("Solicited", secondary=self.solicited_association, lazy='joined')
+        return relationship(
+            "Solicited",
+            secondary=self.solicited_association,
+            lazy='joined',
+            passive_deletes=True)
 
 class User(Base, HasFavoritesMixin):
     """A class that represents a single user account"""
@@ -49,12 +58,48 @@ class User(Base, HasFavoritesMixin):
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
+
+        Raises:
+            ValueError: If project is already in the catalog
         """
         session.add(self)
         if type(project) is Provided:
-            self.provided_favorites.append(project)
+            favorites_to_add = self.provided_favorites
         else:
-            self.solicited_favorites.append(project)
+            favorites_to_add = self.solicited_favorites
+
+        if project in favorites_to_add:
+            raise ValueError("Cannot add duplicate projects to the favorites catalog")
+        else:
+            favorites_to_add.append(project)
+
+
+    @with_session
+    def defavorite_project(self, project, session=None):
+        """Adds the given project to this user's list of favorite projects
+        
+        Args:
+            project (Project): The project to add to this User's list of favorite projects
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        session.add(self)
+        if type(project) is Provided:
+            self.provided_favorites.remove(project)
+        else:
+            self.solicited_favorites.remove(project)
+
+
+    def get_favorites_catalog(self):
+        """Get all of the Projects this User has favorited as a Catalog
+
+        Returns: A Catalog of all of this User's favorited projects
+        """
+        catalog = Catalog()
+        catalog.projects.extend(self.provided_favorites)
+        catalog.projects.extend(self.solicited_favorites)
+        return catalog
 
     @with_session
     def sign_up(self, session=None):
@@ -74,16 +119,6 @@ class User(Base, HasFavoritesMixin):
             raise ValueError(f'user {self.username} already exists')
         self.needs_review = False #TODO: set this to true when we implement the review process
         session.add(self)
-
-    def get_favorites_catalog(self):
-        """Get all of the Projects this User has favorited as a Catalog
-
-        Returns: A Catalog of all of this User's favorited projects
-        """
-        catalog = Catalog()
-        catalog.projects.extend(self.provided_favorites)
-        catalog.projects.extend(self.solicited_favorites)
-        return catalog
 
     @classmethod
     @with_session

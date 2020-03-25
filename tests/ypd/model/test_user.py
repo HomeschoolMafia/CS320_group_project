@@ -21,7 +21,9 @@ class TestUser(TestCase):
         self.user = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
 
     def tearDown(self):
-        self.session.query(user.User).delete()
+        users = self.session.query(user.User).all()
+        for u in users:
+            self.session.delete(u)
         self.session.commit()
         self.session.close()
 
@@ -100,11 +102,25 @@ class TestUser(TestCase):
         project.post('sperm', 'whale', self.user)
         self.user.favorite_project(project)
 
+        with self.assertRaises(ValueError):
+            self.user.favorite_project(project)
+
         self.user = user.User.login('foo', 'bar')
         self.assertEqual(self.user.provided_favorites[0].title, 'asdf')
         self.assertEqual(self.user.provided_favorites[0].description, 'qwerty')
         self.assertEqual(self.user.provided_favorites[1].title, 'sperm')
         self.assertEqual(self.user.provided_favorites[1].description, 'whale')
+
+    def test_defavorite(self):
+        self.user.sign_up()
+        self.user = user.User.login('foo', 'bar')
+
+        project = Provided()
+        project.post('asdf', 'qwerty', self.user)
+        self.user.favorite_project(project)
+        self.user.defavorite_project(project)
+
+        self.assertEqual(len(self.user.provided_favorites), 0)        
 
     def test_get_catalog(self):
         self.user.sign_up()
