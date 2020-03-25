@@ -85,10 +85,13 @@ class User(Base, HasFavoritesMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         session.add(self)
-        if type(project) is Provided:
-            self.provided_favorites.remove(project)
-        else:
-            self.solicited_favorites.remove(project)
+        try:
+            if type(project) is Provided:
+                self.provided_favorites.remove(project)
+            else:
+                self.solicited_favorites.remove(project)
+        except ValueError as e:
+            raise ValueError("Cannot defavorite project that is not favorited") from e
 
 
     def get_favorites_catalog(self):

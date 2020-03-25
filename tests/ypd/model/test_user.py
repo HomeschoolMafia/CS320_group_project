@@ -119,6 +119,9 @@ class TestUser(TestCase):
         project.post('asdf', 'qwerty', self.user)
         self.user.favorite_project(project)
         self.user.defavorite_project(project)
+        
+        with self.assertRaises(ValueError):
+            self.user.defavorite_project(project)
 
         self.assertEqual(len(self.user.provided_favorites), 0)        
 
