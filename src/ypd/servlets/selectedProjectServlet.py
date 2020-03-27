@@ -1,9 +1,9 @@
-from flask import Flask, render_template, request
-
+from flask import render_template, request
 from flask_classy import FlaskView
 
 from ..model.project import Provided, Solicited
 from .indexServlet import login_required
+
 
 
 class SelectedProjectView(FlaskView):
@@ -17,10 +17,13 @@ class SelectedProjectView(FlaskView):
         # Get project by id 
         id         =  request.args.get('id', default = ' ', type=int)
         
-        if is_provided:
-            s = Provided.get(id)
-        else:
-            s = Solicited.get(id)
+        try:
+            if is_provided:
+                s = Provided.get(id)
+            else:
+                s = Solicited.get(id)
             
-        # Render HTML
-        return render_template('project.html', project = s)
+            # Render HTML
+            return render_template('project.html', project = s)
+        except:
+            return 'The requested project could not be found', 404
