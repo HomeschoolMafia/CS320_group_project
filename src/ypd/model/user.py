@@ -1,9 +1,9 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String
+import flask_login
 
 from . import Base, Session
 
-
-class User(Base):
+class User(Base, flask_login.UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
