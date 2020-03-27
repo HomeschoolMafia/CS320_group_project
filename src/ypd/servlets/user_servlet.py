@@ -1,13 +1,14 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
 from werkzeug.security import generate_password_hash
+#import flask_login
 
 from flask_classy import FlaskView, route
 from ypd.model.project import Project
 from .indexServlet import IndexView
+#from ..server import login_manager
 
 from ypd.model.user import User
 from ypd.model import Session
-
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
@@ -50,4 +51,12 @@ class UserView(FlaskView):
                 flash('Welcome to the YCP Database {}!'.format(username))
                 return redirect(url_for('IndexView:get'))
         return render_template('signup.html')
+
+    #@login_manager.user_loader
+    #def load_user(self, user_id):
+    #    return User.get(user_id)
+
+    #def logout(self):
+    #    flask_login.logout_user()
+    #    return redirect(url_for('UserView:get'))
     

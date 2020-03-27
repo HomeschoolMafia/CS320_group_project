@@ -1,12 +1,12 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
+import flask_login
 
 from . import Base, Session
 from .catalog import Catalog
 from .decorator import with_session
 from .project import Provided
-
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
