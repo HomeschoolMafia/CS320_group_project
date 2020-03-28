@@ -1,6 +1,7 @@
 from enum import Enum, auto
 
 from flask import Flask, redirect, render_template, request, url_for
+from flask_login import login_required
 from flask_classy import FlaskView, route
 from flask_wtf import FlaskForm
 from wtforms import RadioField, StringField, SubmitField, TextField
@@ -14,7 +15,8 @@ SOLICITED = 1
 
 class SubmissionView(FlaskView):
     # pull data from HTML form
-    @route ('/', methods =('GET', 'POST'))   
+    @route ('/', methods =('GET', 'POST'))
+    @login_required  
     def post(self):
         form = SubmissionForm()
 

@@ -11,6 +11,13 @@
 </head>
 
 <body>
+    <script>
+        window.alert({
+            {
+                msg | safe
+            }
+        })
+    </script>
     <div class="container">
         <h1>Welcome To YCP <br>Project Database</h1>
         <form class="form" action="{{ url_for( 'UserView:login') }}" method="POST">

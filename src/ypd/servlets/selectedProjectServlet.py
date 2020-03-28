@@ -2,7 +2,7 @@ from flask import render_template, request
 from flask_classy import FlaskView
 
 from ..model.project import Provided, Solicited
-from .indexServlet import login_required
+from flask_login import login_required
 
 
 

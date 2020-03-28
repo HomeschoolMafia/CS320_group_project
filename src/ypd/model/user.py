@@ -105,6 +105,32 @@ class User(Base, HasFavoritesMixin):
         return catalog
 
     @with_session
+    @property
+    def get_id(self, session=None):
+        """Get user id of an instance of user in the db
+        
+        Returns: A user id in integer format
+        """
+        try:
+            return str(self.id)
+        except Exception as e:
+            raise Exception("User does not exist!")
+
+    @property
+    def is_anonymous(self):
+        return False
+    
+    @property
+    def is_active(self):
+        if self.needs_review:
+            return False
+        return True
+    
+    @property
+    def is_authenticated(self):
+        return True
+    
+    @with_session
     def sign_up(self, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
@@ -123,8 +149,11 @@ class User(Base, HasFavoritesMixin):
         self.needs_review = False #TODO: set this to true when we implement the review process
         session.add(self)
 
+    
+
     @classmethod
     @with_session
+    @property
     def login(cls, username, password, session=None):
         """Attempts to login a user with the given username and password
         
@@ -156,7 +185,7 @@ class User(Base, HasFavoritesMixin):
         #If we don't suceed to log in, raise a useful error message
         if not result:
             result = session.query(User).filter_by(username=username, password=password).one_or_none()
-            login_user(result)
+            is_authenticated(result)
             if result:
                 raise ValueError('User account requires review')
             else:

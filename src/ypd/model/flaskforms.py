@@ -1,7 +1,6 @@
-from wtforms import BooleanField, FormField, PasswordField, StringField
+from flask_wtf import FlaskForm, Form
+from wtforms import BooleanField, FormField, PasswordField, StringField, SubmitField, IntegerField, RadioField, validators
 from wtforms.validators import Email, InputRequired, Length
-
-from flask_wtf import FlaskForm
 
 
 class TelephoneForm(Form):
@@ -17,9 +16,4 @@ class LoginForm(FlaskForm):
 
     userType = BooleanField('User Type', choices=['Student', 'Faculty', 'Company'], validators=[InputRequired()])
 
-class SubmissionForm(FlaskForm):
-    """Submission Form"""
-    title = StringField('title')
-    description = StringField('projSummary')
-    projType = RadioField('projectType', choices = [(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
-    submit = SubmitField('Submit')
+
