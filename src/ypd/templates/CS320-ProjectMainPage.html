@@ -14,8 +14,11 @@
         <div class="logo">
             <img src="../static/Logo.png" alt="Logo" width="30" height="35">
         </div>
-        <center>YCP Project Database</center>
-
+        
+        <div class="mainTitleText">
+            <center>YCP Project Database</center>
+        </div>
+        
         <div class="dropDown">
             <div class="menuTab">
                 <center>
@@ -38,7 +41,10 @@
             <input type="submit" value="Search">
         </form>
     </div>
-
+    
+    <div class="pageHeader" style="margin-bottom: -80px">
+        <h1>Project Listing</h1>
+    </div>
 
     <div class="mainBody">
         {% for item in catalog.projects %}

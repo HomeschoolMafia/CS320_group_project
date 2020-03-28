@@ -11,10 +11,14 @@
 
 	<body>
         <div class="mainTitle">
-        <div class="logo">
-            <img src="../static/Logo.png" alt="Logo" width="30" height="35">
-        </div>
-        <center>YCP Project Database</center>
+            <div class="logo">
+                <img src="../static/Logo.png" alt="Logo" width="30" height="35">
+            </div>
+        
+            <div class="mainTitleText">
+                <center>YCP Project Database</center>
+            </div>    
+        
             <div class="dropDown">
                 <div class="menuTab">
                     <center>
@@ -38,31 +42,35 @@
             </form>
         </div>
         
-        <div class="submissionHeader">
+        <div class="pageHeader">
             <h1>Project Submission</h1>
         </div>
+        
         <form action="/submission" method="POST">	
+        <div class="submissionBody">
             <fieldset>
                 <p>
-                    <label>Project Title:</label>
-                    {{ form.title}}
+                    <label>Project Title:</label><br/>
+                    {{ form.title(style="width: 150px")}}
                 </p>
                 <p>
-                    <label>Project Summary:</label>
-                    {{form.description}}
+                    <label>Project Summary:</label><br/>
+                    {{form.description(style="width: 75%")}}
                 </p>
                 <p>
-                    <label>Poster:</label>
+                    <label>Poster:</label><br/>
                     {{form.poster}}
                 </p>
                 <p>
                     {{form.hidden_tag()}}
-                    {{form.projType}}
+                    {{form.projType(style="list-style:none; margin-left: -30px; margin-top: -15px;")}}
                 </p>
                 <p>
-                    <input type = "submit" value = "Go" >
+                    <input type = "submit" value = "Go">
                 </p>
             </fieldset>
+            </div>
         </form>
+        
 	</body>
 </html>
