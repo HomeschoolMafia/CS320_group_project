@@ -2,6 +2,9 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
 
+from flask_login import UserMixin
+from werkzeug.security import generate_password_hash, check_password_hash
+
 from . import Base, Session
 from .catalog import Catalog
 from .decorator import with_session
@@ -34,7 +37,7 @@ class HasFavoritesMixin:
             lazy='joined',
             passive_deletes=True)
 
-class User(Base, HasFavoritesMixin):
+class User(Base, HasFavoritesMixin, UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -73,6 +76,12 @@ class User(Base, HasFavoritesMixin):
         else:
             favorites_to_add.append(project)
 
+    def set_password(self, password):
+        self.password = generate_password_hash(password)
+    
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+    
 
     @with_session
     def defavorite_project(self, project, session=None):
@@ -105,32 +114,6 @@ class User(Base, HasFavoritesMixin):
         return catalog
 
     @with_session
-    @property
-    def get_id(self, session=None):
-        """Get user id of an instance of user in the db
-        
-        Returns: A user id in integer format
-        """
-        try:
-            return str(self.id)
-        except Exception as e:
-            raise Exception("User does not exist!")
-
-    @property
-    def is_anonymous(self):
-        return False
-    
-    @property
-    def is_active(self):
-        if self.needs_review:
-            return False
-        return True
-    
-    @property
-    def is_authenticated(self):
-        return True
-    
-    @with_session
     def sign_up(self, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
@@ -153,8 +136,7 @@ class User(Base, HasFavoritesMixin):
 
     @classmethod
     @with_session
-    @property
-    def login(cls, username, password, session=None):
+    def log_in(cls, username, password, session=None):
         """Attempts to login a user with the given username and password
         
         Args:
@@ -185,7 +167,6 @@ class User(Base, HasFavoritesMixin):
         #If we don't suceed to log in, raise a useful error message
         if not result:
             result = session.query(User).filter_by(username=username, password=password).one_or_none()
-            is_authenticated(result)
             if result:
                 raise ValueError('User account requires review')
             else:

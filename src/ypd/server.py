@@ -2,6 +2,7 @@ from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager
+
 from flask_bootstrap import Bootstrap
 
 from .model import Base, Session, engine
@@ -21,17 +22,7 @@ app = Flask(__name__)
 Bootstrap(app)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-login_manager = LoginManager()
-login_manager.login_view = 'UserView:login'
-login_manager.init_app(app)
-login_manager.login_message = u"You must be logged in to access this page."
-
-@login_manager.user_loader
-def load_user(self, user_id):
-    session = Session()
-    return session.query(User.name).filter_by(id=int(user_id)).one()
-
-#flask-admin stuff
+#Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 admin = Admin(app, name='CS320 Group Project', template_mode='bootstrap3')
 admin.add_view(ModelView(User, session))
@@ -44,6 +35,14 @@ UserView.register(app)
 IndexView.register(app)
 SubmissionView.register(app)
 SelectedProjectView.register(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'UserView:login'
+
+@login_manager.user_loader
+def load_user(self, user_id):
+    session = Session()
+    return session.query(User.id).filter_by(id=int(user_id)).one()
 
 if __name__=='__main__':
     app.run(debug=True)

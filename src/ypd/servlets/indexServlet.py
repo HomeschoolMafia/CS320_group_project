@@ -1,6 +1,6 @@
 from flask import current_app, render_template, request
-from flask_classy import FlaskView
-from flask_login import login_required
+from flask_classy import FlaskView, route
+from flask_login import login_required, current_user
 
 from ypd.model.user import User
 
