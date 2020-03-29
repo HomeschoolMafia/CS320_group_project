@@ -21,16 +21,11 @@ class UserView(FlaskView):
         user = None
         if request.method == 'POST':
             try:
-                user = User.log_in(username=request.form['username'], password=generate_password_hash(request.form['password']))
-                if user and user.check_password(user.password):
-                    login_user(user, remember=True)
-                else:
-                    raise Exception
-            except Exception as e:
-                msg = str(e.args)
-                return redirect(url_for('UserView:login'))
-            finally:
-                return redirect('IndexView:get')
+                user = User.log_in(username=request.form['username'], password=request.form['password'])
+                login_user(user, remember=True)
+                return redirect(url_for('IndexView:get'))
+            except ValueError as e:
+                msg = str(e)
         return render_template('login.html', msg = msg)
 
     @login_required
@@ -49,14 +44,14 @@ class UserView(FlaskView):
             user = None
             try:
                 if option == 'Faculty':
-                    user = User(username=request.form['username'], bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=True, is_admin=True)
+                    user = User(username=request.form['username'], can_post_solicited=True, can_post_provided=True, is_admin=True)
                 elif option == 'Student':
-                    user = User(username=request.form['username'], bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=False, is_admin=False)
+                    user = User(username=request.form['username'], can_post_solicited=True, can_post_provided=False, is_admin=False)
                 elif option == 'Company':
-                    user = User(username=request.form['username'], bio="", email="", contact_info="", name="", can_post_solicited=False, can_post_provided=True, is_admin=False)
+                    user = User(username=request.form['username'], can_post_solicited=False, can_post_provided=True, is_admin=False)
                 user.set_password(request.form['password'])
                 user.sign_up()
-                login_user(user)
+                print(login_user(user, remember=True))
             except Exception as e:
                 msg = e           
             finally:

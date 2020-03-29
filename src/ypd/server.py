@@ -40,9 +40,8 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'UserView:login'
 
 @login_manager.user_loader
-def load_user(self, user_id):
-    session = Session()
-    return session.query(User.id).filter_by(id=int(user_id)).one()
+def load_user(user_id):
+    return User.get_by_id(user_id)
 
 if __name__=='__main__':
     app.run(debug=True)

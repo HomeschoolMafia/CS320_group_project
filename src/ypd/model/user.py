@@ -52,6 +52,10 @@ class User(Base, HasFavoritesMixin, UserMixin):
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
 
+    is_authenticated = True
+    is_active = True
+    is_anonymous = False
+
     @with_session
     def favorite_project(self, project, session=None):
         """Adds the given project to this user's list of favorite projects
@@ -75,13 +79,6 @@ class User(Base, HasFavoritesMixin, UserMixin):
             raise ValueError("Cannot add duplicate projects to the favorites catalog")
         else:
             favorites_to_add.append(project)
-
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-    
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-    
 
     @with_session
     def defavorite_project(self, project, session=None):
@@ -130,6 +127,7 @@ class User(Base, HasFavoritesMixin, UserMixin):
         if result:
             raise ValueError(f'user {self.username} already exists')
         self.needs_review = False #TODO: set this to true when we implement the review process
+        self.password = generate_password_hash(self.password)
         session.add(self)
 
     
@@ -160,7 +158,7 @@ class User(Base, HasFavoritesMixin, UserMixin):
                 subqueryload(User.solicited_favorites)
             ).filter_by(
                 username=username,
-                password=password,
+                password=generate_password_hash(password),
                 needs_review=False
             ).one_or_none()
 
@@ -172,3 +170,16 @@ class User(Base, HasFavoritesMixin, UserMixin):
             else:
                 raise ValueError('Incorrect username or password')
         return result
+
+    @classmethod
+    @with_session
+    def get_by_id(cls, id, session=None):
+        """Gets the User object with the specified id
+        
+        Args:
+            id (int): id of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        return session.query(User).filter_by(id=id).one_or_none()
