@@ -41,7 +41,7 @@ class User(Base, HasFavoritesMixin, UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String)
+    username = Column(String, unique=True)
     password = Column(String)
     bio = Column(String)
     email = Column(String)
@@ -51,10 +51,6 @@ class User(Base, HasFavoritesMixin, UserMixin):
     can_post_solicited = Column(Boolean)
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
-
-    is_authenticated = True
-    is_active = True
-    is_anonymous = False
 
     @with_session
     def favorite_project(self, project, session=None):
@@ -122,15 +118,13 @@ class User(Base, HasFavoritesMixin, UserMixin):
         Raises: 
             ValueError: If the username already exists in the database
         """
-        #TODO: kick off the review process
-        result = session.query(User).filter_by(username=self.username).one_or_none()
-        if result:
-            raise ValueError(f'user {self.username} already exists')
         self.needs_review = False #TODO: set this to true when we implement the review process
         self.password = generate_password_hash(self.password)
-        session.add(self)
 
-    
+        try:
+            session.add(self)
+        except Exception as e:
+            raise ValueError(f'user {self.username} already exists')
 
     @classmethod
     @with_session
@@ -158,18 +152,21 @@ class User(Base, HasFavoritesMixin, UserMixin):
                 subqueryload(User.solicited_favorites)
             ).filter_by(
                 username=username,
-                password=generate_password_hash(password),
                 needs_review=False
             ).one_or_none()
 
         #If we don't suceed to log in, raise a useful error message
-        if not result:
-            result = session.query(User).filter_by(username=username, password=password).one_or_none()
+        if result:
+            if check_password_hash(result.password, password):
+                return result
+            else:
+                raise ValueError('Incorrect username of password')
+        else:
+            result = session.query(User).filter_by(username=username).one_or_none()
             if result:
                 raise ValueError('User account requires review')
             else:
                 raise ValueError('Incorrect username or password')
-        return result
 
     @classmethod
     @with_session
