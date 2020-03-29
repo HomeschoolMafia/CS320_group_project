@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm, Form
 from wtforms import BooleanField, FormField, PasswordField, StringField, SubmitField, IntegerField, RadioField, validators
-from wtforms.validators import Email, InputRequired, Length
+from wtforms.validators import Email, InputRequired, Length, EqualTo
 
 
 class TelephoneForm(Form):
@@ -8,12 +8,25 @@ class TelephoneForm(Form):
     area_code    = IntegerField('Area Code/Exchange', [validators.required()])
     number       = StringField('Number')
 
-class LoginForm(FlaskForm):
+class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
-    email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
-    contacts = FormField(TelephoneForm)
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('password')])
+    #email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
+    #contacts = FormField(TelephoneForm)
+    user_types = RadioField('User Type', choices=[('Student', 'Student'), ('faculty', 'Faculty'), ('company', 'Company')], validators=[InputRequired()])
+    submit = SubmitField('Sign Up')
 
-    userType = BooleanField('User Type', choices=['Student', 'Faculty', 'Company'], validators=[InputRequired()])
+class LoginForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=4, max=64)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
+    remember = BooleanField('Remember Me')
+    submit = SubmitField('Login')
+    #email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64), Email()])
+    #contacts = FormField(TelephoneForm)
+
+class ChangePassword(Form):
+    password = PasswordField('New Password', [InputRequired(), EqualTo('confirm', message='Passwords must match')])
+    confirm  = PasswordField('Repeat Password')
 
 

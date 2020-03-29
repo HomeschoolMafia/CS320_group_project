@@ -8,7 +8,8 @@ INSTALL_REQUIRES = [
     'flask-admin',
     'flask-login',
     'flask-classy',
-    'flask-bootstrap'
+    'flask-bootstrap',
+    'bootstrap-flask'
 ]
 
 DEV_REQUIRES = [

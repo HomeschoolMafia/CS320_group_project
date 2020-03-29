@@ -1,5 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import login_user, logout_user, login_required, LoginManager
+from flask_login import login_user, current_user, logout_user, login_required, LoginManager
 
 from werkzeug.security import check_password_hash, generate_password_hash
 from werkzeug.urls import url_parse
@@ -8,6 +8,7 @@ from flask_classy import FlaskView, route
 from ypd.model import Session
 from ypd.model.project import Project
 from ypd.model.user import User
+from ypd.model.flaskforms import LoginForm, RegistrationForm
 
 from ..model import Session
 from .indexServlet import IndexView
@@ -19,19 +20,15 @@ class UserView(FlaskView):
     def login(self):
         msg = ''
         user = None
-        if request.method == 'POST':
+        form = LoginForm()
+        if form.validate_on_submit:
             try:
-                user = User.log_in(username=request.form['username'], password=generate_password_hash(request.form['password']))
-                if user and user.check_password(user.password):
-                    login_user(user, remember=True)
-                else:
-                    raise Exception
+                user = User.log_in(username=form.username.data, password=generate_password_hash(form.password.data))
+                login_user(user, remember=form.remember.data)
+                return redirect(url_for('IndexView:get'))
             except Exception as e:
-                msg = str(e.args)
-                return redirect(url_for('UserView:login'))
-            finally:
-                return redirect('IndexView:get')
-        return render_template('login.html', msg = msg)
+                return render_template('login.html', msg=str(e), form=form)
+        return render_template('login.html', msg = msg, form=form)
 
     @login_required
     def logout(self):
@@ -42,24 +39,23 @@ class UserView(FlaskView):
     @route('/signup/', methods=['POST', 'GET'])
     def signup(self):
         msg = ''
-        if request.method == 'POST':
-            user = User(username=request.form['username'])
-            # email = request.form['email']
-            option = request.form['user']
+        form = RegistrationForm()
+        if form.validate_on_submit:
+            option = form.user_types.data
             user = None
             try:
-                if option == 'Faculty':
-                    user = User(username=request.form['username'], bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=True, is_admin=True)
-                elif option == 'Student':
-                    user = User(username=request.form['username'], bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=False, is_admin=False)
-                elif option == 'Company':
-                    user = User(username=request.form['username'], bio="", email="", contact_info="", name="", can_post_solicited=False, can_post_provided=True, is_admin=False)
-                user.set_password(request.form['password'])
+                if option == 'faculty':
+                    user = User(username=form.username.data, password=request.form['password'], can_post_solicited=True, can_post_provided=True, is_admin=True)
+                elif option == 'student':
+                    user = User(username=form.username.data, password=request.form['password'], can_post_solicited=True, can_post_provided=False, is_admin=False)
+                elif option == 'company':
+                    user = User(username=form.username.data, password=request.form['password'], can_post_solicited=False, can_post_provided=True, is_admin=False)
+                user.set_password(form.password.data)
                 user.sign_up()
-                login_user(user)
-            except Exception as e:
-                msg = e           
-            finally:
+                login_user(user, remember=True)
                 msg = f"Welcome to the YCP Database {user.username}!"
                 return redirect(url_for('IndexView:get'))
-        return render_template('signup.html', msg = msg)
+            except Exception as e:
+                return render_template('signup.html', msg=str(e), form=form)
+
+        return render_template('signup.html', form=form)
