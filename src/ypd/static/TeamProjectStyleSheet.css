@@ -150,7 +150,14 @@ fieldset {
     box-shadow: 8px 8px 10px gray;
     border-radius: 3px;
     font-family: 'Rokkitt', serif;
-    font-size: 20px;
+    font-size: 25px;
     margin-left: 150px;
     margin-right: 150px;
+}
+
+.bodyPadding{
+    margin-top: 100px;
+    padding-left: 25px;
+    padding-top: 25px;
+    padding-bottom: 25px;
 }
