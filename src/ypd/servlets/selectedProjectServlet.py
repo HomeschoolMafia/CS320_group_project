@@ -4,7 +4,7 @@ from flask_classy import FlaskView
 from ..model.project import Provided, Solicited
 
 #import flask_login
-maintain_login
+#maintain_login
 
 class SelectedProjectView(FlaskView):
     #@flask_login.login_required
