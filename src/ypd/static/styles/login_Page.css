@@ -6,7 +6,7 @@
 }
 
 body {
-    background-image: radial-gradient(circle, white 25%, green 30%, silver 30%);
+   background-image:  url("../backgroung.png");
 }
 
 body * {
