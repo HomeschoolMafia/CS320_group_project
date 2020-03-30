@@ -1,11 +1,11 @@
 from flask_wtf import FlaskForm, Form
 from wtforms import BooleanField, FormField, PasswordField, StringField, SubmitField, IntegerField, RadioField, validators
-from wtforms.validators import Email, InputRequired, Length, EqualTo
+from wtforms.validators import Email, InputRequired, Length, EqualTo, DataRequired
 
 
 class TelephoneForm(Form):
-    country_code = IntegerField('Country Code', [validators.required()])
-    area_code    = IntegerField('Area Code/Exchange', [validators.required()])
+    country_code = IntegerField('Country Code', validators=[DataRequired()])
+    area_code    = IntegerField('Area Code/Exchange', validators=[DataRequired()])
     number       = StringField('Number')
 
 class RegistrationForm(FlaskForm):
