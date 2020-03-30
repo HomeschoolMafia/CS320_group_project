@@ -56,7 +56,7 @@
             <!-- <a href="selectedproject?id={{item.id}}{% if item is provided %}&isProvided=True{% endif %}"> -->
             <a href={{url_for( 'SelectedProjectView:get', id=item.id, is_provided=(item is provided))}}>
                 <div class="postText">
-                    <!--{{ item.name }}-->TempName &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                    {{ item.poster.name }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
                 </div>
             </a>
             <div class="postBar"></div>
