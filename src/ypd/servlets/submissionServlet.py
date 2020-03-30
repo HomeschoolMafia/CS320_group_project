@@ -37,5 +37,5 @@ class SubmissionForm(FlaskForm):
     """Submission Form"""
     title = StringField('title')
     description = StringField('projSummary')
-    projType = RadioField('projectType', choices = [('PROVIDED', 'Provided Project'), ('SOLICITED','Solicited Project')])
+    projType = RadioField('projectType', choices = [(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
     submit = SubmitField('Submit')

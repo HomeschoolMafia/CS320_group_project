@@ -12,10 +12,10 @@
         <div class="container">
             <h1>Welcome To YCP <br>Project Database</h1>
             <form class="form" action="/user/login/" method="POST">
-                {{ form.csrf_token() }}
                 <div class="form__items">
                     <fieldset>
                         <legend>Log In</legend>
+                            {{ form.csrf_token() }}
                             {{ form.username.label(class="form__label") }} {{ form.username(class="form__input") }}
                             {{ form.password.label(class="form__label") }} {{ form.password(class="form__input") }}
                             {{ form.remember (class="form__input") }} {{ form.remember.label (class="form__label") }}

@@ -76,7 +76,6 @@ class User(Base, HasFavoritesMixin, UserMixin):
         else:
             favorites_to_add.append(project)
 
-
     @with_session
     def defavorite_project(self, project, session=None):
         """Adds the given project to this user's list of favorite projects
@@ -145,16 +144,13 @@ class User(Base, HasFavoritesMixin, UserMixin):
         Raises: 
             ValueError: If the username already exists in the database
         """
-        #TODO: kick off the review process
-
         self.needs_review = False #TODO: set this to true when we implement the review process
-        self.set_password(self.password)
+        self.password = generate_password_hash(self.password)
+
         try:
             session.add(self)
         except Exception as e:
             raise ValueError(f'user {self.username} already exists')
-
-    
 
     @classmethod
     @with_session
@@ -197,4 +193,16 @@ class User(Base, HasFavoritesMixin, UserMixin):
                 raise ValueError('User account requires review')
             else:
                 raise ValueError('Incorrect username or password')
-        return result
+
+    @classmethod
+    @with_session
+    def get_by_id(cls, id, session=None):
+        """Gets the User object with the specified id
+        
+        Args:
+            id (int): id of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        return session.query(User).filter_by(id=id).one_or_none()
