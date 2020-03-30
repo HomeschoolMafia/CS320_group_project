@@ -2,6 +2,7 @@ from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
 
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from . import Base, Session
@@ -36,11 +37,11 @@ class HasFavoritesMixin:
             lazy='joined',
             passive_deletes=True)
 
-class User(Base, HasFavoritesMixin):
+class User(Base, HasFavoritesMixin, UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    username = Column(String)
+    username = Column(String, unique=True)
     password = Column(String)
     bio = Column(String)
     email = Column(String)
@@ -112,25 +113,25 @@ class User(Base, HasFavoritesMixin):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
-    def get_id(self, session=None):
-        """Get user id of an instance of user in the db
+    # def get_id(self, session=None):
+    #     """Get user id of an instance of user in the db
         
-        Returns: A user id in unicode aka string format
-        """
-        return str(self.id)
-    @property
-    def is_anonymous(self):
-        return False
+    #     Returns: A user id in unicode aka string format
+    #     """
+    #     return str(self.id)
+    # @property
+    # def is_anonymous(self):
+    #     return False
     
-    @property
-    def is_active(self):
-        if self.needs_review:
-            return False
-        return True
+    # @property
+    # def is_active(self):
+    #     if self.needs_review:
+    #         return False
+    #     return True
     
-    @property
-    def is_authenticated(self):
-        return True
+    # @property
+    # def is_authenticated(self):
+    #     return True
     
     @with_session
     def sign_up(self, session=None):
@@ -145,11 +146,13 @@ class User(Base, HasFavoritesMixin):
             ValueError: If the username already exists in the database
         """
         #TODO: kick off the review process
-        result = session.query(User).filter_by(username=self.username).one_or_none()
-        if result:
-            raise ValueError(f'user {self.username} already exists')
+
         self.needs_review = False #TODO: set this to true when we implement the review process
-        session.add(self)
+        self.set_password(self.password)
+        try:
+            session.add(self)
+        except Exception as e:
+            raise ValueError(f'user {self.username} already exists')
 
     
 
@@ -179,13 +182,17 @@ class User(Base, HasFavoritesMixin):
                 subqueryload(User.solicited_favorites)
             ).filter_by(
                 username=username,
-                password=password,
                 needs_review=False
             ).one_or_none()
 
         #If we don't suceed to log in, raise a useful error message
-        if not result:
-            result = session.query(User).filter_by(username=username, password=password).one_or_none()
+        if result:
+            if check_password_hash(result.password, password):
+                return result
+            else:
+                raise ValueError('Incorrect username of password')
+        else:
+            result = session.query(User).filter_by(username=username).one_or_none()
             if result:
                 raise ValueError('User account requires review')
             else:

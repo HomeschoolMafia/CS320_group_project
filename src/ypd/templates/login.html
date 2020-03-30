@@ -11,7 +11,7 @@
     <body>
         <div class="container">
             <h1>Welcome To YCP <br>Project Database</h1>
-            <form class="form" action="{{url_for('UserView:login')}}" method="POST">
+            <form class="form" action="/user/login/" method="POST">
                 {{ form.csrf_token() }}
                 <div class="form__items">
                     <fieldset>

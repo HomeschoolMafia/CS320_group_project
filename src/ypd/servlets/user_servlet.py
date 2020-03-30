@@ -21,7 +21,7 @@ class UserView(FlaskView):
         msg = ''
         user = None
         form = LoginForm()
-        if form.validate_on_submit:
+        if form.validate_on_submit and request.method == 'POST':
             try:
                 user = User.log_in(username=form.username.data, password=generate_password_hash(form.password.data))
                 login_user(user, remember=form.remember.data)
