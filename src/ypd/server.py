@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-#import flask_login
 
 from .model import Base, Session, engine
 from .model.project import Project
@@ -18,10 +17,6 @@ Base.metadata.create_all(engine)
 #start flask
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-# initalize login manager
-#login_manager = flask_login.LoginManager()
-#login_manager.init_app(app)
 
 #flask-admin stuff
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'

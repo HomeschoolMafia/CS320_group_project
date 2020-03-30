@@ -5,7 +5,6 @@ from flask_classy import FlaskView, route
 from flask_wtf import FlaskForm
 from wtforms import RadioField, StringField, SubmitField, TextField
 from wtforms.validators import DataRequired
-#import flask_login
 
 from ..model.project import Provided, Solicited
 from ..model.user import User
@@ -15,8 +14,7 @@ SOLICITED = 1
 
 class SubmissionView(FlaskView):
     # pull data from HTML form
-    @route ('/', methods =('GET', 'POST'))  
-    #@flask_login.login_required 
+    @route ('/', methods =('GET', 'POST'))
     def post(self):
         form = SubmissionForm()
 

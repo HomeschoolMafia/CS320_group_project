@@ -1,7 +1,6 @@
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
-import flask_login
 
 from . import Base, Session
 from .catalog import Catalog
