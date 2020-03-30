@@ -38,11 +38,11 @@ class UserView(FlaskView):
             option = request.form['user']
             try:
                 if option == 'Faculty':
-                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=True, is_admin=True)
+                    user = User(username=username, password=password_hash, name=username, can_post_solicited=True, can_post_provided=True, is_admin=True)
                 elif option == 'Student':
-                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=False, is_admin=False)
+                    user = User(username=username, password=password_hash, name=username, can_post_solicited=True, can_post_provided=False, is_admin=False)
                 elif option == 'Company':
-                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=False, can_post_provided=True, is_admin=False)
+                    user = User(username=username, password=password_hash, name=username, can_post_solicited=False, can_post_provided=True, is_admin=False)
                 user.sign_up()
             except Exception as e:
                 print(e)
