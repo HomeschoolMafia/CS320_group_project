@@ -21,6 +21,7 @@ class Project(Base, HasPosterMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True
+    __tablename__= 'projects'
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)

@@ -5,7 +5,9 @@ INSTALL_REQUIRES = [
     'flask',
     'requests',
     'flask-wtf',
-    'flask-admin'
+    'flask-admin',
+    'flask-login',
+    'flask-classy'
 ]
 
 DEV_REQUIRES = [
