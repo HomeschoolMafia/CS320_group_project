@@ -1,7 +1,7 @@
 from flask import current_app, render_template, request
+from flask_classy import FlaskView, route
+from flask_login import login_required, current_user
 
-
-from flask_classy import FlaskView
 from ypd.model.user import User
 
 from ..model.catalog import Catalog

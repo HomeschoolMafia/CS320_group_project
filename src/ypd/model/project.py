@@ -1,47 +1,76 @@
 from datetime import datetime
 
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm.exc import NoResultFound
 
-from . import Base, Session
+from . import Base
+from .decorator import with_session
 
-class Project(Base):
+class HasPosterMixin:
+    @declared_attr.cascading
+    def poster_id(self):
+        return Column(Integer, ForeignKey('users.id'))
+
+    @declared_attr.cascading
+    def poster(self):
+        return relationship("User", uselist=False, lazy='subquery')
+
+class Project(Base, HasPosterMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True
+    __tablename__= 'projects'
     id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
-    poster_id = Column(Integer) #TODO: Make this a foreign key
     date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
 
-    def post(self, title, description, poster):
-        """Posts this project to the database"""
+    @with_session
+    def post(self, title, description, poster, session=None):
+        """Posts this project to the database
+
+        Args:
+            title (str): Project title
+            description (str): Project description
+            poster (User): User who posted the project
+        
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
         self.title = title
+    
         self.description = description
-        #TODO: self.poster_id = poster.id, when user class is finished
+        self.poster_id = poster.id
         self.date = datetime.utcnow() #we might want to only assign this when the project is approved
         self.archived = False
         self.needsReview = False #TODO: When we implement the review workflow, we'll set this to True here
-
-        session = Session()
         session.add(self)
-        session.commit()
-        session.close()
         
-    @classmethod    
-    def get(cls, id):
-        """Gets projects from database"""
-        session = Session()
+    @classmethod  
+    @with_session  
+    def get(cls, id, session=None):
+        """Gets projects from database by id
+        
+        Args:
+            id (int): id of the project to get
 
-        # Look for project ID in database
-        result = session.query(cls).filter_by(
-            id = id
-            ).one_or_none()
-
-        session.close()
-        return result
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+            
+        Returns:
+            The project with the given id
+            
+        Raises:
+            ValueError: If no project with the given id exists
+        """
+        try:
+            return session.query(cls).filter_by(id = id).one()
+        except NoResultFound as e:
+            raise ValueError(f'No project found with id {id}') from e
 
 class Provided(Project):
     """Class that represents a provided project"""
@@ -50,4 +79,3 @@ class Provided(Project):
 class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
-   
