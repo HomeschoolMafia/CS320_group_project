@@ -6,6 +6,7 @@ from flask_login import login_required
 
 
 
+
 class SelectedProjectView(FlaskView):
     @login_required
     def get(self):
