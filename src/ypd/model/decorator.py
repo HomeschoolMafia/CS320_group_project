@@ -20,6 +20,3 @@ def with_session(func):
         finally:
             session.close()
     return wrapper
-
-def login_required(func):
-    pass

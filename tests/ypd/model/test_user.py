@@ -58,6 +58,11 @@ class TestUser(TestCase):
         self.assertEqual(results[0].can_post_solicited, True)
         self.assertEqual(results[0].needs_review, False)
 
+    def test_get_by_id(self):
+        self.user.sign_up()
+        acc = user.User.get_by_id(id=1)
+        self.assertEquals(1, acc.id)
+
     def test_login_successful(self):
         self.user.sign_up()
 
