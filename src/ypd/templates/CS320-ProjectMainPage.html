@@ -7,6 +7,10 @@
     <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Rokkitt&display=swap" rel="stylesheet">
     <link href="../static/TeamProjectStyleSheet.css" rel="stylesheet" type="text/css">
+    <!-- {% if current_user.is_authenticated %}
+        <script>
+        </script>
+    {% endif %} -->
 </head>
 
 <body>
@@ -25,12 +29,14 @@
                     <div class="bar"></div>
                     <div class="bar"></div>
                     <div class="bar"></div>
+                    <div class="bar"></div>
                 </center>
             </div>
             <div class="dropDown-Content">
                 <a href="{{ url_for('IndexView:get') }}">Project Listing</a>
                 <a href="{{ url_for('SubmissionView:post') }}">Post A Project</a>
                 <a href="{{ url_for( 'UserView:login') }}">Login/Sign Up</a>
+                <a href="{{ url_for( 'UserView:logout') }}">Logout</a>
             </div>
         </div>
     </div>
