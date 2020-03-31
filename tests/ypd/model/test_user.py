@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
 
 from ypd.model import Base, user, decorator
 from ypd.model.project import Provided, Solicited
@@ -44,7 +45,7 @@ class TestUser(TestCase):
     def test_signup_same_username_fails(self):
         self.user.sign_up()
 
-        with self.assertRaises(ValueError):
+        with self.assertRaises(IntegrityError):
             u = user.User(username='foo', password='baz')
             u.sign_up()
 
