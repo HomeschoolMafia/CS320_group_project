@@ -105,12 +105,6 @@ class User(Base, HasFavoritesMixin, UserMixin):
         catalog.projects.extend(self.provided_favorites)
         catalog.projects.extend(self.solicited_favorites)
         return catalog
-
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-    
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
     
     @with_session
     def sign_up(self, session=None):
