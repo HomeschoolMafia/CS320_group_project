@@ -56,3 +56,13 @@ class TestProject(TestCase):
         self.assertEqual(len(clg.projects), 1)
         self.assertEqual(clg.projects[0].title, 'your')
         self.assertEqual(clg.projects[0].description, 'mom')
+
+    def test_search_by_title_provided(self):
+        project.Provided().post('foo', 'bar', User(id=1))
+        project.Provided().post('hello', 'world', User(id=1))
+        search_term = 'foo'
+        clg = catalog.Catalog(search_term, True)
+        clg.apply()
+
+        self.assertEqual(len(clg.projects), 1)
+        self.assertEqual(clg.projects[0].title, 'foo')

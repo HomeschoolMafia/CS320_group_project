@@ -10,7 +10,6 @@ from .catalog import Catalog
 from .decorator import with_session
 from .project import Provided
 
-
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
     Column('users_id', Integer, ForeignKey('users.id')),

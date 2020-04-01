@@ -1,5 +1,4 @@
-from . import Session
-from .project import Solicited, Provided
+from .project import Solicited, Provided, Project
 from .decorator import with_session
 
 class Catalog:
@@ -26,4 +25,6 @@ class Catalog:
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        self.projects = session.query(self.table_to_search).all()
+        self.projects = session.query(self.table_to_search).filter_by(**self.filters)\
+            .filter(self.table_to_search.title.like(f'%{self.search_term}%')).all()
+
