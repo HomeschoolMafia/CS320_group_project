@@ -1,6 +1,5 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import login_user, current_user, logout_user, login_required, LoginManager
-
+from flask_login import login_user, current_user, logout_user, login_required, login_fresh
 from werkzeug.urls import url_parse
 
 from flask_classy import FlaskView, route
@@ -29,6 +28,16 @@ class UserView(FlaskView):
                 return render_template('login.html', msg=str(e), form=form)
         return render_template('login.html', msg = msg, form=form)
 
+    @route('/<current_user.id>/')
+    @login_required
+    def profile(self):
+        return render_template('profile.html')
+
+    @route('/<current_user.id>/editing/', methods=['POST', 'GET'])
+    @login_required
+    def edit(self):
+        return render_template('profile.html')
+
     @login_required
     def logout(self):
         form = LoginForm()
@@ -52,7 +61,7 @@ class UserView(FlaskView):
                 elif option == 'company':
                     user = User(username=form.username.data, password=form.password.data, can_post_solicited=False, can_post_provided=True, is_admin=False)
                 user.sign_up()
-                login_user(user, remember=True)
+                login_user(user, remember=False)
                 msg = f"Welcome to the YCP Database {user.username}!"
                 return redirect(url_for('IndexView:get'))
             except Exception as e:
