@@ -2,12 +2,12 @@ from flask import render_template, request
 from flask_classy import FlaskView
 
 from ..model.project import Provided, Solicited
+from flask_login import login_required
 
-#import flask_login
-maintain_login
+
 
 class SelectedProjectView(FlaskView):
-    #@flask_login.login_required
+    @login_required
     def get(self):
         #whether the project is provided. Booleans are broken due to a bug within Flask, so we have
         #to use an integer instead. Instead of true and false, we'll use truthy and falsy values

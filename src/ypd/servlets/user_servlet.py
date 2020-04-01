@@ -1,62 +1,58 @@
 from flask import Flask, flash, redirect, render_template, request, url_for
-from werkzeug.security import generate_password_hash
-#import flask_login
+from flask_login import login_user, current_user, logout_user, login_required, LoginManager
+
+from werkzeug.urls import url_parse
 
 from flask_classy import FlaskView, route
-from ypd.model.project import Project
-from .indexServlet import IndexView
-#from ..server import login_manager
-
-from ypd.model.user import User
 from ypd.model import Session
+from ypd.model.project import Project
+from ypd.model.user import User
+from ypd.model.flaskforms import LoginForm, RegistrationForm
+
+from ..model import Session
+from .indexServlet import IndexView
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
-        if request.method == 'POST':
-            username = request.form['username']
-            password = generate_password_hash(request.form['password'], 'sha256')
-            #email = request.form['email']
+        msg = ''
+        form = LoginForm()
+        user = None
+        if form.validate_on_submit:
             try:
-                user = User()
-                user.login(username, password)
-            except Exception as e:
-                print(e)
-            finally:
-                flash('Welcome back {}!'.format(request.form.get('username')))
+                user = User.log_in(username=form.username.data, password=form.password.data)
+                login_user(user, remember=form.remember.data)
                 return redirect(url_for('IndexView:get'))
-        return render_template('login.html')
+            except Exception as e:
+                return render_template('login.html', msg=str(e), form=form)
+        return render_template('login.html', msg = msg, form=form)
+
+    @login_required
+    def logout(self):
+        logout_user()
+        return redirect(url_for('UserView:login'))
 
     # Routes work
     @route('/signup/', methods=['POST', 'GET'])
     def signup(self):
-        if request.method == 'POST':
-            username = request.form['username']
-            password_hash = generate_password_hash(request.form['password'], 'sha256')
+        msg = ''
+        form = RegistrationForm()
+        if form.validate_on_submit:
             # email = request.form['email']
-            option = request.form['user']
+            option = form.user_types.data
+            user = None
             try:
-                if option == 'Faculty':
-                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=True, is_admin=True)
-                elif option == 'Student':
-                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=True, can_post_provided=False, is_admin=False)
-                elif option == 'Company':
-                    user = User(username=username, password=password_hash, bio="", email="", contact_info="", name="", can_post_solicited=False, can_post_provided=True, is_admin=False)
+                user = User(username=form.username.data, password=form.password.data, name=form.username.data, is_admin=False)
+                user.can_post_provided = (option == 'faculty' or option == 'company')
+                user.can_post_solicited = (option == 'faculty' or option == 'student')
                 user.sign_up()
-            except Exception as e:
-                print(e)
-            finally:
-                flash('Welcome to the YCP Database {}!'.format(username))
+                login_user(user, remember=True)
+                msg = f"Welcome to the YCP Database {user.name}!"
                 return redirect(url_for('IndexView:get'))
-        return render_template('signup.html')
+            except Exception as e:
+                msg = e           
+                return render_template('signup.html', msg=str(e), form=form)
 
-    #@login_manager.user_loader
-    #def load_user(self, user_id):
-    #    return User.get(user_id)
-
-    #def logout(self):
-    #    flask_login.logout_user()
-    #    return redirect(url_for('UserView:get'))
-    
+        return render_template('signup.html', form=form)
