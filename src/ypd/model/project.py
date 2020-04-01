@@ -6,6 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
+from .model import Model
 from .decorator import with_session
 
 class HasPosterMixin:
@@ -17,12 +18,11 @@ class HasPosterMixin:
     def poster(self):
         return relationship("User", uselist=False, lazy='subquery')
 
-class Project(Base, HasPosterMixin):
+class Project(Base, Model, HasPosterMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True
     __tablename__= 'projects'
-    id = Column(Integer, primary_key=True)
     title = Column(String)
     description = Column(String)
     date = Column(DateTime)
@@ -71,6 +71,7 @@ class Project(Base, HasPosterMixin):
             return session.query(cls).filter_by(id = id).one()
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
+
 
 class Provided(Project):
     """Class that represents a provided project"""

@@ -3,15 +3,10 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 from flask_login import LoginManager
 
-from flask_bootstrap import Bootstrap
-
 from .model import Base, Session, engine
 from .model.project import Project, Provided, Solicited
 from .model.user import User
-from .servlets.indexServlet import IndexView
-from .servlets.selectedProjectServlet import SelectedProjectView
-from .servlets.submissionServlet import SubmissionView
-from .servlets.user_servlet import UserView
+from .servlets import * #Yes, I know this is bad practice. I'm doing it anyway
 
 #Initialize the database
 session = Session()
@@ -19,7 +14,6 @@ Base.metadata.create_all(engine)
 
 #start flask
 app = Flask(__name__)
-Bootstrap(app)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 #Pass in Databse models to admin page for editing/viewing
@@ -30,10 +24,11 @@ admin.add_view(ModelView(Solicited, session))
 admin.add_view(ModelView(Provided, session))
 
 #Register all the webpages
-UserView.register(app)
-IndexView.register(app)
-SubmissionView.register(app)
-SelectedProjectView.register(app)
+user_servlet.UserView.register(app)
+index_servlet.IndexView.register(app)
+submission_servlet.SubmissionView.register(app)
+selected_project_servlet.SelectedProjectView.register(app)
+base_servlet.BaseView.register(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'UserView:login'
