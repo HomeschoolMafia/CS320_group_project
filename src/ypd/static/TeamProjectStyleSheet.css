@@ -2,23 +2,33 @@ html {
     font-family: 'Alfa Slab One'; 
     overflow: auto;
 }
+
 body {
     background-image:  url("backgroung.png");
 }
+
 a {
     color: black;
     text-decoration: none;
+}
+
+fieldset {
+    border: 0;
 }
 
 .mainTitle {
     font-size: 35px;
     box-shadow: 8px 8px 10px gray;
     border-radius: 5px;
-    background-color: RGBA(135,189,75,1);
+    background-color: rgb(56, 174, 68);
+}
+
+.mainTitleText{
+    margin-left: -100px;
 }
 
 .mainBody {
-    background-color: RGBA(255, 255, 255, 0.7);
+    background-color: rgba(255, 255, 255, 0.7);
     margin-top: 100px;
     box-shadow: 8px 8px 10px gray;
     border-radius: 3px;
@@ -35,8 +45,11 @@ a {
 
 .postBox {
     font-size: 25px;
-    margin-top: 5px;
-    margin-bottom: 10px;
+    padding-top: 8px;
+}
+
+.postBox:hover{
+    background-color: rgb(0, 0, 0, 0.15);
 }
 
 .postText {
@@ -114,7 +127,7 @@ a {
 }
 
 .dropDown-Content a:hover {
-    background-color: RGB(176, 230, 115);
+    background-color: rgb(0, 0, 0, 0.15);
 }
 
 .dropDown:hover .dropDown-Content {
@@ -123,12 +136,28 @@ a {
 
 .searchBar {
     float: right;
+    margin-right: 50px;
+    margin-top: -35px;
 }
 
+.pageHeader{
+    text-align: center;
+    margin-left: 55px;
+}
 
+.submissionBody{
+    background-color: RGBA(255, 255, 255, 0.7);
+    box-shadow: 8px 8px 10px gray;
+    border-radius: 3px;
+    font-family: 'Rokkitt', serif;
+    font-size: 25px;
+    margin-left: 150px;
+    margin-right: 150px;
+}
 
-
-
-
-
-
+.bodyPadding{
+    margin-top: 100px;
+    padding-left: 25px;
+    padding-top: 25px;
+    padding-bottom: 25px;
+}

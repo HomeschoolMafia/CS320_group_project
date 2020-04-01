@@ -3,7 +3,11 @@ from setuptools import find_packages, setup
 INSTALL_REQUIRES = [
     'sqlalchemy',
     'flask',
-    'requests'
+    'requests',
+    'flask-wtf',
+    'flask-admin',
+    'flask-login',
+    'flask-classy'
 ]
 
 DEV_REQUIRES = [
@@ -15,7 +19,7 @@ DEV_REQUIRES = [
 
 ENTRY_POINTS = {
     'console_scripts': [
-        'prototype_server=ypd.scripts.prototype_server:main',
+        'ypd_server=ypd.scripts.server:main',
     ]
 }
 
