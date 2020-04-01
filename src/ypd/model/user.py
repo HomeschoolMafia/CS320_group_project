@@ -1,14 +1,15 @@
+from flask_login import UserMixin
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
-
-from flask_login import UserMixin
-from werkzeug.security import generate_password_hash, check_password_hash
+from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import Base, Session
 from .catalog import Catalog
 from .decorator import with_session
+from .model import Model
 from .project import Provided
+
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -36,10 +37,9 @@ class HasFavoritesMixin:
             lazy='subquery',
             passive_deletes=True)
 
-class User(Base, HasFavoritesMixin, UserMixin):
+class User(Base, Model, HasFavoritesMixin, UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
     username = Column(String, unique=True)
     password = Column(String)
     bio = Column(String)
@@ -64,11 +64,16 @@ class User(Base, HasFavoritesMixin, UserMixin):
         Raises:
             ValueError: If project is already in the catalog
         """
-        session.add(self)
-        if type(project) is Provided:
-            favorites_to_add = self.provided_favorites
+        if project.poster == self:
+            user_to_use = project.poster
         else:
-            favorites_to_add = self.solicited_favorites
+            user_to_use = self
+
+        session.add(user_to_use)
+        if type(project) is Provided:
+            favorites_to_add = user_to_use.provided_favorites
+        else:
+            favorites_to_add = user_to_use.solicited_favorites
 
         if project in favorites_to_add:
             raise ValueError("Cannot add duplicate projects to the favorites catalog")
@@ -85,12 +90,17 @@ class User(Base, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        session.add(self)
+        if project.poster == self:
+            user_to_use = project.poster
+        else:
+            user_to_use = self
+
+        session.add(user_to_use)
         try:
             if type(project) is Provided:
-                self.provided_favorites.remove(project)
+                user_to_use.provided_favorites.remove(project)
             else:
-                self.solicited_favorites.remove(project)
+                user_to_use.solicited_favorites.remove(project)
         except ValueError as e:
             raise ValueError("Cannot defavorite project that is not favorited") from e
 
