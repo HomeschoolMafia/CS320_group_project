@@ -5,8 +5,8 @@ class Model:
 
     def __eq__(self, other):
         """Override == operator"""
-        return self.id == other.id
+        return type(self) is type(other) and self.id == other.id
 
     def __neq__(self, other):
         """Override != operator"""
-        return self.id != other.id
+        return type(self) is type(other) and self.id != other.id
