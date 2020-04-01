@@ -1,15 +1,9 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import login_user, current_user, logout_user, login_required, login_fresh
-from werkzeug.urls import url_parse
-
+from flask import redirect, render_template, request, url_for
 from flask_classy import FlaskView, route
-from ypd.model import Session
-from ypd.model.project import Project
-from ypd.model.user import User
-from ypd.model.flaskforms import LoginForm, RegistrationForm
+from flask_login import login_required, login_user, logout_user
 
-from ..model import Session
-from .indexServlet import IndexView
+from ypd.model.flaskforms import LoginForm, RegistrationForm
+from ypd.model.user import User
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
@@ -28,21 +22,20 @@ class UserView(FlaskView):
                 return render_template('login.html', msg=str(e), form=form)
         return render_template('login.html', msg = msg, form=form)
 
-    @route('/<current_user.id>/')
-    @login_required
-    def profile(self):
-        return render_template('profile.html')
+    # @route('/<current_user.id>/')
+    # @login_required
+    # def profile(self):
+    #     return render_template('profile.html')
 
-    @route('/<current_user.id>/editing/', methods=['POST', 'GET'])
-    @login_required
-    def edit(self):
-        return render_template('profile.html')
+    # @route('/<current_user.id>/editing/', methods=['POST', 'GET'])
+    # @login_required
+    # def edit(self):
+    #     return render_template('profile.html')
 
     @login_required
     def logout(self):
-        form = LoginForm()
         logout_user()
-        return redirect(url_for('UserView:login'), form=form)
+        return redirect(url_for('UserView:login'))
 
     # Routes work
     @route('/signup/', methods=['POST', 'GET'])
@@ -54,15 +47,12 @@ class UserView(FlaskView):
             option = form.user_types.data
             user = None
             try:
-                if option == 'faculty':
-                    user = User(username=form.username.data, password=form.password.data, can_post_solicited=True, can_post_provided=True, is_admin=True)
-                elif option == 'student':
-                    user = User(username=form.username.data, password=form.password.data, can_post_solicited=True, can_post_provided=False, is_admin=False)
-                elif option == 'company':
-                    user = User(username=form.username.data, password=form.password.data, can_post_solicited=False, can_post_provided=True, is_admin=False)
+                user = User(username=form.username.data, password=form.password.data, name=form.username.data, is_admin=False)
+                user.can_post_provided = (option == 'faculty' or option == 'company')
+                user.can_post_solicited = (option == 'faculty' or option == 'student')
                 user.sign_up()
-                login_user(user, remember=False)
-                msg = f"Welcome to the YCP Database {user.username}!"
+                login_user(user, remember=True)
+                msg = f"Welcome to the YCP Database {user.name}!"
                 return redirect(url_for('IndexView:get'))
             except Exception as e:
                 msg = e           

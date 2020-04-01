@@ -10,7 +10,6 @@ from .catalog import Catalog
 from .decorator import with_session
 from .project import Provided
 
-
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
     Column('users_id', Integer, ForeignKey('users.id')),
@@ -25,7 +24,7 @@ class HasFavoritesMixin:
         return relationship(
             "Provided",
             secondary=self.provided_association,
-            lazy='joined',
+            lazy='subquery',
             passive_deletes=True)
 
 
@@ -34,7 +33,7 @@ class HasFavoritesMixin:
         return relationship(
             "Solicited",
             secondary=self.solicited_association,
-            lazy='joined',
+            lazy='subquery',
             passive_deletes=True)
 
 class User(Base, HasFavoritesMixin, UserMixin):
@@ -105,32 +104,6 @@ class User(Base, HasFavoritesMixin, UserMixin):
         catalog.projects.extend(self.provided_favorites)
         catalog.projects.extend(self.solicited_favorites)
         return catalog
-
-    def set_password(self, password):
-        self.password = generate_password_hash(password)
-    
-    def check_password(self, password):
-        return check_password_hash(self.password, password)
-
-    # def get_id(self, session=None):
-    #     """Get user id of an instance of user in the db
-        
-    #     Returns: A user id in unicode aka string format
-    #     """
-    #     return str(self.id)
-    # @property
-    # def is_anonymous(self):
-    #     return False
-    
-    # @property
-    # def is_active(self):
-    #     if self.needs_review:
-    #         return False
-    #     return True
-    
-    # @property
-    # def is_authenticated(self):
-    #     return True
     
     @with_session
     def sign_up(self, session=None):
@@ -146,11 +119,7 @@ class User(Base, HasFavoritesMixin, UserMixin):
         """
         self.needs_review = False #TODO: set this to true when we implement the review process
         self.password = generate_password_hash(self.password)
-
-        try:
-            session.add(self)
-        except Exception as e:
-            raise ValueError(f'user {self.username} already exists')
+        session.add(self)
 
     @classmethod
     @with_session

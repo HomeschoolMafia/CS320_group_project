@@ -72,6 +72,14 @@ class Project(Base, HasPosterMixin):
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
 
+    def __eq__(self, other):
+        """Override == operator"""
+        return self.id == other.id
+
+    def __neq__(self, other):
+        """Override != operator"""
+        return self.id != other.id
+
 class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'

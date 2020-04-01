@@ -14,7 +14,7 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('password')])
     #email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
     #contacts = FormField(TelephoneForm)
-    user_types = RadioField('User Type', choices=[('Student', 'Student'), ('faculty', 'Faculty'), ('company', 'Company')], validators=[InputRequired()])
+    user_types = RadioField('User Type', choices=[('student', 'Student'), ('faculty', 'Faculty'), ('company', 'Company')], validators=[InputRequired()])
     submit = SubmitField('Sign Up')
 
 class LoginForm(FlaskForm):
