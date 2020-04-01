@@ -24,7 +24,7 @@ class HasFavoritesMixin:
         return relationship(
             "Provided",
             secondary=self.provided_association,
-            lazy='joined',
+            lazy='subquery',
             passive_deletes=True)
 
 
@@ -33,7 +33,7 @@ class HasFavoritesMixin:
         return relationship(
             "Solicited",
             secondary=self.solicited_association,
-            lazy='joined',
+            lazy='subquery',
             passive_deletes=True)
 
 class User(Base, HasFavoritesMixin, UserMixin):
