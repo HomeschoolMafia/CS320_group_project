@@ -31,9 +31,8 @@ class UserView(FlaskView):
 
     @login_required
     def logout(self):
-        form = LoginForm()
         logout_user()
-        return redirect(url_for('UserView:login'), form=form)
+        return redirect(url_for('UserView:login'))
 
     # Routes work
     @route('/signup/', methods=['POST', 'GET'])
@@ -45,15 +44,12 @@ class UserView(FlaskView):
             option = form.user_types.data
             user = None
             try:
-                if option == 'faculty':
-                    user = User(username=form.username.data, password=form.password.data, can_post_solicited=True, can_post_provided=True, is_admin=True)
-                elif option == 'student':
-                    user = User(username=form.username.data, password=form.password.data, can_post_solicited=True, can_post_provided=False, is_admin=False)
-                elif option == 'company':
-                    user = User(username=form.username.data, password=form.password.data, can_post_solicited=False, can_post_provided=True, is_admin=False)
+                user = User(username=form.username.data, password=form.password.data, name=form.username.data, is_admin=False)
+                user.can_post_provided = (option == 'faculty' or option == 'company')
+                user.can_post_solicited = (option == 'faculty' or option == 'student')
                 user.sign_up()
                 login_user(user, remember=True)
-                msg = f"Welcome to the YCP Database {user.username}!"
+                msg = f"Welcome to the YCP Database {user.name}!"
                 return redirect(url_for('IndexView:get'))
             except Exception as e:
                 msg = e           

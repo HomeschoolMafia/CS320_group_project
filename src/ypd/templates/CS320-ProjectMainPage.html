@@ -42,7 +42,7 @@
     </div>
 
     <div class="searchBar">
-        <form action="/search">
+        <form action="/index", method = 'GET'>
             <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
             <input type="submit" value="Search">
         </form>
@@ -62,7 +62,7 @@
             <!-- <a href="selectedproject?id={{item.id}}{% if item is provided %}&isProvided=True{% endif %}"> -->
             <a href={{url_for( 'SelectedProjectView:get', id=item.id, is_provided=(item is provided))}}>
                 <div class="postText">
-                    {{ item.poster.name }} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                    <em>{{ item.poster.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
                 </div>
             </a>
             <div class="postBar"></div>

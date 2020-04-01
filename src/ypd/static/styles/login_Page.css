@@ -62,7 +62,8 @@ legend {
 
 input#password,
 input#username,
-input#email {
+input#email,
+input#confirm_password{
     margin-top: 10px;
     margin-bottom: 20px;
     width: 200px;

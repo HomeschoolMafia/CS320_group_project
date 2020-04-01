@@ -1,25 +1,67 @@
 <!DOCTYPE html>
 <!-- Project Listing Page -->
 <html>
-<head>
-    <title>Project</title>
-  </head>
-	
-  <body>
-    <div>
-      <h1>Selected Project {{project.title}}</h1>
-    </div>
-
-    <div>
-		Company: 
-		
-    </div>
-	<div>
-		Project Details: {{project.description}}
-	</div>
-	<div>
-      
-		Contact:
-	</div>
-  </body>
+	<head>
+        <title>YCP Project Database:Project</title>
+        <link rel="icon" href="Logo.png" type="image/png">
+        <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Rokkitt&display=swap" rel="stylesheet">
+        <link href="../static/TeamProjectStyleSheet.css" rel="stylesheet" type="text/css">
+    </head>
+    
+    <body>
+        <div class="mainTitle">
+            <div class="logo">
+                <img src="../static/Logo.png" alt="Logo" width="30" height="35">
+            </div>
+        
+            <div class="mainTitleText">
+                <center>YCP Project Database</center>
+            </div>    
+        
+            <div class="dropDown">
+                <div class="menuTab">
+                    <center>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </center>
+                </div>
+                <div class="dropDown-Content">
+                    <a href="{{ url_for('IndexView:get') }}">Project Listing</a>
+                    <a href="{{ url_for('SubmissionView:post') }}">Post A Project</a>
+                    <a href="{{ url_for( 'UserView:login') }}">Login/Sign Up</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="searchBar">
+            <form action="/search">
+                <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
+                <input type="submit" value="Search">
+            </form>
+        </div>
+    
+        <div class="pageHeader" style="margin-bottom: -80px">
+            <h1>{{project.title}}</h1>
+        </div>
+        
+        <div class="submissionBody">
+            <div class="bodyPadding">
+                Company:
+                <br/>
+                <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
+                  {{project.poster.name}}
+                </div>
+                <br/>
+                  Project Details: 
+                <br/>
+                <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
+                    {{project.description}}
+                </div>
+                <br/><br/>
+                Contact:
+            </div>
+        </div>
+    </body>
 </html>
