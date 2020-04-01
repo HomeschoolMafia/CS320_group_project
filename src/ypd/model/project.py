@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
-from .model import Model
+from .db_model import DBModel
 from .decorator import with_session
 
 class HasPosterMixin:
@@ -18,7 +18,7 @@ class HasPosterMixin:
     def poster(self):
         return relationship("User", uselist=False, lazy='subquery')
 
-class Project(Base, Model, HasPosterMixin):
+class Project(Base, DBModel, HasPosterMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True

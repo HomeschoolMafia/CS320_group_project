@@ -7,7 +7,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from . import Base, Session
 from .catalog import Catalog
 from .decorator import with_session
-from .model import Model
+from .db_model import DBModel
 from .project import Provided
 
 
@@ -37,7 +37,7 @@ class HasFavoritesMixin:
             lazy='subquery',
             passive_deletes=True)
 
-class User(Base, Model, HasFavoritesMixin, UserMixin):
+class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     username = Column(String, unique=True)

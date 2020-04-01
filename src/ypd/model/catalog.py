@@ -38,3 +38,7 @@ class Catalog:
             return self.projects[key]
         except Exception as e:
             raise IndexError('Catalog index out of range') from e
+
+    def __len__(self):
+        """Override len function"""
+        return len(self.projects)
