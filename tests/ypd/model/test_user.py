@@ -26,6 +26,8 @@ class TestUser(TestCase):
         users = self.session.query(user.User).all()
         for u in users:
             self.session.delete(u)
+        self.session.query(Provided).delete()
+        self.session.query(Solicited).delete()
         self.session.commit()
         self.session.close()
 
@@ -103,10 +105,12 @@ class TestUser(TestCase):
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
         self.user.favorite_project(project)
 
         project = Provided()
         project.post('sperm', 'whale', self.user)
+        project = Provided.get(2)
         self.user.favorite_project(project)
 
         with self.assertRaises(ValueError):
@@ -124,6 +128,7 @@ class TestUser(TestCase):
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
         self.user.favorite_project(project)
         self.user.defavorite_project(project)
         
@@ -138,14 +143,17 @@ class TestUser(TestCase):
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
         self.user.favorite_project(project)
 
         project = Solicited()
         project.post('sperm', 'whale', self.user)
+        project = Solicited.get(1)
         self.user.favorite_project(project)
 
         project = Solicited()
         project.post("this isn't", 'favorited', self.user)
+        project = Solicited.get(2)
 
         self.user = user.User.log_in('foo', 'bar')
         favorites = self.user.get_favorites_catalog()
