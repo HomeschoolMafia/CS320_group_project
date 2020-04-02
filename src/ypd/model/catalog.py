@@ -28,3 +28,13 @@ class Catalog:
         self.projects = session.query(self.table_to_search).filter_by(**self.filters)\
             .filter(self.table_to_search.title.like(f'%{self.search_term}%')).all()
 
+    def __contains__(self, item):
+        """Overrides the 'in' operator"""
+        return item in self.projects
+
+    def __getitem__(self, key):
+        """Makes Catalog iterable, and projects can be accessed like a list"""
+        try:
+            return self.projects[key]
+        except Exception as e:
+            raise IndexError('Catalog index out of range') from e

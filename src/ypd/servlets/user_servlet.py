@@ -1,16 +1,9 @@
-from flask import Flask, flash, redirect, render_template, request, url_for
-from flask_login import login_user, current_user, logout_user, login_required, LoginManager
-
-from werkzeug.urls import url_parse
-
+from flask import redirect, render_template, request, url_for
 from flask_classy import FlaskView, route
-from ypd.model import Session
-from ypd.model.project import Project
-from ypd.model.user import User
-from ypd.model.flaskforms import LoginForm, RegistrationForm
+from flask_login import login_required, login_user, logout_user
 
-from ..model import Session
-from .indexServlet import IndexView
+from ypd.model.flaskforms import LoginForm, RegistrationForm
+from ypd.model.user import User
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
