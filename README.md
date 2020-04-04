@@ -10,7 +10,7 @@ python3 -m pip install path_to_project
 
 # Run the program
 Run the command:
-```prototype_server```
+```ypd_server```
 When you do, the main function of the script at project_proposer/scripts/prototype_server.py runs.
 If everything is working correctly, after running that commmand, you should be able to open a browser
 and type
