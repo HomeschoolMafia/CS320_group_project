@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>YCP Project Database</title>
+    <link rel="icon" href="Logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Rokkitt&display=swap" rel="stylesheet">
+    <link href="../static/TeamProjectStyleSheet.css" rel="stylesheet" type="text/css">
+</head>
+
+<body>
+    <div class="mainTitle">
+        <div class="logo">
+            <img src="../static/Logo.png" alt="Logo" width="30" height="35">
+        </div>
+        
+        <div class="mainTitleText">
+            <center>YCP Project Database</center>
+        </div>
+        
+        <div class="dropDown">
+            <div class="menuTab">
+                <center>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </center>
+            </div>
+            <div class="dropDown-Content">
+                <a href="{{ url_for('IndexView:get') }}">Project Listing</a>
+                <a href="{{ url_for( 'IndexView:get_favorites') }}">View favorites</a>
+                <a href="{{ url_for('SubmissionView:post') }}">Post A Project</a>
+                <a href="{{ url_for( 'UserView:logout') }}">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="searchBar">
+        <form action="/index", method = 'GET'>
+            <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
+            <input type="submit" value="Search">
+        </form>
+    </div>
+    
+    {% block content %}{% endblock %}
+    
+</body>
+</html>
