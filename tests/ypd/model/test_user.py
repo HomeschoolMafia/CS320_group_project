@@ -20,7 +20,8 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
+        self.user = user.User(username='foo', password='bar', bio='asdf',
+                              can_post_solicited=True, can_post_provided=True)
 
     def tearDown(self):
         users = self.session.query(user.User).all()
