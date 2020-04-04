@@ -21,6 +21,7 @@ class TestProject(TestCase):
         self.fake_project_list = ['these', "don't", 'need', 'to', 'be', 'real', 'projects']
         self.fake_catalog = catalog.Catalog()
         self.fake_catalog.projects = self.fake_project_list
+        self.user = User(id=1, can_post_provided=True, can_post_solicited=True)
 
     def tearDown(self):
         self.session.query(project.Provided).delete()
@@ -34,9 +35,9 @@ class TestProject(TestCase):
         self.assertEqual(clg.projects, [])
 
     def test_apply_many_projects(self):
-        project.Provided().post('foo', 'bar', User(id=1))
-        project.Provided().post('nobody expects', 'the spanish inquisition', User(id=1))
-        project.Provided().post('sperm whale', 'bowl of petunias', User(id=1))
+        project.Provided().post('foo', 'bar', self.user)
+        project.Provided().post('nobody expects', 'the spanish inquisition', self.user)
+        project.Provided().post('sperm whale', 'bowl of petunias', self.user)
         clg = catalog.Catalog('', True)
         clg.apply()
 
@@ -51,8 +52,8 @@ class TestProject(TestCase):
         self.assertTrue(('sperm whale', 'bowl of petunias') in projects)
 
     def test_apply_chooses_correct_table(self):
-        project.Provided().post('foo', 'bar', User(id=1))
-        project.Solicited().post('your', 'mom', User(id=1))
+        project.Provided().post('foo', 'bar', self.user)
+        project.Solicited().post('your', 'mom', self.user)
         clg = catalog.Catalog('', False)
         clg.apply()
 
@@ -61,8 +62,8 @@ class TestProject(TestCase):
         self.assertEqual(clg.projects[0].description, 'mom')
 
     def test_search_by_title_provided(self):
-        project.Provided().post('foo', 'bar', User(id=1))
-        project.Provided().post('hello', 'world', User(id=1))
+        project.Provided().post('foo', 'bar', self.user)
+        project.Provided().post('hello', 'world', self.user)
         search_term = 'foo'
         clg = catalog.Catalog(search_term, True)
         clg.apply()
