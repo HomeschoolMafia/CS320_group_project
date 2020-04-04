@@ -18,6 +18,9 @@ class TestProject(TestCase):
 
     def setUp(self):
         self.session = self.Session()
+        self.fake_project_list = ['these', "don't", 'need', 'to', 'be', 'real', 'projects']
+        self.fake_catalog = catalog.Catalog()
+        self.fake_catalog.projects = self.fake_project_list
         self.user = User(id=1, can_post_provided=True, can_post_solicited=True)
 
     def tearDown(self):
@@ -67,3 +70,25 @@ class TestProject(TestCase):
 
         self.assertEqual(len(clg.projects), 1)
         self.assertEqual(clg.projects[0].title, 'foo')
+
+    def test_contains(self):
+        self.assertTrue('need' in self.fake_catalog)
+        self.assertTrue('projects' in self.fake_catalog)
+
+        self.assertFalse('foo' in self.fake_catalog)
+        self.assertFalse('bar' in self.fake_catalog)
+
+    def test_len(self):
+        self.assertEqual(len(self.fake_catalog), 7)
+
+    def test_getattr(self):
+        self.assertEqual('need', self.fake_catalog[2])
+        self.assertTrue('projects', self.fake_catalog[6])
+
+        with self.assertRaises(IndexError):
+            self.fake_catalog[12]
+
+        i = 0
+        for fake_project in self.fake_catalog:
+            self.assertEqual(fake_project, self.fake_project_list[i])
+            i += 1
