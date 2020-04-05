@@ -25,7 +25,6 @@ class HasFavoritesMixin:
         return relationship(
             "Provided",
             secondary=self.provided_association,
-            lazy='subquery',
             passive_deletes=True)
 
 
@@ -34,7 +33,6 @@ class HasFavoritesMixin:
         return relationship(
             "Solicited",
             secondary=self.solicited_association,
-            lazy='subquery',
             passive_deletes=True)
 
 class User(Base, DBModel, HasFavoritesMixin, UserMixin):
@@ -104,15 +102,19 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         except ValueError as e:
             raise ValueError("Cannot defavorite project that is not favorited") from e
 
-
-    def get_favorites_catalog(self):
+    @with_session
+    def get_favorites_catalog(self, session=None):
         """Get all of the Projects this User has favorited as a Catalog
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
 
         Returns: A Catalog of all of this User's favorited projects
         """
+        session.add(self)
         catalog = Catalog()
-        catalog.projects.extend(self.provided_favorites)
-        catalog.projects.extend(self.solicited_favorites)
+        catalog.extend(self.provided_favorites)
+        catalog.extend(self.solicited_favorites)
         return catalog
     
     @with_session
@@ -152,9 +154,6 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         #try to log in
         result = session.query(User
-            ).options(
-                subqueryload(User.provided_favorites),
-                subqueryload(User.solicited_favorites)
             ).filter_by(
                 username=username,
                 needs_review=False
