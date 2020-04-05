@@ -19,6 +19,13 @@
                             {{ form.username.label(class="form__label") }} {{ form.username(class="form__input") }}
                             {{ form.password.label(class="form__label") }} {{ form.password(class="form__input") }}
                             {{ form.remember (class="form__input") }} {{ form.remember.label (class="form__label") }}
+
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    <div class="errorText">
+                                        <br>{{messages[0]}}
+                                {% endif %}
+                            {% endwith %}
                     </fieldset>
                 </div>
                 {{ form.submit(id="login") }}
