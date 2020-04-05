@@ -169,7 +169,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         else:
             result = session.query(User).filter_by(username=username).one_or_none()
             if result:
-                raise ValueError('User account requires review')
+                raise ValueError('Your account requires review')
             else:
                 raise ValueError('Incorrect username or password')
 
