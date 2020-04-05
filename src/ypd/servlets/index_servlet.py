@@ -18,7 +18,6 @@ class IndexView(FlaskView):
     
     @login_required
     def get_favorites(self):
-        # return "This feature isn't finished. Come back later"
         current_app.jinja_env.tests['provided'] = is_provided_test
         catalog = current_user.get_favorites_catalog()
         return render_template('index.html', catalog=catalog)
