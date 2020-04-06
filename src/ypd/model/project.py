@@ -72,6 +72,18 @@ class Project(Base, DBModel, HasPosterMixin):
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
 
+    def can_be_modified_by(self, user):
+        """Check whether this project can be modified by user
+
+        Args:
+            user (User): User attempting to modify project
+
+        return: True if can be modified by user, else false
+        """
+        print(user.id)
+        print(self.poster)
+        return user == self.poster or user.is_admin
+
 class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'

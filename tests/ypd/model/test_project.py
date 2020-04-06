@@ -67,3 +67,16 @@ class TestProject(TestCase):
         s = project.Provided.get(1)
         self.assertIsNotNone(s)
         self.assertTrue(s.title == 'cookie' and s.description == 'biscuit')
+
+    def test_can_be_modified_bu(self):
+        u = User(can_post_provided=True, id=1, password='')
+        u.sign_up()
+        p = project.Provided()
+        p.post('foo', 'bar', u)
+        p = project.Provided.get(1)
+
+        self.assertTrue(p.can_be_modified_by(User(id=1)))
+        self.assertTrue(p.can_be_modified_by(User(id=2, is_admin=True)))
+        self.assertFalse(p.can_be_modified_by(User(id=3)))
+
+
