@@ -28,10 +28,10 @@
                 </center>
             </div>
             <div class="dropDown-Content">
-                <a href="{{ url_for('IndexView:get') }}">Project Listing</a>
-                <a href="{{ url_for( 'IndexView:get_favorites') }}">View favorites</a>
-                <a href="{{ url_for('SubmissionView:post') }}">Post A Project</a>
-                <a href="{{ url_for( 'UserView:logout') }}">Logout</a>
+                <a href="{{ url_for('IndexView:get')}}">Project Listing</a>
+                <a href="{{ url_for('IndexView:get_favorites')}}">View favorites</a>
+                <a href="{{ url_for('ProjectView:submit')}}">Post A Project</a>
+                <a href="{{ url_for('UserView:logout')}}">Logout</a>
             </div>
         </div>
     </div>

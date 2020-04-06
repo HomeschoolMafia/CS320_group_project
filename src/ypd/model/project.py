@@ -72,6 +72,27 @@ class Project(Base, DBModel, HasPosterMixin):
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
 
+    @with_session
+    def edit(self, session=None, **kwargs):
+        """Edits this project to change the attributes
+        This functions *should* be future proof. Knock on wood.
+        E.g, if we add attributes to project, or to the editing process,
+        we shouldn't need to change this function.
+        Just pass whatever values you want to change to kwargs, and
+        we'll do the rest
+        Any kwargs that aren't an attribute of Project are ignored
+
+        KwArgs:
+            session (Session): session to perform the query on. Supplied by decorator
+            **kwargs: Attributes of the project to change
+        """
+        for name, value in kwargs.items():
+            if hasattr(self, name):
+                if name == 'id':
+                    raise AttributeError('Cannot change the id of a project')
+                setattr(self, name, value)
+        session.add(self)
+
 class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'

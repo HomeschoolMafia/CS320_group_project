@@ -59,7 +59,6 @@ class TestProject(TestCase):
         self.assertEqual(len(self.session.query(project.Provided).all()), 1)
         self.assertEqual(len(self.session.query(project.Solicited).all()), 1)
 
-
     def test_selected_project_lookup(self):                                     # tests to see that get method works
         s = project.Provided()
         s.post('cookie', 'biscuit', User(can_post_provided=True))
@@ -67,3 +66,19 @@ class TestProject(TestCase):
         s = project.Provided.get(1)
         self.assertIsNotNone(s)
         self.assertTrue(s.title == 'cookie' and s.description == 'biscuit')
+
+    def test_edit(self):
+        User(can_post_provided=True, password='').sign_up()
+        project.Provided().post('foo', 'bar', User(id=1, can_post_provided=True))
+        p = project.Provided.get(1)
+        p.edit(description='baz', this_isnt_real=4)
+
+        p = project.Provided.get(1)
+        self.assertEqual(p.title, 'foo')
+        self.assertEqual(p.description, 'baz')
+
+        with self.assertRaises(AttributeError):
+            x = p.this_isnt_real
+
+        with self.assertRaises(AttributeError):
+            p.edit(id=3)
