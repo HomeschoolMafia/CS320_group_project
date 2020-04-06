@@ -29,7 +29,7 @@ class TestProject(TestCase):
 
     def test_project_post(self):
         p = project.Provided()
-        p.post('foo', 'bar', User(id=1))
+        p.post('foo', 'bar', User(can_post_provided=True))
 
         results = self.session.query(project.Provided).all()
         self.assertEqual(len(results), 1)
@@ -40,10 +40,29 @@ class TestProject(TestCase):
         self.assertEqual(results[0].date, p.date)
         self.assertEqual(results[0].archived, False)
         self.assertEqual(results[0].needsReview, False)
+
+    def test_post_permissions(self):
+        pp = project.Provided()
+        ps = project.Solicited()
+
+        up = User(can_post_provided=True, can_post_solicited=False)
+        us = User(can_post_provided=False, can_post_solicited=True)
+
+        with self.assertRaises(PermissionError):
+            ps.post('foo', 'bar', up)
+        with self.assertRaises(PermissionError):
+            pp.post('foo', 'bar', us)
         
+        pp.post('foo', 'bar', up)
+        ps.post('foo', 'bar', us)
+
+        self.assertEqual(len(self.session.query(project.Provided).all()), 1)
+        self.assertEqual(len(self.session.query(project.Solicited).all()), 1)
+
+
     def test_selected_project_lookup(self):                                     # tests to see that get method works
         s = project.Provided()
-        s.post('cookie', 'biscuit', User(id=1))
+        s.post('cookie', 'biscuit', User(can_post_provided=True))
         
         s = project.Provided.get(1)
         self.assertIsNotNone(s)

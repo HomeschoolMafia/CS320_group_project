@@ -20,7 +20,8 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
+        self.user = user.User(username='foo', password='bar', bio='asdf',
+                              can_post_solicited=True, can_post_provided=True)
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -64,7 +65,7 @@ class TestUser(TestCase):
     def test_get_by_id(self):
         self.user.sign_up()
         acc = user.User.get_by_id(id=1)
-        self.assertEquals(1, acc.id)
+        self.assertEqual(1, acc.id)
 
     def test_login_successful(self):
         self.user.sign_up()

@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
-from .model import Model
+from .db_model import DBModel
 from .decorator import with_session
 
 class HasPosterMixin:
@@ -18,7 +18,7 @@ class HasPosterMixin:
     def poster(self):
         return relationship("User", uselist=False, lazy='subquery')
 
-class Project(Base, Model, HasPosterMixin):
+class Project(Base, DBModel, HasPosterMixin):
     """Abstract class that represents a Project"""
 
     __abstract__ = True
@@ -72,11 +72,42 @@ class Project(Base, Model, HasPosterMixin):
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
 
-
 class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'
 
+    def post(self, title, description, poster):
+        """Posts this project to the database
+
+        Args:
+            title (str): Project title
+            description (str): Project description
+            poster (User): User who posted the project
+        
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        if poster.can_post_provided:
+            super().post(title, description, poster)
+        else:
+            raise PermissionError('User does not have permissions to post provided projects')
+
 class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
+
+    def post(self, title, description, poster):
+        """Posts this project to the database
+
+        Args:
+            title (str): Project title
+            description (str): Project description
+            poster (User): User who posted the project
+        
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        if poster.can_post_solicited:
+            super().post(title, description, poster)
+        else:
+            raise PermissionError('User does not have permissions to post solicited projects')
