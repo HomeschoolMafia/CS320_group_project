@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from ypd.model import Base, user, decorator
+from ypd.model import Base, user, session_manager
 from ypd.model.project import Provided, Solicited
 
 
@@ -16,7 +16,7 @@ class TestUser(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)

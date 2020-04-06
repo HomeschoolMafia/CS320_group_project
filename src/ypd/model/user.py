@@ -6,9 +6,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import Base, Session
 from .catalog import Catalog
-from .decorator import with_session
 from .db_model import DBModel
 from .project import Provided
+from .session_manager import SessionManager
 
 
 class HasFavoritesMixin:
@@ -51,7 +51,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
 
-    @with_session
+    @SessionManager.with_session
     def favorite_project(self, project, session=None):
         """Adds the given project to this user's list of favorite projects
         
@@ -80,7 +80,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         else:
             favorites_to_add.append(project)
 
-    @with_session
+    @SessionManager.with_session
     def defavorite_project(self, project, session=None):
         """Adds the given project to this user's list of favorite projects
         
@@ -115,7 +115,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         catalog.projects.extend(self.solicited_favorites)
         return catalog
     
-    @with_session
+    @SessionManager.with_session
     def sign_up(self, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
@@ -132,7 +132,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         session.add(self)
 
     @classmethod
-    @with_session
+    @SessionManager.with_session
     def log_in(cls, username, password, session=None):
         """Attempts to login a user with the given username and password
         
@@ -174,7 +174,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
                 raise ValueError('Incorrect username or password')
 
     @classmethod
-    @with_session
+    @SessionManager.with_session
     def get_by_id(cls, id, session=None):
         """Gets the User object with the specified id
         
