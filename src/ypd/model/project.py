@@ -80,8 +80,6 @@ class Project(Base, DBModel, HasPosterMixin):
 
         return: True if can be modified by user, else false
         """
-        print(user.id)
-        print(self.poster)
         return user == self.poster or user.is_admin
 
 class Provided(Project):
