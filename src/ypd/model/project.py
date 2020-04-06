@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
 from .db_model import DBModel
-from .decorator import with_session
+from .session_manager import SessionManager
 
 class HasPosterMixin:
     @declared_attr.cascading
@@ -29,7 +29,7 @@ class Project(Base, DBModel, HasPosterMixin):
     archived = Column(Boolean)
     needsReview = Column(Boolean)
 
-    @with_session
+    @SessionManager.with_session
     def post(self, title, description, poster, session=None):
         """Posts this project to the database
 
@@ -51,7 +51,7 @@ class Project(Base, DBModel, HasPosterMixin):
         session.add(self)
         
     @classmethod  
-    @with_session  
+    @SessionManager.with_session  
     def get(cls, id, session=None):
         """Gets projects from database by id
         

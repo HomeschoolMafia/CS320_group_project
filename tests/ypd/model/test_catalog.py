@@ -4,7 +4,7 @@ from unittest.mock import patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ypd.model import Base, catalog, project, decorator
+from ypd.model import Base, catalog, project, session_manager
 from ypd.model.user import User
 
 class TestProject(TestCase):
@@ -14,7 +14,7 @@ class TestProject(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session()
