@@ -7,7 +7,7 @@ from sqlalchemy.orm.exc import NoResultFound
 
 from . import Base
 from .db_model import DBModel
-from .decorator import with_session
+from .session_manager import SessionManager
 
 class HasPosterMixin:
     @declared_attr.cascading
@@ -31,7 +31,7 @@ class Project(Base, DBModel, HasPosterMixin):
 
     immutable_attributes = ['id', 'poster', 'poster_id']
 
-    @with_session
+    @SessionManager.with_session
     def post(self, title, description, poster, session=None):
         """Posts this project to the database
 
@@ -53,7 +53,7 @@ class Project(Base, DBModel, HasPosterMixin):
         session.add(self)
         
     @classmethod  
-    @with_session  
+    @SessionManager.with_session  
     def get(cls, id, session=None):
         """Gets projects from database by id
         
@@ -74,7 +74,7 @@ class Project(Base, DBModel, HasPosterMixin):
         except NoResultFound as e:
             raise ValueError(f'No project found with id {id}') from e
 
-    @with_session
+    @SessionManager.with_session
     def edit(self, user, session=None, **kwargs):
         """Edits this project to change the attributes
         This functions *should* be future proof. Knock on wood.
@@ -93,8 +93,9 @@ class Project(Base, DBModel, HasPosterMixin):
 
         Raises:
             ValueError: If you try to change any immutable attributes
+            PermissionError: If the user cannot edit this project
         """
-        if not self.can_be_edited_by(user):
+        if not self.can_be_modified_by(user):
             raise PermissionError(f'User {user.username} cannot edit this project!')
 
         for name, value in kwargs.items():
@@ -103,6 +104,16 @@ class Project(Base, DBModel, HasPosterMixin):
                     raise AttributeError(f'Cannot change {name} of a project')
                 setattr(self, name, value)
         session.add(self)
+
+    def can_be_modified_by(self, user):
+        """Check whether this project can be modified by user
+
+        Args:
+            user (User): User attempting to modify project
+
+        return: True if can be modified by user, else false
+        """
+        return user == self.poster or user.is_admin
 
 class Provided(Project):
     """Class that represents a provided project"""

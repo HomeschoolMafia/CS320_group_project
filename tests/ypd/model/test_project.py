@@ -6,7 +6,7 @@ from unittest.mock import patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ypd.model import Base, decorator, project
+from ypd.model import Base, session_manager, project
 from ypd.model.user import User
 
 
@@ -17,7 +17,7 @@ class TestProject(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
@@ -69,9 +69,10 @@ class TestProject(TestCase):
 
     def test_edit(self):
         User(can_post_provided=True, password='').sign_up()
-        project.Provided().post('foo', 'bar', User(id=1, can_post_provided=True))
+        u = User.get_by_id(1)
+        project.Provided().post('foo', 'bar', u)
         p = project.Provided.get(1)
-        p.edit(description='baz', this_isnt_real=4)
+        p.edit(u, description='baz', this_isnt_real=4)
 
         p = project.Provided.get(1)
         self.assertEqual(p.title, 'foo')
@@ -81,4 +82,23 @@ class TestProject(TestCase):
             x = p.this_isnt_real
 
         with self.assertRaises(AttributeError):
-            p.edit(id=3)
+            p.edit(u, id=3)
+
+        User(can_post_provided=True, password='').sign_up()
+        u = User.get_by_id(2)
+        with self.assertRaises(PermissionError):
+            p.edit(u, title='bar')
+
+
+    def test_can_be_modified_by(self):
+        u = User(can_post_provided=True, id=1, password='')
+        u.sign_up()
+        p = project.Provided()
+        p.post('foo', 'bar', u)
+        p = project.Provided.get(1)
+
+        self.assertTrue(p.can_be_modified_by(User(id=1)))
+        self.assertTrue(p.can_be_modified_by(User(id=2, is_admin=True)))
+        self.assertFalse(p.can_be_modified_by(User(id=3)))
+
+
