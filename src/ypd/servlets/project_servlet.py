@@ -1,16 +1,18 @@
 from functools import wraps
 
-from flask import current_app, redirect, render_template, request, url_for
+from flask import (current_app, flash, redirect, render_template, request,
+                   url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
+from ..form.project_form import EditForm, SubmissionForm
 from ..model.project import Provided, Solicited
 from ..model.user import User
-from ..form.project_form import EditForm, SubmissionForm
 from .tests import Tests
 
 
 class ProjectView(FlaskView):
+    decorators = [login_required]   #apply login_required to all routes
     class Decorator:
         @classmethod
         def needs_project(cls, func):
@@ -38,13 +40,11 @@ class ProjectView(FlaskView):
             return wrapper
 
     @route('/view')
-    @login_required
     @Decorator.needs_project
     def view(self, project):        
         return render_template('project.html', project=project, user=current_user)
 
     @route('/favorite')
-    @login_required
     @Decorator.needs_project
     def favorite(self, project):
         """Called when the user favorites or defavorites a project"""
@@ -60,36 +60,39 @@ class ProjectView(FlaskView):
                                 is_provided=Tests.is_provided_test(project)))
 
     # pull data from HTML form
-    @route ('/submit', methods =('GET', 'POST'))
-    @login_required  
+    @route ('/submit', methods =('GET', 'POST'))  
     def submit(self):
         form = SubmissionForm()
 
-        if request.method == 'POST' and form.validate_on_submit():
-            projType = form.projType.data
-            title = form.title.data
-            description = form.description.data
+        if form.validate_on_submit:
+                projType = form.projType.data
+                title = form.title.data
+                description = form.description.data
 
-            if int(projType) == form.PROVIDED:
-                Provided().post(title, description, current_user)
-            else:
-                Solicited().post(title, description, current_user)
-            return redirect(url_for('IndexView:get'))
-
+                if projType is None:
+                    flash("You must select a project type") #We have to validate radio fields manually
+                    return render_template('set_project_data.html', form=form)
+                elif projType == form.PROVIDED:
+                    project = Provided()
+                else:
+                    project = Solicited()
+                project.post(title, description, current_user)
+                return redirect(url_for('IndexView:view',
+                                        is_provided=(projType==form.PROVIDED), id=project.id))
         return render_template('set_project_data.html', form=form)
 
     @route('/edit', methods=('GET', 'POST'))
-    @login_required
     @Decorator.needs_project
     def edit(self, project):
         form = EditForm()
 
-        if request.method == 'POST' and form.validate_on_submit():
-            project.edit(form.data.items())
+        if form.validate_on_submit():
+            print(form.data.items())
+            project.edit(current_user, **form.data)
             return redirect(url_for('ProjectView:view', id=project.id,
-                is_provided=Tests.is_provided_test(project)))
+                                    is_provided=Tests.is_provided_test(project)))
         else:
             for field in form:
-                if field.type != 'SubmitField':
+                if hasattr(project, field.name):
                     field.data = getattr(project, field.name)
             return render_template('set_project_data.html', form=form, project=project) 

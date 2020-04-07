@@ -5,18 +5,26 @@
 </div>
 
 <!-- Project will only be supplied if we are editing an existing project -->
-<form action="{{url_for('ProjectView:edit') if project else url_for('ProjectView:submit')}}" method="POST">	
+<form action="{{url_for('ProjectView:edit', id=project.id, is_provided=(project is provided)) if project else url_for('ProjectView:submit')}}" method="POST">	
     <div class="submissionBody">
         <fieldset>
+            {{ form.csrf_token() }}
             {% for field in form %}
                 {% if field.label.text != 'CSRF Token' %}
                     {% if field.type != "SubmitField" %}
                         {{ field.label.text }} <br>
                     {% endif %}
-                    {{ field -}} <br> <br>
+                    {{ field }} <br> <br>
                 {% endif %}
             {% endfor %}
         </fieldset>
+
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="errorText">
+                    <br>{{messages[0]}}
+            {% endif %}
+        {% endwith %}   
     </div>
 </form>
 {% endblock %}

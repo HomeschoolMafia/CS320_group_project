@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import (BooleanField, IntegerField, RadioField, StringField,
                      SubmitField, TextAreaField)
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, Length
 from wtforms.widgets import TextArea
 
 class SubmissionForm(FlaskForm):
@@ -12,7 +12,8 @@ class SubmissionForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired()])
     description = TextAreaField('Project Summary:', validators=[InputRequired()],
                                 widget=TextArea(), render_kw={'cols': '150', 'rows': '25'})
-    projType = RadioField('Project Type:', choices=[(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
+    projType = RadioField('Project Type:', validators=[InputRequired()], coerce=int,
+                          choices=[(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
     submit = SubmitField('Submit')
 
 class EditForm(FlaskForm):
