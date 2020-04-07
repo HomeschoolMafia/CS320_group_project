@@ -87,7 +87,6 @@ class ProjectView(FlaskView):
         form = EditForm()
 
         if form.validate_on_submit():
-            print(form.data.items())
             project.edit(current_user, **form.data)
             return redirect(url_for('ProjectView:view', id=project.id,
                                     is_provided=Tests.is_provided_test(project)))
