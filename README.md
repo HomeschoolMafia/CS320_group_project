@@ -18,5 +18,3 @@ and type
 localhost:5000/user/login
 ```
 This should display the login page. From there, you can navigate to every page of the website
-
-    ```
