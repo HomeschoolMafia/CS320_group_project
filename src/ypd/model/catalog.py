@@ -29,6 +29,29 @@ class Catalog:
         self.projects = session.query(self.table_to_search).filter_by(**self.filters)\
             .filter(self.table_to_search.title.like(f'%{self.search_term}%')).all()
 
+    def append(self, project):
+        """Appends project to this catalog
+
+        Args:
+            project (Project): Project to append to the catalog
+        """
+        if isinstance(project, Project):
+            self.projects.append(project)
+        else:
+            raise ValueError(f"Cannot add object of type {type(project)} to catalog")
+
+    def extend(self, projects):
+        """Extends this catalog with a list of projects
+
+        Args:
+            projects (list): List of projects to append
+        """
+        for project in projects:
+            if not isinstance(project, Project):
+                raise ValueError(f"Cannot add object of type {type(project)} to catalog")
+
+        self.projects.extend(projects)
+
     def __contains__(self, item):
         """Overrides the 'in' operator"""
         return item in self.projects

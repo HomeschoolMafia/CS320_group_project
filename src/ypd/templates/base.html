@@ -2,16 +2,16 @@
 <html>
 <head>
     <title>YCP Project Database</title>
-    <link rel="icon" href="Logo.png" type="image/png">
+    <link rel="icon" href="{{url_for('static', filename='Logo.png')}}" type="image/png">
     <link href="https://fonts.googleapis.com/css?family=Alfa+Slab+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Rokkitt&display=swap" rel="stylesheet">
-    <link href="../static/TeamProjectStyleSheet.css" rel="stylesheet" type="text/css">
+    <link href="{{url_for('static', filename='TeamProjectStyleSheet.css')}}" rel="stylesheet" type="text/css">
 </head>
 
 <body>
     <div class="mainTitle">
         <div class="logo">
-            <img src="../static/Logo.png" alt="Logo" width="30" height="35">
+            <img src="{{url_for('static', filename='Logo.png')}}" alt="Logo" width="30" height="35">
         </div>
         
         <div class="mainTitleText">

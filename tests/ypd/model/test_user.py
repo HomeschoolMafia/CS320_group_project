@@ -118,6 +118,7 @@ class TestUser(TestCase):
             self.user.favorite_project(project)
 
         self.user = user.User.log_in('foo', 'bar')
+        self.session.add(self.user)
         self.assertEqual(self.user.provided_favorites[0].title, 'asdf')
         self.assertEqual(self.user.provided_favorites[0].description, 'qwerty')
         self.assertEqual(self.user.provided_favorites[1].title, 'sperm')
@@ -135,7 +136,8 @@ class TestUser(TestCase):
         
         with self.assertRaises(ValueError):
             self.user.defavorite_project(project)
-
+        
+        self.session.add(self.user)
         self.assertEqual(len(self.user.provided_favorites), 0)        
 
     def test_get_catalog(self):
@@ -163,5 +165,6 @@ class TestUser(TestCase):
         self.assertEqual(favorites.projects[0].description, 'qwerty')
         self.assertEqual(favorites.projects[1].title, 'sperm')
         self.assertEqual(favorites.projects[1].description, 'whale')
+        self.assertEqual(favorites.projects[1].poster, self.user)
         self.assertEqual(len(favorites.projects), 2)
 
