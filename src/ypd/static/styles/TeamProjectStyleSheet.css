@@ -4,7 +4,7 @@ html {
 }
 
 body {
-    background-image:  url("backgroung.png");
+    background-image:  url("../icons/backgroung.png");
 }
 
 a {
@@ -162,8 +162,14 @@ fieldset {
     padding-bottom: 25px;
 }
 
-.favButton{
+.projectButton{
     float: right;
     margin-right: 30px;
     margin-top: 15px;
+}
+
+.errorText {
+    font-size: 15px;
+    color: red;
+    text-align: center;
 }

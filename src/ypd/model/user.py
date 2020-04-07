@@ -102,7 +102,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         except ValueError as e:
             raise ValueError("Cannot defavorite project that is not favorited") from e
 
-    @with_session
+    @SessionManager.with_session
     def get_favorites_catalog(self, session=None):
         """Get all of the Projects this User has favorited as a Catalog
 

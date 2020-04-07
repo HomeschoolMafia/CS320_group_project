@@ -59,7 +59,6 @@ class TestProject(TestCase):
         self.assertEqual(len(self.session.query(project.Provided).all()), 1)
         self.assertEqual(len(self.session.query(project.Solicited).all()), 1)
 
-
     def test_selected_project_lookup(self):                                     # tests to see that get method works
         s = project.Provided()
         s.post('cookie', 'biscuit', User(can_post_provided=True))
@@ -68,7 +67,30 @@ class TestProject(TestCase):
         self.assertIsNotNone(s)
         self.assertTrue(s.title == 'cookie' and s.description == 'biscuit')
 
-    def test_can_be_modified_bu(self):
+    def test_edit(self):
+        User(can_post_provided=True, password='').sign_up()
+        u = User.get_by_id(1)
+        project.Provided().post('foo', 'bar', u)
+        p = project.Provided.get(1)
+        p.edit(u, description='baz', this_isnt_real=4)
+
+        p = project.Provided.get(1)
+        self.assertEqual(p.title, 'foo')
+        self.assertEqual(p.description, 'baz')
+
+        with self.assertRaises(AttributeError):
+            x = p.this_isnt_real
+
+        with self.assertRaises(AttributeError):
+            p.edit(u, id=3)
+
+        User(can_post_provided=True, password='').sign_up()
+        u = User.get_by_id(2)
+        with self.assertRaises(PermissionError):
+            p.edit(u, title='bar')
+
+
+    def test_can_be_modified_by(self):
         u = User(can_post_provided=True, id=1, password='')
         u.sign_up()
         p = project.Provided()
