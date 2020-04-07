@@ -3,18 +3,12 @@ from functools import wraps
 from flask import current_app, redirect, render_template, request, url_for
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
-from flask_wtf import FlaskForm
-from wtforms import (BooleanField, IntegerField, RadioField, StringField,
-                     SubmitField, TextAreaField)
-from wtforms.validators import InputRequired
-from wtforms.widgets import TextArea
 
 from ..model.project import Provided, Solicited
 from ..model.user import User
+from ..form.project_form import EditForm, SubmissionForm
 from .tests import Tests
 
-PROVIDED = 0
-SOLICITED = 1
 
 class ProjectView(FlaskView):
     class Decorator:
@@ -69,14 +63,14 @@ class ProjectView(FlaskView):
     @route ('/submit', methods =('GET', 'POST'))
     @login_required  
     def submit(self):
-        form = self.SubmissionForm()
+        form = SubmissionForm()
 
         if request.method == 'POST' and form.validate_on_submit():
             projType = form.projType.data
             title = form.title.data
             description = form.description.data
 
-            if int(projType) == PROVIDED:
+            if int(projType) == form.PROVIDED:
                 Provided().post(title, description, current_user)
             else:
                 Solicited().post(title, description, current_user)
@@ -88,7 +82,7 @@ class ProjectView(FlaskView):
     @login_required
     @Decorator.needs_project
     def edit(self, project):
-        form = self.SubmissionForm()
+        form = EditForm()
 
         if request.method == 'POST' and form.validate_on_submit():
             project.edit(form.data.items())
@@ -99,18 +93,3 @@ class ProjectView(FlaskView):
                 if field.type != 'SubmitField':
                     field.data = getattr(project, field.name)
             return render_template('set_project_data.html', form=form, project=project) 
-
-    class SubmissionForm(FlaskForm):
-        """Submission Form"""
-        title = StringField('Title:', validators=[InputRequired()])
-        description = TextAreaField('Project Summary:', validators=[InputRequired()],
-                                    widget=TextArea(), render_kw={'cols': '150', 'rows': '25'})
-        projType = RadioField('Project Type:', choices=[(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
-        submit = SubmitField('Submit')
-
-    class EditForm(FlaskForm):
-        """Project editing Form"""
-        title = StringField('Title:', validators=[InputRequired()])
-        description = TextAreaField('Project Summary:', validators=[InputRequired()],
-                                    widget=TextArea(), render_kw={'cols': '150', 'rows': '25'})
-        submit = SubmitField('Submit')

@@ -4,7 +4,7 @@
     <h1>{{ 'Edit' if project else 'Submit' }} Project </h1>
 </div>
 
-
+<!-- Project will only be supplied if we are editing an existing project -->
 <form action="{{url_for('ProjectView:edit') if project else url_for('ProjectView:submit')}}" method="POST">	
     <div class="submissionBody">
         <fieldset>
