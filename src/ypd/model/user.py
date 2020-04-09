@@ -185,3 +185,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         return session.query(User).filter_by(id=id).one_or_none()
+
+    @with_session
+    def update_password(self, password, session=None):
+        self.password = generate_password_hash(password)

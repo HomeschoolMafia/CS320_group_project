@@ -25,7 +25,7 @@ class LoginForm(FlaskForm):
     #email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64), Email()])
     #contacts = FormField(TelephoneForm)
 
-class ChangePassword(Form):
+class ChangePasswordForm(FlaskForm):
     password = PasswordField('New Password', [InputRequired(), EqualTo('confirm', message='Passwords must match')])
     confirm  = PasswordField('Repeat Password')
 

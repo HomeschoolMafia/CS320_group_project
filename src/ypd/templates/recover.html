@@ -15,19 +15,9 @@
                 <div class="form__items">
                     <fieldset>
                         <legend>Log In</legend>
-                        {% for field in form %}
-                            {% if field.label.text != 'CSRF Token' %}
-                                {% if field.type != "SubmitField" %}
-                                    {{ field.label.text }} <br>
-                                    
-                                {% endif %}
-                            {{ field (id="login")-}} <br> <br>
-                            {% endif %}
-                        {% endfor %}
                             {{ form.csrf_token() }}
-                            {{ form.username.label(class="form__label") }} {{ form.username(class="form__input") }}
                             {{ form.password.label(class="form__label") }} {{ form.password(class="form__input") }}
-                            {{ form.remember (class="form__input") }} {{ form.remember.label (class="form__label") }}
+                            {{ form.confirm_password.label(class="form__label") }} {{ form.confirm_password(class="form__input") }}
 
                             {% with messages = get_flashed_messages() %}
                                 {% if messages %}
@@ -38,9 +28,6 @@
                     </fieldset>
                 </div>
                 {{ form.submit(id="login") }}
-                <small>
-                        Are you new? <a href="{{ url_for('UserView:signup') }}"> Sign Up</a>
-                </small>
             </form>
         </div>        
     </body>

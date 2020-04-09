@@ -1,9 +1,9 @@
-from flask import flash, redirect, render_template, request, url_for
+from flask import flash, redirect, render_template, request, url_for, current_app
 from flask_classy import FlaskView, route
-from flask_login import login_required, login_user, logout_user
+from flask_login import login_required, login_user, logout_user, current_user
 from sqlalchemy.exc import IntegrityError
 
-from ypd.model.flaskforms import LoginForm, RegistrationForm
+from ypd.model.flaskforms import LoginForm, RegistrationForm, ChangePasswordForm
 from ypd.model.user import User
 
 """A class that represents User creation routes"""
@@ -22,11 +22,30 @@ class UserView(FlaskView):
 
         return render_template('login.html', form=form)
 
+    @route('/recover/', methods=['POST', 'GET'])
+    @login_required
+    def passwordRecovery(self):
+        form = ChangePasswordForm()
+        if form.validate_on_submit:
+            try:
+                current_user.update_password(form.password.data)
+            except ValueError as e:
+                flash(str(e)) 
+            finally:
+                return redirect(url_for('UserView:login'))
+        return render_template('recover.html')
+
+    def confirm_login(self):
+        session['_fresh'] = True
+        session['_id'] = current_app.login_manager._session_identifier_generator()
+        user_login_confirmed.send(current_app._get_current_object())
+    # {profile route -- Work In Progress} 
     # @route('/<current_user.id>/')
     # @login_required
     # def profile(self):
     #     return render_template('profile.html')
 
+    # {edit profile route -- Work In Progress}
     # @route('/<current_user.id>/editing/', methods=['POST', 'GET'])
     # @login_required
     # def edit(self):
