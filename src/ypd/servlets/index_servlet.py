@@ -4,13 +4,13 @@ from flask_login import current_user, login_required
 
 from ..model.catalog import Catalog
 from ..model.project import Provided
-from .test import is_provided_test
+from .tests import Tests
 
 
 class IndexView(FlaskView):
     @login_required
     def get(self):
-        current_app.jinja_env.tests['provided'] = is_provided_test
+        current_app.jinja_env.tests['provided'] = Tests.is_provided_test
         search_text = request.args.get('search_text', default='')
         catalog = Catalog(search_text, True)
         catalog.apply()
@@ -18,8 +18,7 @@ class IndexView(FlaskView):
     
     @login_required
     def get_favorites(self):
-        return "This feature isn't finished. Come back later"
-        # current_app.jinja_env.tests['provided'] = is_provided_test
-        # catalog = current_user.get_favorites_catalog()
-        # return render_template('index.html', catalog=catalog)
+        current_app.jinja_env.tests['provided'] = is_provided_test
+        catalog = current_user.get_favorites_catalog()
+        return render_template('index.html', catalog=catalog)
 
