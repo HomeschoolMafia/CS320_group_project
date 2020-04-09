@@ -10,7 +10,6 @@ from .db_model import DBModel
 from .project import Provided
 from .session_manager import SessionManager
 
-
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
     Column('users_id', Integer, ForeignKey('users.id')),
@@ -164,7 +163,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             if check_password_hash(result.password, password):
                 return result
             else:
-                raise ValueError('Incorrect username of password')
+                raise ValueError('Incorrect username or password')
         else:
             result = session.query(User).filter_by(username=username).one_or_none()
             if result:
@@ -185,6 +184,15 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         return session.query(User).filter_by(id=id).one_or_none()
 
-    @with_session
-    def update_password(self, password, session=None):
+    def update_password(self, password):
         self.password = generate_password_hash(password)
+
+    def get_email(self):
+        if self.email:
+            return self.email
+        else:
+            raise TypeError("No email found!")
+    
+    @SessionManager.with_session
+    def delete_account(self, session=None):
+        session.delete(self)

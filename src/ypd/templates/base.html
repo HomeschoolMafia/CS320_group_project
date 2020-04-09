@@ -27,12 +27,14 @@
                     <div class="bar"></div>
                     <div class="bar"></div>
                     <div class="bar"></div>
+                    <div class="bar"></div>
                 </center>
             </div>
             <div class="dropDown-Content">
                 <a href="{{ url_for('IndexView:get')}}">Project Listing</a>
                 <a href="{{ url_for('IndexView:get_favorites')}}">View favorites</a>
                 <a href="{{ url_for('ProjectView:submit')}}">Post A Project</a>
+                <a href="{{ url_for('UserView:changePassword')}}">Change Password</a>
                 <a href="{{ url_for('UserView:logout')}}">Logout</a>
             </div>
         </div>
@@ -47,4 +49,7 @@
     {% block content %}{% endblock %}
     
 </body>
+<footer>
+    <a href="{{ url_for('UserView:deleteAccount')}}">Delete your account?</a>
+</footer>
 </html>

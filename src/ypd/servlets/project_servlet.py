@@ -1,7 +1,6 @@
 from functools import wraps
 
-from flask import (current_app, flash, redirect, render_template, request,
-                   url_for)
+from flask import (current_app, flash, redirect, render_template, request,url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
@@ -56,8 +55,8 @@ class ProjectView(FlaskView):
         else:
             current_user.defavorite_project(project)
 
-        return redirect(url_for('ProjectView:view', id=project.id,
-                                is_provided=Tests.is_provided_test(project)))
+        return redirect(url_for('ProjectView:view', id=project.id, 
+                                                    is_provided=Tests.is_provided_test(project)))
 
     # pull data from HTML form
     @route ('/submit', methods =('GET', 'POST'))  
@@ -77,7 +76,7 @@ class ProjectView(FlaskView):
                 else:
                     project = Solicited()
                 project.post(title, description, current_user)
-                return redirect(url_for('IndexView:view',
+                return redirect(url_for('IndexView:get',
                                         is_provided=(projType==form.PROVIDED), id=project.id))
         return render_template('set_project_data.html', form=form)
 

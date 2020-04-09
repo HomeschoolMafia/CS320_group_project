@@ -11,30 +11,26 @@
     <body>
         <div class="container">
             <h1>Welcome To YCP <br>Project Database</h1>
-            <form class="form" action="/user/login/" method="POST">
+            <form class="form" action="{{ url_for('UserView:changePassword')}}" method="POST">
                 <div class="form__items">
                     <fieldset>
-                        {% with messages = get_flashed_messages() %}
-                            {% if messages %}
-                                <div class="errorText">
-                                    <br>{{messages[0]}}
-                                </div>
-                            {% endif %}
-                        {% endwith %}
-                        <legend>Log In</legend>
+                        <legend>Change Password</legend>
                         {% for field in form %}
                             {% if field.label.text != 'CSRF Token' %}
                                 {% if field.type != "SubmitField" %}
                                     {{ field.label.text }} <br>
                                 {% endif %}
-                            {{ field (id="login")-}} <br> <br>
+                                {{ field (id="login")-}} <br> <br>
                             {% endif %}
                         {% endfor %}
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <div class="errorText">
+                                    <br>{{messages[0]}}
+                            {% endif %}
+                        {% endwith %}
                     </fieldset>
                 </div>
-                <small>
-                        Are you new? <a href="{{ url_for('UserView:signup') }}"> Sign Up</a>
-                </small>
             </form>
         </div>        
     </body>

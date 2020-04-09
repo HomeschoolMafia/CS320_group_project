@@ -1,13 +1,18 @@
 from flask import flash, redirect, render_template, request, url_for, current_app
 from flask_classy import FlaskView, route
 from flask_login import login_required, login_user, logout_user, current_user
+from flask_mail import Message
+from datetime import datetime, timedelta
+
 from sqlalchemy.exc import IntegrityError
 
-from ypd.form.user_form import LoginForm, RegistrationForm
+from ypd.form.user_form import LoginForm, RegistrationForm, ChangePasswordForm
 from ypd.model.user import User
+# from ..server import mail
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
+    msg = ""
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
@@ -15,30 +20,42 @@ class UserView(FlaskView):
         if request.method == 'POST' and form.validate_on_submit:
             try:
                 user = User.log_in(username=form.username.data, password=form.password.data)
-                login_user(user, remember=form.remember.data)
+                login_user(user, remember=form.remember.data, duration=timedelta(minutes=30.0))
                 return redirect(url_for('IndexView:get'))
             except ValueError as e:
                 flash(str(e))
 
         return render_template('login.html', form=form)
 
-    @route('/recover/', methods=['POST', 'GET'])
+    @route('/change/', methods=['POST', 'GET'])
     @login_required
-    def passwordRecovery(self):
+    def changePassword(self):
         form = ChangePasswordForm()
-        if form.validate_on_submit:
+        if request.method == 'POST' and form.validate_on_submit:
             try:
                 current_user.update_password(form.password.data)
-            except ValueError as e:
-                flash(str(e)) 
-            finally:
+                if current_user.get_email():
+                    msg = Message(subject="PASSWORD HAS BEEN CHANGED!",
+                                recipients = [current_user.get_email()],
+                                date = datetime.utcnow(),
+                                body=f"""Hello, {current_user.username} 
+                                        Your password has been changed.
+                                        If this is correct, ignore this message. 
+                                        Else contact the email ASAP!""")
+                flash("Please login again")
                 return redirect(url_for('UserView:login'))
-        return render_template('recover.html')
+            except ValueError as e:
+                flash(str(e))
+            except TypeError as e:
+                flash(str(e))
+        return render_template('change_pwd.html', form=form)
+    
+    @login_required
+    def deleteAccount(self):
+        current_user.delete_account()
+        logout_user
+        return redirect(url_for('UserView:logout'))
 
-    def confirm_login(self):
-        session['_fresh'] = True
-        session['_id'] = current_app.login_manager._session_identifier_generator()
-        user_login_confirmed.send(current_app._get_current_object())
     # {profile route -- Work In Progress} 
     # @route('/<current_user.id>/')
     # @login_required
@@ -61,15 +78,16 @@ class UserView(FlaskView):
     def signup(self):
         form = RegistrationForm()
         if request.method == 'POST' and form.validate_on_submit:
-            # email = request.form['email']
             user_type = form.user_types.data
-            user = User(username=form.username.data, password=form.password.data, name=form.username.data, is_admin=False)
+            user = User(username=form.username.data, password=form.password.data, email=form.email.data, name=form.username.data, is_admin=False)
             user.can_post_provided = (user_type == 'faculty' or user_type == 'company')
             user.can_post_solicited = (user_type == 'faculty' or user_type == 'student')
             if user.can_post_solicited or user.can_post_provided:
                 try:
+                    if user.can_post_provided and user.can_post_solicited:
+                        user.is_admin = True
                     user.sign_up()
-                    login_user(user, remember=True)
+                    login_user(user, remember=True, duration=timedelta(minutes=30.0))
                     return redirect(url_for('IndexView:get'))
                 except IntegrityError:
                     flash(f'"{form.username.data}" already has an account')

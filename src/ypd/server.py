@@ -7,10 +7,9 @@ from flask_mail import Mail, Message
 from .model import Base, Session, engine
 from .model.project import Project, Provided, Solicited
 from .model.user import User
-from .servlets.user_servlet import UserView
+from .servlets.user_servlet import UserView, Message
 from .servlets.index_servlet import IndexView
-from .servlets.submission_servlet import SubmissionView
-from .servlets.selected_project_servlet import SelectedProjectView
+from .servlets.project_servlet import ProjectView
 from .servlets.base_servlet import BaseView
 
 #Initialize the database
@@ -20,8 +19,18 @@ Base.metadata.create_all(engine)
 #start flask
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-mail = Mail(app)
 
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_DEBUG'] = True
+app.config['MAIL_USERNAME'] = ''
+app.config['MAIL_PASSWORD'] = ''
+app.config['MAIL_DEFAULT_SENDER'] = ''
+
+mail = Mail(app)
+if UserView.msg:
+    mail.send(UserView.msg)
 
 #Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
@@ -33,8 +42,7 @@ admin.add_view(ModelView(Provided, session))
 #Register all the webpages
 UserView.register(app)
 IndexView.register(app)
-SubmissionView.register(app)
-SelectedProjectView.register(app)
+ProjectView.register(app)
 BaseView.register(app)
 
 login_manager = LoginManager(app)
