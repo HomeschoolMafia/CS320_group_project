@@ -5,8 +5,8 @@
 </div>
 
 <div class="submissionBody">
-    <div class="favButton">
-        <a href="{{url_for('SelectedProjectView:favorite',
+    <div class="projectButton">
+        <a href="{{url_for('ProjectView:favorite',
             id=project.id, is_provided=(project is provided), favorite=(0 if project in user.get_favorites_catalog() else 1))}}">
             <button>
                 {% if project in user.get_favorites_catalog() %}
@@ -17,6 +17,17 @@
             </button>
         </a>
     </div>
+
+    {% if project.can_be_modified_by(user) %}
+        <div class="projectButton">
+            <a href="{{url_for('ProjectView:edit', id=project.id, is_provided=(project is provided))}}">
+                <button>
+                    ✏️
+                </button>
+            </a>
+        </div>
+    {% endif %}
+
     <div class="bodyPadding">
         Company:
         <br/>

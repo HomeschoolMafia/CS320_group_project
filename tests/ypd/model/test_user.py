@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from ypd.model import Base, user, decorator
+from ypd.model import Base, user, session_manager
 from ypd.model.project import Provided, Solicited
 
 
@@ -16,7 +16,7 @@ class TestUser(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
@@ -118,6 +118,7 @@ class TestUser(TestCase):
             self.user.favorite_project(project)
 
         self.user = user.User.log_in('foo', 'bar')
+        self.session.add(self.user)
         self.assertEqual(self.user.provided_favorites[0].title, 'asdf')
         self.assertEqual(self.user.provided_favorites[0].description, 'qwerty')
         self.assertEqual(self.user.provided_favorites[1].title, 'sperm')
@@ -135,7 +136,8 @@ class TestUser(TestCase):
         
         with self.assertRaises(ValueError):
             self.user.defavorite_project(project)
-
+        
+        self.session.add(self.user)
         self.assertEqual(len(self.user.provided_favorites), 0)        
 
     def test_get_catalog(self):
@@ -163,5 +165,6 @@ class TestUser(TestCase):
         self.assertEqual(favorites.projects[0].description, 'qwerty')
         self.assertEqual(favorites.projects[1].title, 'sperm')
         self.assertEqual(favorites.projects[1].description, 'whale')
+        self.assertEqual(favorites.projects[1].poster, self.user)
         self.assertEqual(len(favorites.projects), 2)
 

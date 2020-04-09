@@ -4,7 +4,7 @@ from unittest.mock import patch
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from ypd.model import Base, catalog, project, decorator
+from ypd.model import Base, catalog, project, session_manager
 from ypd.model.user import User
 
 class TestProject(TestCase):
@@ -14,7 +14,7 @@ class TestProject(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session()
@@ -23,6 +23,10 @@ class TestProject(TestCase):
         self.fake_catalog.projects = self.fake_project_list
         self.user = User(id=1, can_post_provided=True, can_post_solicited=True)
 
+        project.Provided().post('foo', 'bar', self.user)
+        project.Provided().post('nobody expects', 'the spanish inquisition', self.user)
+        project.Provided().post('sperm whale', 'bowl of petunias', self.user)
+
     def tearDown(self):
         self.session.query(project.Provided).delete()
         self.session.query(project.Solicited).delete()
@@ -30,14 +34,12 @@ class TestProject(TestCase):
         self.session.close()
 
     def test_apply_no_projects(self):
+        self.session.query(project.Provided).delete()
         clg = catalog.Catalog('', True)
         clg.apply()
         self.assertEqual(clg.projects, [])
 
     def test_apply_many_projects(self):
-        project.Provided().post('foo', 'bar', self.user)
-        project.Provided().post('nobody expects', 'the spanish inquisition', self.user)
-        project.Provided().post('sperm whale', 'bowl of petunias', self.user)
         clg = catalog.Catalog('', True)
         clg.apply()
 
@@ -62,8 +64,6 @@ class TestProject(TestCase):
         self.assertEqual(clg.projects[0].description, 'mom')
 
     def test_search_by_title_provided(self):
-        project.Provided().post('foo', 'bar', self.user)
-        project.Provided().post('hello', 'world', self.user)
         search_term = 'foo'
         clg = catalog.Catalog(search_term, True)
         clg.apply()
@@ -92,3 +92,33 @@ class TestProject(TestCase):
         for fake_project in self.fake_catalog:
             self.assertEqual(fake_project, self.fake_project_list[i])
             i += 1
+            
+    def test_append(self):
+        p0 = self.session.query(project.Provided).filter_by(title='foo').one()
+        p1 = self.session.query(project.Provided).filter_by(title='nobody expects').one()
+
+        clg = catalog.Catalog('foo', True)
+        clg.apply()
+        clg.append(p1)
+        self.assertEqual(len(clg), 2)
+        self.assertEqual(clg[0].id, p0.id)
+        self.assertEqual(clg[1].id, p1.id)
+
+        with self.assertRaises(ValueError):
+            clg.append(4)
+
+    def test_extend(self):
+        p0 = self.session.query(project.Provided).filter_by(title='foo').one()
+        p1 = self.session.query(project.Provided).filter_by(title='nobody expects').one()
+        p2 = self.session.query(project.Provided).filter_by(title='sperm whale').one()
+
+        clg = catalog.Catalog('foo', True)
+        clg.apply()
+        clg.extend([p1, p2])
+        self.assertEqual(len(clg), 3)
+        self.assertEqual(clg[0].id, p0.id)
+        self.assertEqual(clg[1].id, p1.id)
+        self.assertEqual(clg[2].id, p2.id)
+
+        with self.assertRaises(ValueError):
+            clg.extend([p0, 4, p1])
