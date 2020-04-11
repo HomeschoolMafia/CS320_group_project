@@ -77,7 +77,7 @@ class ProjectView(FlaskView):
                 else:
                     project = Solicited()
                 project.post(title, description, current_user)
-                return redirect(url_for('IndexView:view',
+                return redirect(url_for('IndexView:get',
                                         is_provided=(projType==form.PROVIDED), id=project.id))
         return render_template('set_project_data.html', form=form)
 
