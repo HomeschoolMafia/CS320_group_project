@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from ypd.model import Base, user, decorator
+from ypd.model import Base, user, session_manager
 from ypd.model.project import Provided, Solicited
 
 
@@ -16,16 +16,19 @@ class TestUser(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
+        self.user = user.User(username='foo', password='bar', bio='asdf',
+                              can_post_solicited=True, can_post_provided=True)
 
     def tearDown(self):
         users = self.session.query(user.User).all()
         for u in users:
             self.session.delete(u)
+        self.session.query(Provided).delete()
+        self.session.query(Solicited).delete()
         self.session.commit()
         self.session.close()
 
@@ -62,7 +65,7 @@ class TestUser(TestCase):
     def test_get_by_id(self):
         self.user.sign_up()
         acc = user.User.get_by_id(id=1)
-        self.assertEquals(1, acc.id)
+        self.assertEqual(1, acc.id)
 
     def test_login_successful(self):
         self.user.sign_up()
@@ -103,16 +106,19 @@ class TestUser(TestCase):
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
         self.user.favorite_project(project)
 
         project = Provided()
         project.post('sperm', 'whale', self.user)
+        project = Provided.get(2)
         self.user.favorite_project(project)
 
         with self.assertRaises(ValueError):
             self.user.favorite_project(project)
 
         self.user = user.User.log_in('foo', 'bar')
+        self.session.add(self.user)
         self.assertEqual(self.user.provided_favorites[0].title, 'asdf')
         self.assertEqual(self.user.provided_favorites[0].description, 'qwerty')
         self.assertEqual(self.user.provided_favorites[1].title, 'sperm')
@@ -124,12 +130,14 @@ class TestUser(TestCase):
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
         self.user.favorite_project(project)
         self.user.defavorite_project(project)
         
         with self.assertRaises(ValueError):
             self.user.defavorite_project(project)
-
+        
+        self.session.add(self.user)
         self.assertEqual(len(self.user.provided_favorites), 0)        
 
     def test_get_catalog(self):
@@ -138,14 +146,17 @@ class TestUser(TestCase):
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
         self.user.favorite_project(project)
 
         project = Solicited()
         project.post('sperm', 'whale', self.user)
+        project = Solicited.get(1)
         self.user.favorite_project(project)
 
         project = Solicited()
         project.post("this isn't", 'favorited', self.user)
+        project = Solicited.get(2)
 
         self.user = user.User.log_in('foo', 'bar')
         favorites = self.user.get_favorites_catalog()
@@ -154,5 +165,6 @@ class TestUser(TestCase):
         self.assertEqual(favorites.projects[0].description, 'qwerty')
         self.assertEqual(favorites.projects[1].title, 'sperm')
         self.assertEqual(favorites.projects[1].description, 'whale')
+        self.assertEqual(favorites.projects[1].poster, self.user)
         self.assertEqual(len(favorites.projects), 2)
 
