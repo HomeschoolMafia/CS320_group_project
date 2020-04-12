@@ -15,21 +15,19 @@
                 <div class="form__items">
                     <fieldset>
                         <legend>Change Password</legend>
-                        {% for field in form %}
-                            {% if field.label.text != 'CSRF Token' %}
-                                {% if field.type != "SubmitField" %}
-                                    {{ field.label.text }} <br>
-                                {% endif %}
-                                {{ field (id="login")-}} <br> <br>
-                            {% endif %}
-                        {% endfor %}
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}
                                 <div class="errorText">
                                     <br>{{messages[0]}}
                             {% endif %}
                         {% endwith %}
+                        {{ form.csrf_token() }}
+                        {{ form.password.label(class="form__label") }}
+                        {{ form.password(class="form__input") }}
+                        {{ form.confirm_password.label(class="form__label") }}
+                        {{ form.confirm_password(class="form__input") }}
                     </fieldset>
+                    {{ form.submit(id="login") }}
                 </div>
             </form>
         </div>        

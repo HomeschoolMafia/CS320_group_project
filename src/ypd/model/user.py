@@ -184,8 +184,29 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         return session.query(User).filter_by(id=id).one_or_none()
     
+    @classmethod
+    @SessionManager.with_session
+    def get_by_username(cls, username, session=None):
+        """Gets the User object with the unique username
+        
+        Args:
+            username (str): username of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        return session.query(User).filter_by(username=username).one_or_none()
+    
     @SessionManager.with_session
     def update_password(self, password, session=None):
+        """Updates current user object password with new password
+        
+        Args:
+            password (str): password of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
         self.password = generate_password_hash(password)
         session.add(self)
 

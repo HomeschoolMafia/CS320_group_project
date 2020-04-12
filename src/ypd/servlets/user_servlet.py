@@ -1,3 +1,4 @@
+import os
 from flask import flash, redirect, render_template, request, url_for, current_app
 from flask_classy import FlaskView, route
 from flask_login import login_required, login_user, logout_user, current_user
@@ -6,7 +7,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.exc import IntegrityError
 
-from ypd.form.user_form import LoginForm, RegistrationForm, ChangePasswordForm
+from ypd.form.user_form import LoginForm, RegistrationForm, ChangePasswordForm, ValidateEmailForm
 from ypd.model.user import User
 # from ..server import mail
 
@@ -34,13 +35,16 @@ class UserView(FlaskView):
         if request.method == 'POST' and form.validate_on_submit:
             try:
                 current_user.update_password(form.password.data)
+             
+             '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''
+                
                 if current_user.get_email():
-                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': '', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu','MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'),'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
                     mail = Mail()
                     mail.init_app(current_app)
-                    mail.send_message(subject="PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""Hello {current_user.username}, Your password has been changed. If this is not correct, please contact support!""")
+                    mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!""")
                 flash("Please login again")
-                return redirect(url_for('UserView:login'))
+                return redirect(url_for('UserView:logout'))
             except ValueError as e:
                 flash(str(e))
             except TypeError as e:
@@ -48,9 +52,26 @@ class UserView(FlaskView):
         return render_template('change_pwd.html', form=form)
     
     def forgotPassword(self):
-        form = ChangePasswordForm()
-        
-        return render_template('accountRecovery.html')
+        form = ValidateUsernameForm()
+        if form.validate_on_submit:
+            try:
+                user = User.get_by_username(username=form.username.data)
+                login_user(user)
+                return redirect(url_for('UserView:changePassword'))
+            except TypeError as e:
+                flash(str(e))
+        return render_template('forgot_password.html', form=form)
+    
+    # def forgotEmailOrUSername(self):
+    #     form = ValidateUsernameForm()
+    #     if form.validate_on_submit:
+    #         try:
+    #             user = User.get_by_username(username=form.username.data)
+    #             login_user(user)
+    #             return redirect(url_for('UserView:changePassword'))
+    #         except TypeError as e:
+    #             flash(str(e))
+    #     return render_template('forgot_password.html', form=form)
 
     @login_required
     def deleteAccount(self):

@@ -27,7 +27,7 @@ class ChangePasswordForm(FlaskForm):
     confirm  = PasswordField('Repeat Password')
     submit = SubmitField('Submit')
 
-class ForgotPasswordForm(FlaskForm):
+class ValidateEmailForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64), Email])
     submit = SubmitField('Submit')
 
