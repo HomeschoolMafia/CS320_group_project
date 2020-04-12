@@ -35,7 +35,7 @@ class UserView(FlaskView):
             try:
                 current_user.update_password(form.password.data)
                 if current_user.get_email():
-                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': 'W31243n12Aw320M3', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu','MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': '', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu','MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
                     mail = Mail()
                     mail.init_app(current_app)
                     mail.send_message(subject="PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""Hello {current_user.username}, Your password has been changed. If this is not correct, please contact support!""")
