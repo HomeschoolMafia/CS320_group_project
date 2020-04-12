@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, request, url_for, current_app
 from flask_classy import FlaskView, route
 from flask_login import login_required, login_user, logout_user, current_user
-from flask_mail import Message
+from flask_mail import Mail, Message
 from datetime import datetime, timedelta
 
 from sqlalchemy.exc import IntegrityError
@@ -35,13 +35,10 @@ class UserView(FlaskView):
             try:
                 current_user.update_password(form.password.data)
                 if current_user.get_email():
-                    msg = Message(subject="PASSWORD HAS BEEN CHANGED!",
-                                recipients = [current_user.get_email()],
-                                date = datetime.utcnow(),
-                                body=f"""Hello, {current_user.username} 
-                                        Your password has been changed.
-                                        If this is correct, ignore this message. 
-                                        Else contact the email ASAP!""")
+                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': 'W31243n12Aw320M3', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu','MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                    mail = Mail()
+                    mail.init_app(current_app)
+                    mail.send_message(subject="PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""Hello {current_user.username}, Your password has been changed. If this is not correct, please contact support!""")
                 flash("Please login again")
                 return redirect(url_for('UserView:login'))
             except ValueError as e:
@@ -50,10 +47,14 @@ class UserView(FlaskView):
                 flash(str(e))
         return render_template('change_pwd.html', form=form)
     
+    def forgotPassword(self):
+        form = ChangePasswordForm()
+        
+        return render_template('accountRecovery.html')
+
     @login_required
     def deleteAccount(self):
         current_user.delete_account()
-        logout_user
         return redirect(url_for('UserView:logout'))
 
     # {profile route -- Work In Progress} 

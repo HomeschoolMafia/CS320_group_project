@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, current_app
 from flask_admin import Admin
 from flask_login import LoginManager
 from flask_admin.contrib.sqla import ModelView
@@ -19,18 +19,6 @@ Base.metadata.create_all(engine)
 #start flask
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_DEBUG'] = True
-app.config['MAIL_USERNAME'] = ''
-app.config['MAIL_PASSWORD'] = ''
-app.config['MAIL_DEFAULT_SENDER'] = ''
-
-mail = Mail(app)
-if UserView.msg:
-    mail.send(UserView.msg)
 
 #Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'

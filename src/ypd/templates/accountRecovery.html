@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>  
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <link rel="shortcut icon" href="/assets/favico.ico" type="image/x-con">
+        <link rel="stylesheet" type="text/css" href={{url_for( 'static', filename='styles/login_Page.css' )}}>
+        <title>YCP Project Database</title>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Welcome To YCP <br>Project Database</h1>
+            <form class="form" action="/user/login/" method="POST">
+                <div class="form__items">
+                    <fieldset>
+                        <legend>Log In</legend>
+                            {% with messages = get_flashed_messages() %}
+                                {% if messages %}
+                                    <div class="errorText">
+                                        <br>{{messages[0]}}
+                                    </div>
+                                {% endif %}
+                            {% endwith %}
+                            {{ form.csrf_token() }}
+                            {{ form.email.label(class="form__label") }} {{ form.email(class="form__input") }}
+                            {{ form.submit.label (id="login")}}      
+                    </fieldset>
+                </div>
+                <small>
+                        Are you new? <a href="{{ url_for('UserView:signup') }}"> Sign Up</a>
+                </small>
+            </form>
+        </div>        
+    </body>
+</html>
