@@ -1,3 +1,5 @@
+from enum import Enum, auto
+
 from flask_login import UserMixin
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
@@ -10,6 +12,12 @@ from .db_model import DBModel
 from .project import Provided
 from .session_manager import SessionManager
 
+
+class UserType(Enum):
+    student = auto()
+    faculty = auto()
+    company = auto()
+    admin = auto()
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -117,11 +125,18 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         catalog.extend(self.solicited_favorites)
         return catalog
     
+    @classmethod
     @SessionManager.with_session
-    def sign_up(self, session=None):
+    def sign_up(cls, username, password, name, user_type, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
+
+        Args:
+            username (str): Username to log in with
+            password (str): Password to log in with
+            name (str): Display name of the account
+            user_type (UserType): Type of the account
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
@@ -129,9 +144,24 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Raises: 
             ValueError: If the username already exists in the database
         """
-        self.needs_review = False #TODO: set this to true when we implement the review process
-        self.password = generate_password_hash(self.password)
-        session.add(self)
+        new_user = cls()
+
+        #Set permissions
+        if not type(user_type) is UserType:
+            raise TypeError(f'Expected type {UserType} for argument user_type. Got {type(user_type)}')
+        new_user.is_admin = user_type is UserType.admin
+        can_post_both = new_user.is_admin or user_type is UserType.faculty
+        new_user.can_post_solicited = can_post_both or user_type is UserType.student
+        new_user.can_post_provided = can_post_both or user_type is UserType.company
+        # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
+        new_user.needs_review = False #Uncomment the above line once we have admin review finished
+
+        new_user.username = username
+        new_user.name = name
+        new_user.password = generate_password_hash(password)
+
+        session.add(new_user)
+        return new_user
 
     @classmethod
     @SessionManager.with_session
@@ -164,7 +194,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             if check_password_hash(result.password, password):
                 return result
             else:
-                raise ValueError('Incorrect username of password')
+                raise ValueError('Incorrect username or password')
         else:
             result = session.query(User).filter_by(username=username).one_or_none()
             if result:
