@@ -9,9 +9,8 @@ from ypd.model.user import UserType
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=4, max=15)])
-    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80),
-                             EqualTo('confirm_password', message='Passwords must match')])
-    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('password')])
     #email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
     #contacts = FormField(TelephoneForm)
     user_types = RadioField('User Type', validators=[InputRequired()], coerce=int,
