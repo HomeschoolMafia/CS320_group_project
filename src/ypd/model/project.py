@@ -105,6 +105,15 @@ class Project(Base, DBModel, HasPosterMixin):
                 setattr(self, name, value)
         session.add(self)
 
+    @SessionManager.with_session
+    def archive_project(self, user, session=None):
+        """"Archives the project"""
+        if not self.can_be_modified_by(user):
+            raise PermissionError(f'User {user.username} cannot archive this project!')
+
+        self.archived = not self.archived
+        session.add(self)   
+
     def can_be_modified_by(self, user):
         """Check whether this project can be modified by user
 

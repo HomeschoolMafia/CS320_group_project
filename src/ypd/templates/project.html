@@ -28,6 +28,16 @@
         </div>
     {% endif %}
 
+    {% if project.can_be_modified_by(user) %}
+        <div class="projectButton">
+            <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
+                <button>
+                    🗑️
+                </button>
+            </a>
+        </div>
+    {% endif %}
+
     <div class="bodyPadding">
         Company:
         <br/>
