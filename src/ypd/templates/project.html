@@ -32,7 +32,11 @@
         <div class="projectButton">
             <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
                 <button>
-                    🗑️
+                    {% if project.archived == false %}
+                        🗑️
+                    {% else %}
+                        🔓 
+                    {% endif %}
                 </button>
             </a>
         </div>

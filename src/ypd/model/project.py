@@ -106,12 +106,15 @@ class Project(Base, DBModel, HasPosterMixin):
         session.add(self)
 
     @SessionManager.with_session
-    def archive_project(self, user, session=None):
-        """"Archives the project"""
+    def toggle_archived(self, user, session=None):
+        """"Toggles Archive Flag - Only Admin can Toggle a locked project"""
         if not self.can_be_modified_by(user):
             raise PermissionError(f'User {user.username} cannot archive this project!')
 
-        self.archived = not self.archived
+        if self.archived == False and self.can_be_modified_by(user):
+            self.archived = True
+        if self.archived == True and user.is_admin:
+            self.archived = False
         session.add(self)   
 
     def can_be_modified_by(self, user):
