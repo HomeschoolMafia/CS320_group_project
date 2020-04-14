@@ -5,6 +5,15 @@
 </div>
 
 <div class="submissionBody">
+    
+    {% if project.archived == true %}
+        <div class="projectButton">
+            <button>
+                🔒
+            </button>
+        </div>
+    {% endif %}
+
     <div class="projectButton">
         <a href="{{url_for('ProjectView:favorite',
             id=project.id, is_provided=(project is provided), favorite=(0 if project in user.get_favorites_catalog() else 1))}}">
