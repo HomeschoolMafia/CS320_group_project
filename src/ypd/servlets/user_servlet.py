@@ -43,7 +43,7 @@ class UserView(FlaskView):
                         current_user.update_password(password = form.new_password)
 
                         '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
-                        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'),'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': 'W31243n12Aw320M3', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu', 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
                         mail = Mail()
                         mail.init_app(current_app)
                         mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!""")
@@ -51,11 +51,7 @@ class UserView(FlaskView):
                         flash("Please login again")
                         return redirect(url_for('UserView:logout'))
                     else:
-                        raise ValueError('New password and cofirm password do not match!!!')
-            except ValueError as e:
-                flash(str(e))
-            except TypeError as e:
-                flash(str(e))
+                        raise ValueError('New password and cofirm password do not match!')
             except Exception as e:
                 flash(str(e))
         return render_template('change_pwd.html', form=form)
@@ -71,7 +67,7 @@ class UserView(FlaskView):
                 flash(str(e))
         return render_template('forgot_password.html', form=form)
     
-    # def forgotEmailOrUSername(self):
+    # def forgotEmailOrUsername(self):
     #     form = ValidateUsernameForm()
     #     if form.validate_on_submit:
     #         try:
@@ -84,6 +80,12 @@ class UserView(FlaskView):
 
     @login_required
     def deleteAccount(self):
+        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': 'W31243n12Aw320M3', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu', 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+        mail = Mail()
+        mail.init_app(current_app)
+
+        '''Timed account deletion is in progress'''
+        mail.send_message(subject="YOUR ACCOUNT IS NO LONGER ACTIVE!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your account is no longer active and will be deleted within 3 days. <br> If this is not correct, please contact support!""")
         current_user.delete_account()
         return redirect(url_for('UserView:logout'))
 
@@ -115,16 +117,20 @@ class UserView(FlaskView):
             user.can_post_solicited = (user_type == 'faculty' or user_type == 'student')
             if user.can_post_solicited or user.can_post_provided:
                 try:
-                    if user.can_post_provided and user.can_post_solicited:
-                        user.is_admin = True
                     if form.confirm_password.data != form.password.data:
                         raise ValueError('New password and cofirm password do not match!!!')
+                    elif len(form.confirm_password.data) < 8  or len(form.password.data) < 8:
+                        raise ValueError('Password must be at least 8 characters long!')
+                    if user.can_post_provided and user.can_post_solicited:
+                        user.is_admin = True
                     user.sign_up()
                     login_user(user, remember=True, duration=timedelta(minutes=30.0))
                     return redirect(url_for('IndexView:get'))
                 except IntegrityError:
                     flash(Markup(f'"<b>{form.username.data}</b>" is taken'))
                 except ValueError as e:
+                    flash(str(e))
+                except Exception as e:
                     flash(str(e))
             else:
                 flash('You must select an account type')

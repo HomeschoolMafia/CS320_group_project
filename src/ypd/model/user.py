@@ -207,9 +207,13 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        self.password = generate_password_hash(password)
-        session.add(self)
-
+        if check_password_hash(self.password, password):
+            raise ValueError('Passwords must not match!')
+        elif len(password) < 8:
+            raise ValueError('Password must be at least 8 characters long!')
+        else:
+            self.password = generate_password_hash(password)
+            session.add(self)    
 
     @SessionManager.with_session
     def get_email(self, session=None):
@@ -220,4 +224,4 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     
     @SessionManager.with_session
     def delete_account(self, session=None):
-        session.delete(self)
+        session.query(User).filter_by(username=self.username).delete()
