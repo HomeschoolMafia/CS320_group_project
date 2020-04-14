@@ -24,6 +24,7 @@ class TestProject(TestCase):
 
     def tearDown(self):
         self.session.query(project.Provided).delete()
+        self.session.query(User).delete()
         self.session.commit()
         self.session.close()
 
@@ -68,8 +69,9 @@ class TestProject(TestCase):
         self.assertTrue(s.title == 'cookie' and s.description == 'biscuit')
 
     def test_edit(self):
-        User(can_post_provided=True, password='').sign_up()
-        u = User.get_by_id(1)
+        u = User(can_post_provided=True)
+        self.session.add(u)
+        self.session.commit()
         project.Provided().post('foo', 'bar', u)
         p = project.Provided.get(1)
         p.edit(u, description='baz', this_isnt_real=4)
@@ -84,21 +86,23 @@ class TestProject(TestCase):
         with self.assertRaises(AttributeError):
             p.edit(u, id=3)
 
-        User(can_post_provided=True, password='').sign_up()
-        u = User.get_by_id(2)
+        u = User(can_post_provided=True, is_admin=False)
+        self.session.add(u)
+        self.session.commit()
         with self.assertRaises(PermissionError):
             p.edit(u, title='bar')
 
 
     def test_can_be_modified_by(self):
-        u = User(can_post_provided=True, id=1, password='')
-        u.sign_up()
+        u = User(can_post_provided=True)
+        self.session.add(u)
+        self.session.commit()
         p = project.Provided()
         p.post('foo', 'bar', u)
         p = project.Provided.get(1)
 
-        self.assertTrue(p.can_be_modified_by(User(id=1)))
+        self.assertTrue(p.can_be_modified_by(User(id=1, is_admin=False)))
         self.assertTrue(p.can_be_modified_by(User(id=2, is_admin=True)))
-        self.assertFalse(p.can_be_modified_by(User(id=3)))
+        self.assertFalse(p.can_be_modified_by(User(id=3, is_admin=False)))
 
 
