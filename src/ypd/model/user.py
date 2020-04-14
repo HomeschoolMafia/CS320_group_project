@@ -160,7 +160,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         new_user.can_post_provided = can_post_both or user_type is UserType.company
         # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
         new_user.needs_review = False #Uncomment the above line once we have admin review finished
-
+        new_user.is_active = True
         new_user.username = username
         new_user.name = name
         new_user.password = User.password_check(password, confirm_password)

@@ -21,7 +21,7 @@ class UserView(FlaskView):
         form = LoginForm()
         if form.validate_on_submit:
             try:
-                user = User.log_in(username=form.username.data, password=form.password.data)
+                user = User.log_in(form.username.data, form.password.data)
                 login_user(user, remember=form.remember.data, duration=timedelta(minutes=30.0))
                 return redirect(url_for('IndexView:get'))
             except ValueError as e:
@@ -37,33 +37,28 @@ class UserView(FlaskView):
             try:
                 # print(os.environ.get('MAIL_USERNAME'))
                 # print(os.environ.get('MAIL_PASSWORD'))
+                # current_user is User.log_in(current_user.username, form.old_password.data)
+                if current_user.get_email():
+                    current_user.update_password(form.new_password.data, form.confirm_new.data)
 
-                user = User.log_in(username=current_user.username, password=form.old_password.data)
-                if current_user is user and current_user.get_email():
-                    if form.confirm_new.data == form.new_password.data:
-                        current_user.update_password(form.new_password, form.confirm_new.data)
+                    '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
+                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': 'W31243n12Aw320M3', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu', 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                    mail = Mail()
+                    mail.init_app(current_app)
+                    mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=Markup(f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!"""))
 
-                        '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
-                        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': 'W31243n12Aw320M3', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu', 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
-                        mail = Mail()
-                        mail.init_app(current_app)
-                        mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!""")
-
-                        flash("Please login again")
-                        return redirect(url_for('UserView:logout'))
-                    else:
-                        raise ValueError('New password and cofirm password do not match!')
+                    flash("Please login again")
+                    return redirect(url_for('UserView:logout'))
             except Exception as e:
                 flash(str(e))
         return render_template('change_pwd.html', form=form)
     
-    @route('/forgot_pwd/', methods=['POST', 'GET'])
     def forgotPassword(self):
         form = ValidateUsernameForm()
         if form.validate_on_submit:
             try:
-                user = User.get_by_username(username=form.username.data)
-                login_user(user, fresh=True)
+                user = User.get_by_username(form.username.data)
+                login_user(user)
                 return redirect(url_for('UserView:changePassword'))
             except TypeError as e:
                 flash(str(e))
