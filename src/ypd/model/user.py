@@ -1,3 +1,5 @@
+from enum import Enum, auto
+
 from flask_login import UserMixin
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
@@ -9,6 +11,13 @@ from .catalog import Catalog
 from .db_model import DBModel
 from .project import Provided
 from .session_manager import SessionManager
+
+
+class UserType(Enum):
+    student = auto()
+    faculty = auto()
+    company = auto()
+    admin = auto()
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -116,21 +125,49 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         catalog.extend(self.solicited_favorites)
         return catalog
     
+    @classmethod
     @SessionManager.with_session
-    def sign_up(self, session=None):
+    def sign_up(cls, username, password, confirm_password, email, name, user_type, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
 
+        Args:
+            username (str): Username to log in with
+            password (str): Password to log in with
+            confirm_password (str): Confirmed password to log in with
+            email (str): Email to send messages to
+            name (str): Display name of the account
+            user_type (UserType): Type of the account
+
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
 
-        Raises: 
-            ValueError: If the username already exists in the database
+        Raises:
+            TypeErrors:  If user_type is invalid 
+            ValueErrors: If the username already exists in the database
         """
-        self.needs_review = False #TODO: set this to true when we implement the review process
-        self.password = generate_password_hash(self.password)
-        session.add(self)
+        new_user = cls()
+
+        #Set permissions
+        if not type(user_type) is UserType:
+            raise TypeError(f'Expected type {UserType} for argument user_type. Got {type(user_type)}')
+        
+
+        new_user.is_admin = user_type is UserType.admin
+        can_post_both = new_user.is_admin or user_type is UserType.faculty
+        new_user.can_post_solicited = can_post_both or user_type is UserType.student
+        new_user.can_post_provided = can_post_both or user_type is UserType.company
+        # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
+        new_user.needs_review = False #Uncomment the above line once we have admin review finished
+
+        new_user.username = username
+        new_user.name = name
+        new_user.password = User.password_check(password, confirm_password)
+        new_user.email = email
+
+        session.add(new_user)
+        return new_user
 
     @classmethod
     @SessionManager.with_session
@@ -197,23 +234,39 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         return session.query(User).filter_by(username=username).one_or_none()
     
+    @classmethod
+    def password_check(self, password, confirm_password):
+        """Takes in user form password and confirmed password, and validates
+        Args:
+            password (str): Password to be stored in user
+            confirm_password (str): Password for comparing to for validation
+        Raises:    
+            ValueError: If password and confirm_password length and elements do no match
+        Returns:
+            password (hash): Password hash to be stored in account 
+        """
+        if confirm_password != password:
+            raise ValueError('New password and cofirm password do not match!!!')
+        elif len(confirm_password) < 8  or len(password) < 8:
+            raise ValueError('Password must be at least 8 characters long!')
+        else:
+            return generate_password_hash(password)
+
     @SessionManager.with_session
-    def update_password(self, password, session=None):
+    def update_password(self, password, confirm_password, session=None):
         """Updates current user object password with new password
         
         Args:
             password (str): password of User object to get
+            confirm_password (str): password of User object to get
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
+
+        Raises Value
         """
-        if check_password_hash(self.password, password):
-            raise ValueError('Passwords must not match!')
-        elif len(password) < 8:
-            raise ValueError('Password must be at least 8 characters long!')
-        else:
-            self.password = generate_password_hash(password)
-            session.add(self)    
+        self.password = User.password_check(password, confirm_password)
+        session.add(self)    
 
     @SessionManager.with_session
     def get_email(self, session=None):
@@ -224,4 +277,5 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     
     @SessionManager.with_session
     def delete_account(self, session=None):
+        # self.is_active = False
         session.query(User).filter_by(username=self.username).delete()

@@ -15,7 +15,7 @@ body * {
 
 .container {
     margin: 0 auto;
-    width: 320px;
+    width: 390px;
     margin-top: 20vh;
     padding: 20px;
     background-color: rgb(56, 196, 68, 0.8);
@@ -74,6 +74,7 @@ input#confirm_password{
     margin-bottom: 20px;
     width: 200px;
     padding: 5px;
+    margin-left: 25px;
     color: black;
     border: 2px solid gainsboro;
     box-shadow: 5px 10px rgba(120, 120, 120, 0.2);

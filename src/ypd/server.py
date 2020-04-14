@@ -1,16 +1,17 @@
 from flask import Flask, current_app
 from flask_admin import Admin
-from flask_login import LoginManager
 from flask_admin.contrib.sqla import ModelView
+from flask_login import LoginManager
+
 from flask_mail import Mail, Message
 
 from .model import Base, Session, engine
 from .model.project import Project, Provided, Solicited
 from .model.user import User
-from .servlets.user_servlet import UserView, Message
+from .servlets.base_servlet import BaseView
 from .servlets.index_servlet import IndexView
 from .servlets.project_servlet import ProjectView
-from .servlets.base_servlet import BaseView
+from .servlets.user_servlet import Message, UserView
 
 #Initialize the database
 session = Session()
