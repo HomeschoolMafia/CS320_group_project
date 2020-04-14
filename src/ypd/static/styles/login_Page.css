@@ -69,7 +69,10 @@ legend {
 input#password,
 input#username,
 input#email,
-input#confirm_password{
+input#confirm_password,
+input#confirm_new,
+input#old_password,
+input#new_password{
     margin-top: 10px;
     margin-bottom: 20px;
     width: 200px;

@@ -36,7 +36,7 @@ BaseView.register(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'UserView:login'
-login_manager.refresh_view = "auth.reauthenticate"
+login_manager.refresh_view = "UserView:login"
 login_manager.needs_refresh_message = (
     u"To protect your account, please reauthenticate to access this page."
 )

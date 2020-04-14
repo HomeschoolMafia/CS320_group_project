@@ -34,8 +34,9 @@ class ChangePasswordForm(FlaskForm):
     confirm_new  = PasswordField('Repeat New Password')
     submit = SubmitField('Submit')
 
-class ValidateUsernameForm(FlaskForm):
+class ValidateUserForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
+    email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
     submit = SubmitField('Submit')
 
 class SupportForm(FlaskForm):

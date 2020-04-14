@@ -21,8 +21,8 @@ class UserType(Enum):
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
-    Column('users_id', Integer, ForeignKey('users.id')),
-    Column('project_id', Integer, ForeignKey('provided.id')))       
+        Column('users_id', Integer, ForeignKey('users.id')),
+        Column('project_id', Integer, ForeignKey('provided.id')))       
 
     solicited_association = Table('solicited_association', Base.metadata,
         Column('users_id', Integer, ForeignKey('users.id')),
@@ -223,7 +223,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     
     @classmethod
     @SessionManager.with_session
-    def get_by_username(cls, username, session=None):
+    def get_by_username(cls, username, email, session=None):
         """Gets the User object with the unique username
         
         Args:
@@ -232,7 +232,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        return session.query(User).filter_by(username=username).one_or_none()
+        return session.query(User).filter_by(username=username, email=email).one_or_none()
     
     @classmethod
     def password_check(self, password, confirm_password):

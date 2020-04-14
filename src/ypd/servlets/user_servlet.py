@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from flask_classy import FlaskView, route
 from flask_mail import Mail, Message
-from ypd.form.user_form import (ChangePasswordForm, LoginForm, RegistrationForm, ValidateUsernameForm)
+from ypd.form.user_form import (ChangePasswordForm, LoginForm, RegistrationForm, ValidateUserForm)
 from ypd.model.user import User, UserType
 
 # from ..server import mail
@@ -53,13 +53,15 @@ class UserView(FlaskView):
                 flash(str(e))
         return render_template('change_pwd.html', form=form)
     
+    @route('/forgot_pwd/', methods=['POST', 'GET'])
     def forgotPassword(self):
-        form = ValidateUsernameForm()
+        form = ValidateUserForm()
         if form.validate_on_submit:
             try:
-                user = User.get_by_username(form.username.data)
-                login_user(user)
-                return redirect(url_for('UserView:changePassword'))
+                user = User.get_by_username(form.username.data, form.email.data)
+                if user:
+                    login_user(user)
+                    return redirect(url_for('UserView:changePassword'))
             except TypeError as e:
                 flash(str(e))
         return render_template('forgot_password.html', form=form)
