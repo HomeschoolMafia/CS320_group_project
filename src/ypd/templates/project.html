@@ -44,6 +44,19 @@
     {% if project.can_be_modified_by(user) %}
         <div class="projectButton">
             <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
+                {% if project.archived == false %}
+                <button class = "tooltip">
+                    <span class = "tooltiptext">Click to Archive project.</span>
+                        🗑️
+                </button>
+                {% endif %}
+            </a>
+        </div>
+    {% endif %}
+
+    {% if user.is_admin %}
+        <div class="projectButton">
+            <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
                 <button class = "tooltip">
                     {% if project.archived == false %}
                     <span class = "tooltiptext">Click to Archive project.</span>
