@@ -49,20 +49,13 @@
                     <span class = "tooltiptext">Click to Archive project.</span>
                         🗑️
                 </button>
-                {% endif %}
-            </a>
-        </div>
-    {% endif %}
-
-    {% if user.is_admin %}
-        <div class="projectButton">
-            <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
+                {%  endif %}
+                {% if project.archived == true and user.is_admin %}
                 <button class = "tooltip">
-                    {% if project.archived == true %}
                     <span class = "tooltiptext">Click to restore project.</span>
                         🔓 
-                    {% endif %}
                 </button>
+                {% endif %}
             </a>
         </div>
     {% endif %}

@@ -113,8 +113,10 @@ class Project(Base, DBModel, HasPosterMixin):
 
         if self.archived == False and self.can_be_modified_by(user):
             self.archived = True
-        if self.archived == True and user.is_admin:
-            self.archived = False
+
+        else:
+            if user.is_admin:
+                self.archived = False
         session.add(self)   
 
     def can_be_modified_by(self, user):
