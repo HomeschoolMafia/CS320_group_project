@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
 
 from ypd.form.user_form import LoginForm, RegistrationForm
-from ypd.model.user import User
+from ypd.model.user import User, UserType
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
@@ -32,19 +32,13 @@ class UserView(FlaskView):
     def signup(self):
         form = RegistrationForm()
         if request.method == 'POST' and form.validate_on_submit:
-            # email = request.form['email']
-            user_type = form.user_types.data
-            user = User(username=form.username.data, password=form.password.data, name=form.username.data, is_admin=False)
-            user.can_post_provided = (user_type == 'faculty' or user_type == 'company')
-            user.can_post_solicited = (user_type == 'faculty' or user_type == 'student')
-            if user.can_post_solicited or user.can_post_provided:
-                try:
-                    user.sign_up()
-                    login_user(user, remember=True)
-                    return redirect(url_for('IndexView:get'))
-                except IntegrityError:
-                    flash(f'"{form.username.data}" already has an account')
-            else:
-                flash('You must select an account type')
+            try:
+                user = User.sign_up(form.username.data, form.password.data, form.username.data, UserType(form.user_types.data))
+                login_user(user, remember=True)
+                return redirect(url_for('IndexView:get'))
+            except IntegrityError:
+                flash(f'"{form.username.data}" already has an account')
+            except ValueError:
+                flash(f'You must select an account type')
 
         return render_template('signup.html', form=form)
