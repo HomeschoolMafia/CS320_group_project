@@ -30,7 +30,7 @@ form {
 
 .errorText {
     font-size: 15px;
-    color: red;
+    color: rgb(255, 0, 0, 0.75);
     text-align: center;
 }
 

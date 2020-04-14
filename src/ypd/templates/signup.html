@@ -19,6 +19,7 @@
                             {% if messages %}
                                 <div class="errorText">
                                     <br>{{messages[0]}}
+                                </div>
                             {% endif %}
                         {% endwith %}
                         {{ form.csrf_token() }}

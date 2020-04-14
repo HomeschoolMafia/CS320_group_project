@@ -1,5 +1,5 @@
 import os
-from flask import flash, redirect, render_template, request, url_for, current_app
+from flask import flash, redirect, render_template, request, url_for, current_app, Markup
 from flask_classy import FlaskView, route
 from flask_login import login_required, login_user, logout_user, current_user
 from flask_mail import Mail, Message
@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 
 from sqlalchemy.exc import IntegrityError
 
-from ypd.form.user_form import LoginForm, RegistrationForm, ChangePasswordForm, ValidateEmailForm
+from ypd.form.user_form import LoginForm, RegistrationForm, ChangePasswordForm, ValidateUsernameForm
 from ypd.model.user import User
 # from ..server import mail
 
@@ -18,7 +18,7 @@ class UserView(FlaskView):
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
         form = LoginForm()
-        if request.method == 'POST' and form.validate_on_submit:
+        if form.validate_on_submit:
             try:
                 user = User.log_in(username=form.username.data, password=form.password.data)
                 login_user(user, remember=form.remember.data, duration=timedelta(minutes=30.0))
@@ -32,22 +32,31 @@ class UserView(FlaskView):
     @login_required
     def changePassword(self):
         form = ChangePasswordForm()
-        if request.method == 'POST' and form.validate_on_submit:
+        if form.validate_on_submit:
             try:
-                current_user.update_password(form.password.data)
-             
-             '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''
-                
-                if current_user.get_email():
-                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'),'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
-                    mail = Mail()
-                    mail.init_app(current_app)
-                    mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!""")
-                flash("Please login again")
-                return redirect(url_for('UserView:logout'))
+                # print(os.environ.get('MAIL_USERNAME'))
+                # print(os.environ.get('MAIL_PASSWORD'))
+
+                user = User.log_in(username=current_user.username, password=form.old_password.data)
+                if current_user is user and current_user.get_email():
+                    if form.confirm_new.data == form.new_password.data:
+                        current_user.update_password(password = form.new_password)
+
+                        '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
+                        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'),'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                        mail = Mail()
+                        mail.init_app(current_app)
+                        mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!""")
+
+                        flash("Please login again")
+                        return redirect(url_for('UserView:logout'))
+                    else:
+                        raise ValueError('New password and cofirm password do not match!!!')
             except ValueError as e:
                 flash(str(e))
             except TypeError as e:
+                flash(str(e))
+            except Exception as e:
                 flash(str(e))
         return render_template('change_pwd.html', form=form)
     
@@ -56,7 +65,7 @@ class UserView(FlaskView):
         if form.validate_on_submit:
             try:
                 user = User.get_by_username(username=form.username.data)
-                login_user(user)
+                login_user(user, force=True, fresh=True)
                 return redirect(url_for('UserView:changePassword'))
             except TypeError as e:
                 flash(str(e))
@@ -99,7 +108,7 @@ class UserView(FlaskView):
     @route('/signup/', methods=['POST', 'GET'])
     def signup(self):
         form = RegistrationForm()
-        if request.method == 'POST' and form.validate_on_submit:
+        if form.validate_on_submit:
             user_type = form.user_types.data
             user = User(username=form.username.data, password=form.password.data, email=form.email.data, name=form.username.data, is_admin=False)
             user.can_post_provided = (user_type == 'faculty' or user_type == 'company')
@@ -108,11 +117,15 @@ class UserView(FlaskView):
                 try:
                     if user.can_post_provided and user.can_post_solicited:
                         user.is_admin = True
+                    if form.confirm_password.data != form.password.data:
+                        raise ValueError('New password and cofirm password do not match!!!')
                     user.sign_up()
                     login_user(user, remember=True, duration=timedelta(minutes=30.0))
                     return redirect(url_for('IndexView:get'))
                 except IntegrityError:
-                    flash(f'"{form.username.data}" already has an account')
+                    flash(Markup(f'"<b>{form.username.data}</b>" is taken'))
+                except ValueError as e:
+                    flash(str(e))
             else:
                 flash('You must select an account type')
 
