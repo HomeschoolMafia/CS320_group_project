@@ -58,10 +58,7 @@
         <div class="projectButton">
             <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
                 <button class = "tooltip">
-                    {% if project.archived == false %}
-                    <span class = "tooltiptext">Click to Archive project.</span>
-                        🗑️
-                    {% else %}
+                    {% if project.archived == true %}
                     <span class = "tooltiptext">Click to restore project.</span>
                         🔓 
                     {% endif %}
