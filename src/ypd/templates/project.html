@@ -8,8 +8,9 @@
     
     {% if project.archived == true %}
         <div class="projectButton">
-            <button>
+            <button class = "tooltip">
                 🔒
+                <span class = "tooltiptext">Project is Archived.</span>
             </button>
         </div>
     {% endif %}
@@ -17,10 +18,12 @@
     <div class="projectButton">
         <a href="{{url_for('ProjectView:favorite',
             id=project.id, is_provided=(project is provided), favorite=(0 if project in user.get_favorites_catalog() else 1))}}">
-            <button>
+            <button class = "tooltip">
                 {% if project in user.get_favorites_catalog() %}
+                <span class = "tooltiptext">Click to remove from favorites.</span>
                     ⭐
                 {% else %}
+                <span class = "tooltiptext">Click to add to favorites.</span>
                     ☆
                 {% endif %}
             </button>
@@ -30,7 +33,8 @@
     {% if project.can_be_modified_by(user) %}
         <div class="projectButton">
             <a href="{{url_for('ProjectView:edit', id=project.id, is_provided=(project is provided))}}">
-                <button>
+                <button class = "tooltip">
+                <span class = "tooltiptext">Click to edit project.</span>
                     ✏️
                 </button>
             </a>
@@ -40,10 +44,12 @@
     {% if project.can_be_modified_by(user) %}
         <div class="projectButton">
             <a href="{{url_for('ProjectView:archive', id=project.id, is_provided=(project is provided))}}">
-                <button>
+                <button class = "tooltip">
                     {% if project.archived == false %}
+                    <span class = "tooltiptext">Click to Archive project.</span>
                         🗑️
                     {% else %}
+                    <span class = "tooltiptext">Click to restore project.</span>
                         🔓 
                     {% endif %}
                 </button>
