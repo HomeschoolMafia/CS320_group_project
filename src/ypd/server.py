@@ -26,8 +26,7 @@ admin.add_view(ModelView(Provided, session))
 #Register all the webpages
 user_servlet.UserView.register(app)
 index_servlet.IndexView.register(app)
-submission_servlet.SubmissionView.register(app)
-selected_project_servlet.SelectedProjectView.register(app)
+project_servlet.ProjectView.register(app)
 base_servlet.BaseView.register(app)
 user_page_servlet.UserPageView.register(app)
 

@@ -6,7 +6,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from ypd.model import Base, user, decorator
+from ypd.model import Base, user, session_manager
 from ypd.model.project import Provided, Solicited
 
 
@@ -16,11 +16,11 @@ class TestUser(TestCase):
         self.engine = create_engine('sqlite:///')
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
-        decorator.Session = self.Session
+        session_manager.Session = self.Session
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user = user.User(username='foo', password='bar', bio='asdf', can_post_solicited=True)
+        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'user_type': user.UserType.faculty}
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -32,67 +32,59 @@ class TestUser(TestCase):
         self.session.close()
 
     def test_signup_successful(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
 
         results = self.session.query(user.User).all()
         self.assertEqual(len(results), 1)
 
-        self.assertEqual(results[0].id, self.user.id)
+        self.assertEqual(results[0].id, 1)
         self.assertEqual(results[0].username, 'foo')
         self.assertEqual(True, check_password_hash(results[0].password, 'bar'))
-        self.assertEqual(results[0].bio, 'asdf')
-        self.assertEqual(results[0].can_post_solicited, True)
-        self.assertEqual(results[0].needs_review, False)
+        self.assertTrue(results[0].can_post_solicited)
+        self.assertTrue(results[0].can_post_provided)
+        self.assertFalse(results[0].is_admin)
+        self.assertFalse(results[0].needs_review)
 
     def test_signup_same_username_fails(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
 
         with self.assertRaises(IntegrityError):
-            u = user.User(username='foo', password='baz')
-            u.sign_up()
+            user.User.sign_up(**self.user_args)
 
         results = self.session.query(user.User).all()
         self.assertEqual(len(results), 1)
 
-        self.assertEqual(results[0].id, self.user.id)
-        self.assertEqual(results[0].username, 'foo')
-        self.assertEqual(True, check_password_hash(results[0].password, 'bar'))
-        self.assertEqual(results[0].bio, 'asdf')
-        self.assertEqual(results[0].can_post_solicited, True)
-        self.assertEqual(results[0].needs_review, False)
-
     def test_get_by_id(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
         acc = user.User.get_by_id(id=1)
-        self.assertEquals(1, acc.id)
+        self.assertEqual(1, acc.id)
 
     def test_login_successful(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
 
         user_logged_in = user.User.log_in('foo', 'bar')
 
-        self.assertEqual(user_logged_in.id, self.user.id)
+        self.assertEqual(user_logged_in.id, 1)
         self.assertEqual(user_logged_in.username, 'foo')
-        self.assertEqual(True, check_password_hash(user_logged_in.password, 'bar'))
-        self.assertEqual(user_logged_in.bio, 'asdf')
-        self.assertEqual(user_logged_in.can_post_solicited, True)
-        self.assertEqual(user_logged_in.needs_review, False)
+        self.assertTrue(check_password_hash(user_logged_in.password, 'bar'))
+        self.assertTrue(user_logged_in.can_post_solicited)
+        self.assertFalse(user_logged_in.needs_review)
 
     def test_login_bad_password_fails(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
 
         with self.assertRaises(ValueError):
             user.User.log_in('foo', 'baz')
 
     def test_login_bad_username_fails(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
 
         with self.assertRaises(ValueError):
             user.User.log_in('asdf', 'bar')
 
     def test_login_needs_review_fails(self):
-        self.needs_review = True
-        self.session.add(self.user)
+        unreviewed_user = user.User(needs_review=True, username='foo', password=generate_password_hash('bar'))
+        self.session.add(unreviewed_user)
         self.session.commit()
         self.session.close()
 
@@ -100,7 +92,7 @@ class TestUser(TestCase):
             user.User.log_in('foo', 'bar')
 
     def test_favorite_project(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
         self.user = user.User.log_in('foo', 'bar')
 
         project = Provided()
@@ -117,13 +109,14 @@ class TestUser(TestCase):
             self.user.favorite_project(project)
 
         self.user = user.User.log_in('foo', 'bar')
+        self.session.add(self.user)
         self.assertEqual(self.user.provided_favorites[0].title, 'asdf')
         self.assertEqual(self.user.provided_favorites[0].description, 'qwerty')
         self.assertEqual(self.user.provided_favorites[1].title, 'sperm')
         self.assertEqual(self.user.provided_favorites[1].description, 'whale')
 
     def test_defavorite(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
         self.user = user.User.log_in('foo', 'bar')
 
         project = Provided()
@@ -134,11 +127,12 @@ class TestUser(TestCase):
         
         with self.assertRaises(ValueError):
             self.user.defavorite_project(project)
-
+        
+        self.session.add(self.user)
         self.assertEqual(len(self.user.provided_favorites), 0)        
 
     def test_get_catalog(self):
-        self.user.sign_up()
+        user.User.sign_up(**self.user_args)
         self.user = user.User.log_in('foo', 'bar')
 
         project = Provided()
@@ -162,5 +156,6 @@ class TestUser(TestCase):
         self.assertEqual(favorites.projects[0].description, 'qwerty')
         self.assertEqual(favorites.projects[1].title, 'sperm')
         self.assertEqual(favorites.projects[1].description, 'whale')
+        self.assertEqual(favorites.projects[1].poster, self.user)
         self.assertEqual(len(favorites.projects), 2)
 
