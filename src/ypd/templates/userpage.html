@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHeader" style="margin-bottom: -80px">
+    <h1>Your Info</h1>
+</div>
+<div class="mainBody">
+    <div class="pageHeader" style="float: right; margin-right: 15%">
+        <h1>Projects Created</h1>
+        <div class="postBar" style="margin-top: -15px; margin-bottom: 5px; margin-left: -25%; margin-right: -25%"></div>
+    </div>
+    <div class="pageHeader" style="float: left; margin-left: 15%; position: inherit">
+        <h1>{{ user.name }}</h1>
+        <div class="postBar" style="margin-top: -15px; margin-bottom: 5px; margin-left: -25%; margin-right: -25%"></div>
+        <div>
+            <img src="../static/Logo.png" style="width: 50px; height: 50px">
+        </div>
+        <div style="position: absolute; margin-right: 52%; margin-left: -12%;">
+            <h2>This is a temp bio (not pulled from database yet)</h2>
+        </div>
+    </div>
+    <div style="float: right; width: 50%;">
+    {% for item in catalog %}
+        {% if item.poster.name == user.name %}
+            <div class="postBox">
+                <div class="postText">
+                    <em>{{ item.poster.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                </div>
+                <div class="postBar"></div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    <div>
+</div>
+{% endblock %}

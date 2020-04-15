@@ -20,6 +20,7 @@ DEV_REQUIRES = [
 ENTRY_POINTS = {
     'console_scripts': [
         'ypd_server=ypd.scripts.server:main',
+        'load_csv=ypd.scripts.loadcsv:main',
     ]
 }
 
