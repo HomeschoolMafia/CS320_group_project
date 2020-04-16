@@ -160,11 +160,10 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         new_user.can_post_provided = can_post_both or user_type is UserType.company
         # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
         new_user.needs_review = False #Uncomment the above line once we have admin review finished
-        new_user.is_active = True
+        new_user.email = email
         new_user.username = username
         new_user.name = name
         new_user.password = User.password_check(password, confirm_password)
-        new_user.email = email
 
         session.add(new_user)
         return new_user
@@ -223,7 +222,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     
     @classmethod
     @SessionManager.with_session
-    def get_by_username(cls, username, email, session=None):
+    def get_by_username(cls, username, session=None):
         """Gets the User object with the unique username
         
         Args:
@@ -232,7 +231,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        return session.query(User).filter_by(username=username, email=email).one_or_none()
+        return session.query(User).filter_by(username=username).one_or_none()
     
     @classmethod
     def password_check(self, password, confirm_password):
@@ -270,12 +269,15 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @SessionManager.with_session
     def get_email(self, session=None):
-        if self.email:
+        if self.email and len(self.email) > 0:
             return self.email
         else:
             raise TypeError("No email found!")
     
+    # @classmethod
     @SessionManager.with_session
     def delete_account(self, session=None):
         # self.is_active = False
-        session.query(User).filter_by(username=self.username).delete()
+        acc = User.get_by_username(self.username)
+        session.delete(acc)
+        

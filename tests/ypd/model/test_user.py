@@ -20,7 +20,7 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'user_type': user.UserType.faculty}
+        self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 'email': 'fbaz@ycp.edu', 'name': 'baz', 'user_type': user.UserType.faculty}
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -39,7 +39,8 @@ class TestUser(TestCase):
 
         self.assertEqual(results[0].id, 1)
         self.assertEqual(results[0].username, 'foo')
-        self.assertEqual(True, check_password_hash(results[0].password, 'bar'))
+        self.assertEqual(True, check_password_hash(results[0].password, 'barbarba'))
+        self.assertEqual(results[0].email, 'fbaz@ycp.edu')
         self.assertTrue(results[0].can_post_solicited)
         self.assertTrue(results[0].can_post_provided)
         self.assertFalse(results[0].is_admin)
@@ -59,14 +60,24 @@ class TestUser(TestCase):
         acc = user.User.get_by_id(id=1)
         self.assertEqual(1, acc.id)
 
+    def test_get_by_username(self):
+        user.User.sign_up(**self.user_args)
+        acc = user.User.get_by_username(username=user.User.username)
+        self.assertEqual('foo', acc.username)
+
+    def test_get_email(self):
+        user.User.sign_up(**self.user_args)
+        acc = user.User.get_by_username(username=user.User.username)
+        self.assertEqual('fbaz@ycp.edu', acc.get_email())
+
     def test_login_successful(self):
         user.User.sign_up(**self.user_args)
 
-        user_logged_in = user.User.log_in('foo', 'bar')
+        user_logged_in = user.User.log_in('foo', 'barbarba')
 
         self.assertEqual(user_logged_in.id, 1)
         self.assertEqual(user_logged_in.username, 'foo')
-        self.assertTrue(check_password_hash(user_logged_in.password, 'bar'))
+        self.assertTrue(check_password_hash(user_logged_in.password, 'barbarba'))
         self.assertTrue(user_logged_in.can_post_solicited)
         self.assertFalse(user_logged_in.needs_review)
 
@@ -80,20 +91,32 @@ class TestUser(TestCase):
         user.User.sign_up(**self.user_args)
 
         with self.assertRaises(ValueError):
-            user.User.log_in('asdf', 'bar')
+            user.User.log_in('asdf', 'barbarba')
+
+    def test_get_email_fail(self):
+        acc = user.User.sign_up(**self.user_args)
+        acc.email = None
+
+        with self.assertRaises(TypeError):
+            acc.get_email()
 
     def test_login_needs_review_fails(self):
-        unreviewed_user = user.User(needs_review=True, username='foo', password=generate_password_hash('bar'))
+        unreviewed_user = user.User(needs_review=True, username='foo', password=generate_password_hash('barbarba'))
         self.session.add(unreviewed_user)
         self.session.commit()
         self.session.close()
 
         with self.assertRaises(ValueError):
-            user.User.log_in('foo', 'bar')
+            user.User.log_in('foo', 'barbarba')
+    
+    def test_delete_account(self):
+        acc = user.User.sign_up(**self.user_args)
+        acc.delete_account()
+        self.assertIsNone(acc.get_by_username(username=acc.username))
 
     def test_favorite_project(self):
         user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
@@ -108,7 +131,7 @@ class TestUser(TestCase):
         with self.assertRaises(ValueError):
             self.user.favorite_project(project)
 
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
         self.session.add(self.user)
         self.assertEqual(self.user.provided_favorites[0].title, 'asdf')
         self.assertEqual(self.user.provided_favorites[0].description, 'qwerty')
@@ -117,7 +140,7 @@ class TestUser(TestCase):
 
     def test_defavorite(self):
         user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
@@ -133,7 +156,7 @@ class TestUser(TestCase):
 
     def test_get_catalog(self):
         user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
 
         project = Provided()
         project.post('asdf', 'qwerty', self.user)
@@ -149,7 +172,7 @@ class TestUser(TestCase):
         project.post("this isn't", 'favorited', self.user)
         project = Solicited.get(2)
 
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
         favorites = self.user.get_favorites_catalog()
 
         self.assertEqual(favorites.projects[0].title, 'asdf')

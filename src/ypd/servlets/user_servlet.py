@@ -79,7 +79,7 @@ class UserView(FlaskView):
 
     @login_required
     def deleteAccount(self):
-        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': '', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu', 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
         mail = Mail()
         mail.init_app(current_app)
 
