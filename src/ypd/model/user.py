@@ -266,13 +266,6 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         self.password = User.password_check(password, confirm_password)
         session.add(self)    
-
-    @SessionManager.with_session
-    def get_email(self, session=None):
-        if self.email and len(self.email) > 0:
-            return self.email
-        else:
-            raise TypeError("No email found!")
     
     # @classmethod
     @SessionManager.with_session

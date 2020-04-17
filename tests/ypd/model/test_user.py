@@ -65,11 +65,6 @@ class TestUser(TestCase):
         acc = user.User.get_by_username(username=user.User.username)
         self.assertEqual('foo', acc.username)
 
-    def test_get_email(self):
-        user.User.sign_up(**self.user_args)
-        acc = user.User.get_by_username(username=user.User.username)
-        self.assertEqual('fbaz@ycp.edu', acc.get_email())
-
     def test_login_successful(self):
         user.User.sign_up(**self.user_args)
 
@@ -92,13 +87,6 @@ class TestUser(TestCase):
 
         with self.assertRaises(ValueError):
             user.User.log_in('asdf', 'barbarba')
-
-    def test_get_email_fail(self):
-        acc = user.User.sign_up(**self.user_args)
-        acc.email = None
-
-        with self.assertRaises(TypeError):
-            acc.get_email()
 
     def test_login_needs_review_fails(self):
         unreviewed_user = user.User(needs_review=True, username='foo', password=generate_password_hash('barbarba'))

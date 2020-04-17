@@ -8,10 +8,7 @@ from flask_mail import Mail, Message
 from .model import Base, Session, engine
 from .model.project import Project, Provided, Solicited
 from .model.user import User
-from .servlets.base_servlet import BaseView
-from .servlets.index_servlet import IndexView
-from .servlets.project_servlet import ProjectView
-from .servlets.user_servlet import Message, UserView
+from .servlets import *
 
 #Initialize the database
 session = Session()
@@ -29,10 +26,10 @@ admin.add_view(ModelView(Solicited, session))
 admin.add_view(ModelView(Provided, session))
 
 #Register all the webpages
-UserView.register(app)
-IndexView.register(app)
-ProjectView.register(app)
-BaseView.register(app)
+user_servlet.UserView.register(app)
+index_servlet.IndexView.register(app)
+project_servlet.ProjectView.register(app)
+base_servlet.BaseView.register(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'UserView:login'
