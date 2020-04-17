@@ -117,7 +117,7 @@ class Project(Base, DBModel, HasPosterMixin):
         else:
             if user.is_admin:
                 self.archived = False
-        session.add(self)   
+        session.add(self)
 
     def can_be_modified_by(self, user):
         """Check whether this project can be modified by user
@@ -148,7 +148,12 @@ class Provided(Project):
             super().post(title, description, poster)
         else:
             raise PermissionError('User does not have permissions to post provided projects')
-
+    
+    # @SessionManager.with_session
+    # def delete_projects(self, user, session=None):
+    #     project = session.query(Provided).filter_by(id=user.id).all()
+    #     session.delete(project)
+        
 class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'

@@ -114,6 +114,15 @@ class TestUser(TestCase):
         acc.delete_account()
         self.assertIsNone(acc.get_by_username(username=acc.username))
 
+    # def test_delete_projects(self):
+    #     acc = user.User.sign_up(**self.user_args)
+    #     project = Provided()
+    #     project.post('asdf', 'qwerty', acc)
+    #     project = Provided.get(acc.id)
+
+    #     project.delete_projects(acc)
+    #     self.assertIsNone(project)
+
     def test_favorite_project(self):
         user.User.sign_up(**self.user_args)
         self.user = user.User.log_in('foo', 'barbarba')

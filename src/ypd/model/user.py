@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from . import Base, Session
 from .catalog import Catalog
 from .db_model import DBModel
-from .project import Provided
+from .project import Provided, Project
 from .session_manager import SessionManager
 
 
@@ -277,7 +277,11 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     # @classmethod
     @SessionManager.with_session
     def delete_account(self, session=None):
-        # self.is_active = False
+        
         acc = User.get_by_username(self.username)
+    
+        if acc.can_post_provided:
+           session.query(Provided).filter_by(id=acc.id).delete()
+
         session.delete(acc)
         

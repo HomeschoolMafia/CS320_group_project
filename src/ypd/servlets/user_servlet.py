@@ -42,7 +42,7 @@ class UserView(FlaskView):
                     current_user.update_password(form.new_password.data, form.confirm_new.data)
 
                     '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
-                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': 'llewis9@ycp.edu', 'MAIL_PASSWORD': '', 'MAIL_DEFAULT_SENDER': 'llewis9@ycp.edu', 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
                     mail = Mail()
                     mail.init_app(current_app)
                     mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=Markup(f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!"""))
@@ -87,18 +87,6 @@ class UserView(FlaskView):
         mail.send_message(subject="YOUR ACCOUNT IS NO LONGER ACTIVE!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your account is no longer active and will be deleted within 3 days. <br> If this is not correct, please contact support!""")
         current_user.delete_account()
         return redirect(url_for('UserView:logout'))
-
-    # {profile route -- Work In Progress} 
-    # @route('/<current_user.id>/')
-    # @login_required
-    # def profile(self):
-    #     return render_template('profile.html')
-
-    # {edit profile route -- Work In Progress}
-    # @route('/<current_user.id>/editing/', methods=['POST', 'GET'])
-    # @login_required
-    # def edit(self):
-    #     return render_template('profile.html')
 
     @login_required
     def logout(self):
