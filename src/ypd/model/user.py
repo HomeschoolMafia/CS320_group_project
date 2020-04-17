@@ -153,8 +153,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         can_post_both = new_user.is_admin or user_type is UserType.faculty
         new_user.can_post_solicited = can_post_both or user_type is UserType.student
         new_user.can_post_provided = can_post_both or user_type is UserType.company
-        # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
-        new_user.needs_review = False #Uncomment the above line once we have admin review finished
+        new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
 
         new_user.username = username
         new_user.name = name
@@ -214,3 +213,18 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         return session.query(User).filter_by(id=id).one_or_none()
+
+    @classmethod
+    @SessionManager.with_session
+    def get_unreviewed_users(cls, session=None):
+        """Gets all Users that have not been reviewed by an admin
+        
+        Args:
+            id (int): id of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+
+        Returns: The list of users that have not been reviewed
+        """
+        return session.query(cls).filter_by(needs_review=True).all()

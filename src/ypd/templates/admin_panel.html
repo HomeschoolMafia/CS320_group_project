@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHeader" style="margin-bottom: -80px">
+    <h1>Admin Panel</h1>
+</div>
+
+<div class="mainBody">
+    {% for user in users %}
+    {{user.name}} <br>
+    {% endfor %}
+</div>
+{% endblock %}

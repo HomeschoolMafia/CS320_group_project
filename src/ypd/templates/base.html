@@ -30,9 +30,10 @@
                 </center>
             </div>
             <div class="dropDown-Content">
-                <a href="{{ url_for('IndexView:get')}}">Project Listing</a>
+                <a href="{{ url_for('IndexView:get')}}">Project index</a>
                 <a href="{{ url_for('IndexView:get_favorites')}}">View favorites</a>
                 <a href="{{ url_for('ProjectView:submit')}}">Post A Project</a>
+                {% if user and user.is_admin %} <a href="{{ url_for('AdminPanelView:view')}}">Admin Panel</a> {% endif %}
                 <a href="{{ url_for('UserView:logout')}}">Logout</a>
             </div>
         </div>
@@ -44,6 +45,11 @@
             <input type="submit" value="Search">
         </form>
     </div>    
+    {% if not user %}
+        <div class="errorText">      
+            No user passed to template
+        </div>
+    {% endif %}
     {% block content %}{% endblock %}
     
 </body>
