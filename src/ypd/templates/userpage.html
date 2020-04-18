@@ -4,31 +4,57 @@
     <h1>Your Info</h1>
 </div>
 <div class="mainBody">
-    <div class="pageHeader" style="float: right; margin-right: 15%">
+    <div class="pageHeaderR">
         <h1>Projects Created</h1>
-        <div class="postBar" style="margin-top: -15px; margin-bottom: 5px; margin-left: -25%; margin-right: -25%"></div>
+        <div class="postBarUser"></div>
     </div>
-    <div class="pageHeader" style="float: left; margin-left: 15%; position: inherit">
+    <div class="pageHeaderL">
         <h1>{{ user.name }}</h1>
-        <div class="postBar" style="margin-top: -15px; margin-bottom: 5px; margin-left: -25%; margin-right: -25%"></div>
+        <div class="postBarUser"></div>
         <div>
             <img src="../static/Logo.png" style="width: 50px; height: 50px">
         </div>
-        <div style="position: absolute; margin-right: 52%; margin-left: -12%;">
-            <h2>This is a temp bio (not pulled from database yet)</h2>
+        <div class="bio">
+            {% if user.bio == none%}
+                <form action="{{ url_for('UserPageView:submit') }}" method="post">
+                    <textarea name="bio" rows="20" cols="100"></textarea><br/>
+                    <input type="submit">
+                </form>
+            {% elif user.bio == '' %}
+                <form action="{{ url_for('UserPageView:submit') }}" method="post">
+                    <textarea name="bio" rows="20" cols="100">{{ oldBio }}</textarea><br/>
+                    <input type="submit">
+                </form>
+            {% else %}
+                <h2>{{ user.bio }}</h2>
+                <a href="{{ url_for('UserPageView:editbio', oldBio=user.bio) }}">
+                    <button class = "tooltip" style="margin-left: -80%; margin-top: -10px">
+                    <span class = "tooltiptext">Click to Edit Bio</span>
+                        ✏️
+                    </button>
+                </a>    
+            {% endif %}
         </div>
     </div>
-    <div style="float: right; width: 50%;">
+    <div class="userProjectBox" style="margin-right: 5px">
     {% for item in catalog %}
-        {% if item.poster.name == user.name %}
-            <div class="postBox">
-                <div class="postText">
+        <div class="postBox">
+            <div class="postText">
+                <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
                     <em>{{ item.poster.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                </a>
+                <div style="float: right; margin-right: 50px">
+                    <form class="tooltip"  action="{{ url_for('UserPageView:delete', id=item.id, is_provided=(item is provided)) }}" method="post">
+                        <button onclick="sumbit">
+                            <span class = "tooltiptext">Delete Project</span>
+                                🗑️
+                        </button>
+                    </form>
                 </div>
-                <div class="postBar"></div>
             </div>
-        {% endif %}
+            <div class="postBar"></div>
+        </div>
     {% endfor %}
-    <div>
+    </div>
 </div>
 {% endblock %}

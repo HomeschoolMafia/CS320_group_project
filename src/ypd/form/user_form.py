@@ -3,7 +3,6 @@ from wtforms import (BooleanField, FormField, IntegerField, PasswordField,
                      RadioField, StringField, SubmitField, validators)
 from wtforms.validators import (DataRequired, Email, EqualTo, InputRequired,
                                 Length)
-
 from ypd.model.user import UserType
 
 
@@ -28,4 +27,3 @@ class LoginForm(FlaskForm):
 class ChangePassword(Form):
     password = PasswordField('New Password', [InputRequired(), EqualTo('confirm', message='Passwords must match')])
     confirm  = PasswordField('Repeat Password')
-

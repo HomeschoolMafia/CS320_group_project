@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from . import Base, Session
 from .catalog import Catalog
 from .db_model import DBModel
-from .project import Provided
+from .project import Provided, Solicited
 from .session_manager import SessionManager
 
 
@@ -125,6 +125,24 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         catalog.extend(self.solicited_favorites)
         return catalog
     
+    @SessionManager.with_session
+    def get_user_projects(self, session=None):
+        """Get all of the Projects from the User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+
+        Returns: A Catalog of all of this User's projects
+        """
+        catalog = Catalog()
+
+        provided = session.query(Provided).filter_by(poster=self).all()
+        solicited = session.query(Solicited).filter_by(poster=self).all()
+        catalog.extend(provided)
+        catalog.extend(solicited)
+
+        return catalog
+
     @classmethod
     @SessionManager.with_session
     def sign_up(cls, username, password, name, user_type, session=None):
@@ -214,3 +232,16 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         return session.query(User).filter_by(id=id).one_or_none()
+
+    @SessionManager.with_session
+    def add_bio(self, bio, session=None):
+        """Get all of the Projects from the User
+
+        Args:
+            bio (str): bio of User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.bio = bio
+        session.add(self)
