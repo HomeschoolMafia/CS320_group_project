@@ -244,3 +244,8 @@ fieldset {
     float: right; 
     width: 50%;
 }
+
+.userImageBio {
+    width: 50px; 
+    height: 50px;
+}

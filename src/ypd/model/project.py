@@ -131,17 +131,6 @@ class Project(Base, DBModel, HasPosterMixin):
         """
         return user == self.poster or user.is_admin
 
-    @classmethod
-    @SessionManager.with_session
-    def delete_project(cls, id, session=None):
-        """Check whether this project can be modified by user
-
-        Args:
-            title (str): User attempting to delete project
-        KwArgs:
-            session (Session): session to perform the query on. Supplied by decorator
-        """
-        session.delete(session.query(cls).filter_by(id=id).one())
 
 class Provided(Project):
     """Class that represents a provided project"""

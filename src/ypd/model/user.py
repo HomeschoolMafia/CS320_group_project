@@ -245,3 +245,16 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         self.bio = bio
         session.add(self)
+
+    @SessionManager.with_session
+    def add_contact(self, contact, session=None):
+        """Get all of the Projects from the User
+
+        Args:
+            contact (str): Contact of User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.contact_info = contact
+        session.add(self)
