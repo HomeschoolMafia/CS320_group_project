@@ -24,7 +24,7 @@ app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Email configuration w/ app
 '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
-app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get(' YPD_MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get(' YPD_MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get(' YPD_MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get(' YPD_MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('YPD_MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get(' YPD_MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
 
 admin = Admin(app, name='CS320 Project Database', template_mode='bootstrap3')
 admin.add_view(ModelView(User, session))
