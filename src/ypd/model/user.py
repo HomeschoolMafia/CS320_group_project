@@ -231,8 +231,10 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        return session.query(User).filter_by(username=username).one_or_none()
-    
+        result = session.query(User).filter_by(username=username).one()
+        
+        return result
+            
     @classmethod
     def password_check(self, password, confirm_password):
         """Takes in user form password and confirmed password, and validates
@@ -248,6 +250,8 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             raise ValueError('New password and cofirm password do not match!!!')
         elif len(confirm_password) < 8  or len(password) < 8:
             raise ValueError('Password must be at least 8 characters long!')
+        # elif check_password_hash(self.password, password):
+        #     raise ValueError('Use a different password!')
         else:
             return generate_password_hash(password)
 
@@ -267,7 +271,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         self.password = User.password_check(password, confirm_password)
         session.add(self)    
     
-    # @classmethod
+    @classmethod
     @SessionManager.with_session
     def delete_account(self, session=None):
         

@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.exc import IntegrityError
 
 from ypd.model import Base, user, session_manager
@@ -100,16 +101,42 @@ class TestUser(TestCase):
     def test_delete_account(self):
         acc = user.User.sign_up(**self.user_args)
         acc.delete_account()
-        self.assertIsNone(acc.get_by_username(username=acc.username))
 
-    # def test_delete_projects(self):
-    #     acc = user.User.sign_up(**self.user_args)
-    #     project = Provided()
-    #     project.post('asdf', 'qwerty', acc)
-    #     project = Provided.get(acc.id)
+        with self.assertRaises(NoResultFound):
+            acc.get_by_username(username=acc.username)
 
-    #     project.delete_projects(acc)
-    #     self.assertIsNone(project)
+    def test_update_password(self):
+        acc = user.User.sign_up(**self.user_args)
+        password = '3ncap2u1at10n'
+        acc.update_password(password, password)
+
+        self.assertTrue(check_password_hash(acc.password, password))
+    
+    def test_password_check(self):
+        acc = user.User.sign_up(**self.user_args)
+        password = 'DatBootyIsGood'
+        booty = acc.password_check(password, password)
+
+        self.assertTrue(check_password_hash(booty, password))
+
+    def test_update_password_fail(self):
+        acc = user.User.sign_up(**self.user_args)
+        password = '3ncap2'
+        with self.assertRaises(ValueError):
+            acc.update_password(password, 'encaps')
+            acc.update_password(password, password)
+
+    def test_delete_projects(self):
+        user.User.sign_up(**self.user_args)
+        self.user = user.User.log_in('foo', 'barbarba')
+
+        project = Provided()
+        project.post('asdf', 'qwerty', self.user)
+        project = Provided.get(1)
+        project.delete_projects(self.user)
+
+        with self.assertRaises(ValueError):
+            Provided.get(self.user.id)
 
     def test_favorite_project(self):
         user.User.sign_up(**self.user_args)

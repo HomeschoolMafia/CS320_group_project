@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 
 from flask_classy import FlaskView, route
 from flask_mail import Mail, Message
-from ypd.form.user_form import (ChangePasswordForm, LoginForm, RegistrationForm, ValidateUserForm)
+from ypd.form.user_form import (ChangePasswordForm, LoginForm, RegistrationForm, ReEnterPasswordForm, RecoveryForm)
 from ypd.model.user import User, UserType
 
 # from ..server import mail
@@ -15,11 +15,12 @@ from ypd.model.user import User, UserType
 """A class that represents User creation routes"""
 class UserView(FlaskView):
     msg = ""
+    
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
         form = LoginForm()
-        if form.validate_on_submit:
+        if form.validate_on_submit and request.method == 'POST':
             try:
                 user = User.log_in(form.username.data, form.password.data)
                 login_user(user, remember=form.remember.data, duration=timedelta(minutes=30.0))
@@ -33,35 +34,50 @@ class UserView(FlaskView):
     @login_required
     def changePassword(self):
         form = ChangePasswordForm()
-        if form.validate_on_submit:
+        if form.validate_on_submit and request.method == 'POST':
             try:
-                # print(os.environ.get('MAIL_USERNAME'))
-                # print(os.environ.get('MAIL_PASSWORD'))
-                # current_user is User.log_in(current_user.username, form.old_password.data)
-                if current_user.get_email():
+                if current_user.email:
                     current_user.update_password(form.new_password.data, form.confirm_new.data)
-
-                    '''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
-                    current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
+                    ''' Passed mail in servlet because if I put it in the server it causes a circular error '''
                     mail = Mail()
                     mail.init_app(current_app)
-                    mail.send_message(subject="YOUR PASSWORD HAS BEEN CHANGED!", recipients=[current_user.email], body=Markup(f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your password has been changed. <br> If this is not correct, please contact support!"""))
+                    mail.send_message(subject="PASSWORD CHANGED!",
+                                     recipients=[current_user.email],
+                                     body=f"""Hello \033[1m {current_user.username} \033[0m,\n\rYour password has been changed. \nIf this is not correct, please respond to this email!""",
+                                     html=render_template("pwd_email.html", username=current_user.username))
 
                     flash("Please login again")
                     return redirect(url_for('UserView:logout'))
             except Exception as e:
                 flash(str(e))
         return render_template('change_pwd.html', form=form)
-    
+
     @route('/forgot_pwd/', methods=['POST', 'GET'])
     def forgotPassword(self):
-        form = ValidateUserForm()
-        if form.validate_on_submit:
+        form = RecoveryForm()
+        if form.validate_on_submit and request.method == 'POST':
             try:
-                user = User.get_by_username(form.username.data, form.email.data)
+                user = User.get_by_username(form.username.data)
                 if user:
-                    login_user(user)
-                    return redirect(url_for('UserView:changePassword'))
+                    import secrets 
+                    import string 
+                    
+                    # initializing size of string  
+                    N = 8
+                    
+                    # using random.choices() 
+                    # generating random strings  
+                    res = ''.join(secrets.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase + string.punctuation) for i in range(N))
+                    user.update_password(res, res)
+                    flash('Password change successful!')
+                    mail = Mail()
+                    mail.init_app(current_app)
+                    mail.send_message(subject="PASSWORD CHANGED!",
+                                     recipients=[user.email],
+                                     body=f"""Hello \033[1m {user.username} \033[0m,\n\rYour password has been changed to \033[1m {res} \033[0m.\nPlease change it \033[1m immdiately \033[0m after signing in. \nIf this is not correct, please respond to this email!""",
+                                     html=render_template("pwd_email.html", username=user.username, res=res))
+
+                    return redirect(url_for('UserView:login'))
             except TypeError as e:
                 flash(str(e))
         return render_template('forgot_password.html', form=form)
@@ -78,15 +94,35 @@ class UserView(FlaskView):
     #     return render_template('forgot_password.html', form=form)
 
     @login_required
-    def deleteAccount(self):
-        current_app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
-        mail = Mail()
-        mail.init_app(current_app)
+    def reEnterPassword(self):
+        form = ReEnterPasswordForm()
+        if form.validate_on_submit:
+            try:
+                user = User.get_by_username(form.username.data)
+                if user:
+                    login_user(user)
+                    return redirect(url_for('Ind'))
+            except TypeError as e:
+                flash(str(e))
+        return render_template('reenter_password.html', form=form)
 
-        '''Timed account deletion is still under construction'''
-        mail.send_message(subject="YOUR ACCOUNT IS NO LONGER ACTIVE!", recipients=[current_user.email], body=f"""<h2>Hello <b> {current_user.username} </b>, </h2> <br> Your account is no longer active and will be deleted within 3 days. <br> If this is not correct, please contact support!""")
-        current_user.delete_account()
-        return redirect(url_for('UserView:logout'))
+    @login_required
+    def deleteAccount(self):
+        form = ReEnterPasswordForm()
+        try:
+            if form.validate_on_submit and User.password_check(current_user.password, form.password.data) and request.methods == 'POST':
+                '''Deletes account for now. Want to implement timed deletion later on'''
+                mail = Mail()
+                mail.init_app(current_app)
+                mail.send_message(subject="ACCOUNT NO LONGER ACTIVE!", 
+                                recipients=[current_user.email],
+                                body=f"""Hello \033[1m {current_user.username} \033[0m , \n\rYour account is no longer active and will be deleted within 3 days. \nIf this is not correct, please respond to this email!""",
+                                html=render_template('delete_email.html', username=current_user.usrename))
+                current_user.delete_account()
+                return redirect(url_for('UserView:logout'))
+        except Exception as e:
+            flash(str(e))
+        return(render_template('reenter_password.html', form=form))
 
     @login_required
     def logout(self):
@@ -97,7 +133,7 @@ class UserView(FlaskView):
     @route('/signup/', methods=['POST', 'GET'])
     def signup(self):
         form = RegistrationForm()
-        if form.validate_on_submit:        
+        if form.validate_on_submit and request.method == 'POST':
             try:
                 user = User.sign_up(form.username.data, form.password.data, form.confirm_password.data, form.email.data, form.username.data, UserType(form.user_types.data))
                 login_user(user)

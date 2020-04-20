@@ -149,10 +149,9 @@ class Provided(Project):
         else:
             raise PermissionError('User does not have permissions to post provided projects')
     
-    # @SessionManager.with_session
-    # def delete_projects(self, user, session=None):
-    #     project = session.query(Provided).filter_by(id=user.id).all()
-    #     session.delete(project)
+    @SessionManager.with_session
+    def delete_projects(self, user, session=None):
+        session.query(Provided).filter_by(id=user.id).delete()
         
 class Solicited(Project):
     """Class that represents a solicited project"""

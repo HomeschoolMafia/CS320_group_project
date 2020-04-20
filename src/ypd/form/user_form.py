@@ -12,14 +12,13 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80)])
     email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
-    #contacts = FormField(TelephoneForm)
     user_types = RadioField('User Type', validators=[InputRequired()], coerce=int,
         choices=[(UserType.student.value, 'Student'), (UserType.faculty.value, 'Faculty'), (UserType.company.value, 'Company')])
     submit = SubmitField('Sign Up')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
-    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=128)])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
     
@@ -29,14 +28,23 @@ class TelephoneForm(Form):
     number       = StringField('Number')
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Old Password', [InputRequired()])
+    old_password = PasswordField('Old Password', [InputRequired(), Length(min=8, max=128)])
     new_password = PasswordField('New Password', [InputRequired(), EqualTo('confirm_new', message='Passwords must match')])
     confirm_new  = PasswordField('Repeat New Password')
     submit = SubmitField('Submit')
 
-class ValidateUserForm(FlaskForm):
-    username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
-    email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
+class RecoveryForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=8, max=128)])
+    password = PasswordField('Password', validators=[InputRequired(),EqualTo('password', message='Passwords must match')])
+    confirm = PasswordField('Confirm New Password', [InputRequired(), Length(min=8, max=128)])
+    submit = SubmitField('Login')
+
+class UsernameForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=8, max=128)])
+    submit = SubmitField('Login')
+
+class ReEnterPasswordForm(FlaskForm):
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=128)])
     submit = SubmitField('Submit')
 
 class SupportForm(FlaskForm):
