@@ -11,7 +11,6 @@
             <div class="logoInPad">
                 <!--<img src="{{ item.logo }}" alt="Logo" width="25" height="30">--></div>
         </div>
-        <!-- <a href="selectedproject?id={{item.id}}{% if item is provided %}&isProvided=True{% endif %}"> -->
         <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
             <div class="postText">
                 <em>{{ item.poster.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}

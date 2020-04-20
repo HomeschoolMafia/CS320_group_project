@@ -228,3 +228,16 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Returns: The list of users that have not been reviewed
         """
         return session.query(cls).filter_by(needs_review=True).all()
+
+    @SessionManager.with_session
+    def review(self, approval, session=None):
+        """Review a user
+        
+        Args:
+            approval (bool): Whether to approve or deny the user
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.needs_review = not approval
+        session.add(self)

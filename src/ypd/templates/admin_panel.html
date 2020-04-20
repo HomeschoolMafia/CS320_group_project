@@ -5,8 +5,13 @@
 </div>
 
 <div class="mainBody">
-    {% for user in users %}
-    {{user.name}} <br>
+    {% for user_to_review in users_to_review %}
+    <a href={{url_for('AdminPanelView:review_user', user_id=user_to_review.id, approval=1)}}>
+        <div class="postText">
+            <em>{{ user_to_review.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </div>
+    </a>
+    <div class="postBar"> </div> <br>
     {% endfor %}
 </div>
 {% endblock %}
