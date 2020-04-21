@@ -34,7 +34,7 @@ class UserPageView(FlaskView):
         else:
             project = Solicited.get(ID) 
 
-        user = User.get_by_id(ID)
+        user = project.poster
         catalog = user.get_user_projects()
         return render_template('userpage.html', catalog=catalog, user=user, current_user=current_user)
    
