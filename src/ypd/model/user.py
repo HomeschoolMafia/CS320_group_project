@@ -277,7 +277,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         
         acc = User.get_by_username(self.username)
     
-        if acc.can_post_provided:
+        if acc.can_post_provided or acc.can_post_both:
            session.query(Provided).filter_by(id=acc.id).delete()
 
         session.delete(acc)
