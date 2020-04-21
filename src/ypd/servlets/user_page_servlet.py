@@ -27,8 +27,7 @@ class UserPageView(FlaskView):
     @login_required
     def getUser(self):
         ID = request.args.get('id', default = ' ', type=int)
-        is_provided = request.args.get('is_provided', default=0, type=int)
-
+        
         user = User.get_by_id(ID)
         catalog = user.get_user_projects()
         
