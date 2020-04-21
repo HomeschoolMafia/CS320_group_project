@@ -140,7 +140,7 @@ class UserView(FlaskView):
                 flash(Markup('''<p>Password <b>must</b> have at least:</p> 
                                     <ul>
                                         <li>1 Number Character</li>
-                                        <li>1 Symbol Character ($,%^&*)</li>
+                                        <li>1 Symbol Character</li>
                                         <li>1 UpperCase character</li>
                                         <li>1 LowerCase character</li>
                                     </ul>'''))
