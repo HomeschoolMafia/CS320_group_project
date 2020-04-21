@@ -52,7 +52,7 @@
                     <h2 style="margin-left: -55%"><u>Bio: </u></h2>
                     <h2>No Bio Listed Yet</h2>
                 {% else %}
-                    <div style="margin-right: 10%; margin-left: -20%">
+                    <div class="userBio">
                         <h2 style="margin-left: -55%"><u>Bio: </u></h2>
                         <h2>{{ user.bio }}</h2>
                     </div>
@@ -90,19 +90,24 @@
             {% endif %}
         </div>
     </div>
-    <div class="userProjectBox" style="margin-right: 5px">
+    <div class="userProjectBox">
     {% for item in catalog %}
         <div class="postBox">
             <div class="postText">
                 <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
-                    <em>{{ item.poster.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{ item.title }}
+                    <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
                 </a>
                 {% if item.poster.name == current_user.name %}
-                    <div style="float: right; margin-right: 50px">
+                    <div class="userToolOp">
                         <form class="tooltip"  action="{{ url_for('UserPageView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
                             <button onclick="sumbit">
-                                <span class = "tooltiptext">Archive Project</span>
-                                    🗑️
+                    {% if item.archived %}    
+                        <span class = "tooltiptext">Click to Restore Project</span>
+                            🔓 
+                    {% else %}
+                        <span class = "tooltiptext">Click to Archive Project</span>
+                            🗑️    
+                    {% endif %}
                             </button>
                         </form>
                     </div>

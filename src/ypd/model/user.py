@@ -145,7 +145,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, name, user_type, session=None):
+    def sign_up(cls, username, password, name, user_type, bio=None, contact_info=None, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -177,6 +177,8 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         new_user.username = username
         new_user.name = name
         new_user.password = generate_password_hash(password)
+        new_user.bio = bio
+        new_user.contact_info = contact_info
 
         session.add(new_user)
         return new_user

@@ -117,7 +117,7 @@ class Project(Base, DBModel, HasPosterMixin):
             self.archived = True
 
         else:
-            if user.is_admin:
+            if user.is_admin or self.can_be_modified_by(user):
                 self.archived = False
         session.add(self)   
 

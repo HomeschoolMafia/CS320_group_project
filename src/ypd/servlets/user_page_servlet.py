@@ -22,7 +22,7 @@ class UserPageView(FlaskView):
         catalog = current_user.get_user_projects()
         
         return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user)
-    
+
     #This gets a user's page from a project 
     @login_required
     def getUser(self):
@@ -37,16 +37,23 @@ class UserPageView(FlaskView):
         user = User.get_by_id(ID)
         catalog = user.get_user_projects()
         return render_template('userpage.html', catalog=catalog, user=user, current_user=current_user)
-        
-        
+   
     @route ('/submitBio', methods =('GET', 'POST'))
     def submitBio(self):
         bio = request.form['bio']
         current_user.add_bio(bio)
         
         return redirect(url_for('UserPageView:get'))
-    
-    
+
+    @route ('/editBio', methods =('GET', 'POST'))
+    def editBio(self):
+        oldBio = request.args.get('oldBio', default = ' ', type=str)
+        current_user.add_bio('')
+        current_app.jinja_env.tests['provided'] = Tests.is_provided_test
+        catalog = current_user.get_user_projects()
+        
+        return render_template('userpage.html', catalog=catalog, user=current_user, oldBio=oldBio, current_user=current_user)
+
     @route ('/submitImage', methods =('GET', 'POST'))
     def submitImage(self):
         #target = os.path.join(app, '../db/UserImg')
@@ -55,6 +62,21 @@ class UserPageView(FlaskView):
         #file.save(os.path.join(target, filename))
         return file.filename
 
+    @route ('/submitContact', methods =('GET', 'POST'))
+    def submitContact(self):
+        contact = request.form['contact']
+        current_user.add_contact(contact)
+        
+        return redirect(url_for('UserPageView:get'))
+
+    @route ('/editContact', methods =('GET', 'POST'))
+    def editContact(self):
+        oldContact = request.args.get('oldContact', default = ' ', type=str)
+        current_user.add_contact('')
+        current_app.jinja_env.tests['provided'] = Tests.is_provided_test
+        catalog = current_user.get_user_projects()
+        
+        return render_template('userpage.html', catalog=catalog, user=current_user, oldContact=oldContact, current_user=current_user)
 
     @route('/archive', methods =('GET', 'POST'))
     def archive(self):
@@ -71,29 +93,3 @@ class UserPageView(FlaskView):
         project.toggle_archived(current_user)
 
         return redirect(url_for('UserPageView:get'))
-    
-    @route ('/editBio', methods =('GET', 'POST'))
-    def editBio(self):
-        oldBio = request.args.get('oldBio', default = ' ', type=str)
-        current_user.add_bio('')
-        current_app.jinja_env.tests['provided'] = Tests.is_provided_test
-        catalog = current_user.get_user_projects()
-        
-        return render_template('userpage.html', catalog=catalog, user=current_user, oldBio=oldBio, current_user=current_user)
-    
-    @route ('/submitContact', methods =('GET', 'POST'))
-    def submitContact(self):
-        contact = request.form['contact']
-        current_user.add_contact(contact)
-        
-        return redirect(url_for('UserPageView:get'))
-    
-    @route ('/editContact', methods =('GET', 'POST'))
-    def editContact(self):
-        oldContact = request.args.get('oldContact', default = ' ', type=str)
-        current_user.add_contact('')
-        current_app.jinja_env.tests['provided'] = Tests.is_provided_test
-        catalog = current_user.get_user_projects()
-        
-        return render_template('userpage.html', catalog=catalog, user=current_user, oldContact=oldContact, current_user=current_user)
-    
