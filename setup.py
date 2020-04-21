@@ -21,6 +21,7 @@ DEV_REQUIRES = [
 ENTRY_POINTS = {
     'console_scripts': [
         'ypd_server=ypd.scripts.server:main',
+        'init_db=ypd.scripts.initialize_database:main',
     ]
 }
 
