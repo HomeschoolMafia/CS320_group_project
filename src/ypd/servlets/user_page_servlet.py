@@ -28,14 +28,10 @@ class UserPageView(FlaskView):
     def getUser(self):
         ID = request.args.get('id', default = ' ', type=int)
         is_provided = request.args.get('is_provided', default=0, type=int)
-        
-        if is_provided:
-            project = Provided.get(ID)
-        else:
-            project = Solicited.get(ID) 
 
-        user = project.poster
+        user = User.get_by_id(ID)
         catalog = user.get_user_projects()
+        
         return render_template('userpage.html', catalog=catalog, user=user, current_user=current_user)
    
     @route ('/submitBio', methods =('GET', 'POST'))
