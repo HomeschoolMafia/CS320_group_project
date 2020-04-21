@@ -281,4 +281,3 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
            session.query(Provided).filter_by(id=acc.id).delete()
 
         session.delete(acc)
-        session.delete(self)
