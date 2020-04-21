@@ -1,13 +1,19 @@
 import os
+import re
+import secrets 
+import string 
 from datetime import datetime, timedelta
 
-from flask import (Markup, current_app, flash, redirect, render_template, request, url_for)
+from flask import (Markup, current_app, flash, redirect, render_template,
+                   request, url_for)
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
+from werkzeug.security import check_password_hash
 
 from flask_classy import FlaskView, route
 from flask_mail import Mail, Message
-from ypd.form.user_form import (ChangePasswordForm, LoginForm, RegistrationForm, ReEnterPasswordForm, RecoveryForm)
+from ypd.form.user_form import (ChangePasswordForm, LoginForm, RecoveryForm,
+                                ReEnterPasswordForm, RegistrationForm)
 from ypd.model.user import User, UserType
 
 # from ..server import mail
@@ -34,7 +40,7 @@ class UserView(FlaskView):
     @login_required
     def changePassword(self):
         form = ChangePasswordForm()
-        if form.validate_on_submit and request.method == 'POST':
+        if form.validate_on_submit and request.method == 'POST' and check_password_hash(current_user.password, form.old_password.data):
             try:
                 if current_user.email:
                     current_user.update_password(form.new_password.data, form.confirm_new.data)
@@ -59,13 +65,10 @@ class UserView(FlaskView):
             try:
                 user = User.get_by_username(form.username.data)
                 if user:
-                    import secrets 
-                    import string 
-                    
                     # initializing size of string  
                     N = 8
                     
-                    # using random.choices() 
+                    # using secrets.choices() 
                     # generating random strings  
                     res = ''.join(secrets.choice(string.ascii_uppercase + string.digits + string.ascii_lowercase + string.punctuation) for i in range(N))
                     user.update_password(res, res)
@@ -81,6 +84,8 @@ class UserView(FlaskView):
             except TypeError as e:
                 flash(str(e))
         return render_template('forgot_password.html', form=form)
+
+
     
     # def forgotEmailOrUsername(self):
     #     form = ValidateUsernameForm()
@@ -94,29 +99,16 @@ class UserView(FlaskView):
     #     return render_template('forgot_password.html', form=form)
 
     @login_required
-    def reEnterPassword(self):
-        form = ReEnterPasswordForm()
-        if form.validate_on_submit:
-            try:
-                user = User.get_by_username(form.username.data)
-                if user:
-                    login_user(user)
-                    return redirect(url_for('Ind'))
-            except TypeError as e:
-                flash(str(e))
-        return render_template('reenter_password.html', form=form)
-
-    @login_required
     def deleteAccount(self):
         form = ReEnterPasswordForm()
         try:
-            if form.validate_on_submit and User.password_check(current_user.password, form.password.data) and request.methods == 'POST':
+            if form.validate_on_submit and request.methods == 'POST' and check_password_hash(current_user.password, form.password.data):
                 '''Deletes account for now. Want to implement timed deletion later on'''
                 mail = Mail()
                 mail.init_app(current_app)
-                mail.send_message(subject="ACCOUNT NO LONGER ACTIVE!", 
+                mail.send_message(subject="ACCOUNT NO LONGER ACTIVE!",
                                 recipients=[current_user.email],
-                                body=f"""Hello \033[1m {current_user.username} \033[0m , \n\rYour account is no longer active and will be deleted within 3 days. \nIf this is not correct, please respond to this email!""",
+                                body=f"""Hello \033[1m {current_user.username} \033[0m , \n\rYour account is no longer active and has been deleted. \nIf this is not correct, please respond to this email!""",
                                 html=render_template('delete_email.html', username=current_user.usrename))
                 current_user.delete_account()
                 return redirect(url_for('UserView:logout'))
@@ -135,6 +127,8 @@ class UserView(FlaskView):
         form = RegistrationForm()
         if form.validate_on_submit and request.method == 'POST':
             try:
+                if not any(char in form.password.data for char in string.ascii_lowercase) or not any(char in form.password.data for char in string.ascii_uppercase) or not any(char in form.password.data for char in string.digits) or not any(char in form.password.data for char in string.punctuation): 
+                    raise TypeError
                 user = User.sign_up(form.username.data, form.password.data, form.confirm_password.data, form.email.data, form.username.data, UserType(form.user_types.data))
                 login_user(user)
                 return redirect(url_for('IndexView:get'))
@@ -142,6 +136,14 @@ class UserView(FlaskView):
                 flash(Markup(f'<b>{form.username.data}</b> is taken'))
             except ValueError as e:
                 flash(str(e))
+            except TypeError:
+                flash(Markup('''<p>Password <b>must</b> have at least:</p> 
+                                    <ul>
+                                        <li>1 Number Character</li>
+                                        <li>1 Symbol Character ($,%^&*)</li>
+                                        <li>1 UpperCase character</li>
+                                        <li>1 LowerCase character</li>
+                                    </ul>'''))
             except Exception as e:
                 flash(str(e))
 
