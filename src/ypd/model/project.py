@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import csv
+
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
@@ -115,7 +117,7 @@ class Project(Base, DBModel, HasPosterMixin):
             self.archived = True
 
         else:
-            if user.is_admin:
+            if self.can_be_modified_by(user):
                 self.archived = False
         session.add(self)
 
@@ -128,6 +130,7 @@ class Project(Base, DBModel, HasPosterMixin):
         return: True if can be modified by user, else false
         """
         return user == self.poster or user.is_admin
+
 
 class Provided(Project):
     """Class that represents a provided project"""

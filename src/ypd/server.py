@@ -46,6 +46,7 @@ user_servlet.UserView.register(app)
 index_servlet.IndexView.register(app)
 project_servlet.ProjectView.register(app)
 base_servlet.BaseView.register(app)
+user_page_servlet.UserPageView.register(app)
 
 login_manager = LoginManager(app)
 login_manager.login_view = 'UserView:login'

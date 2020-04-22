@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 from wtforms import (BooleanField, FormField, IntegerField, PasswordField, RadioField,
                      StringField, SubmitField, TextAreaField, validators)
 from wtforms.validators import (DataRequired, Email, EqualTo, InputRequired, Length)
 from wtforms.widgets import TextArea
 
 from flask_wtf import FlaskForm, Form
+=======
+from flask_wtf import FlaskForm, Form
+from wtforms import (BooleanField, FormField, IntegerField, PasswordField,
+                     RadioField, StringField, SubmitField, validators)
+from wtforms.validators import (DataRequired, Email, EqualTo, InputRequired,
+                                Length)
+>>>>>>> develop
 from ypd.model.user import UserType
 
 
@@ -43,6 +51,7 @@ class UsernameForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=128)])
     submit = SubmitField('Login')
 
+<<<<<<< HEAD
 class ReEnterPasswordForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=128)])
     submit = SubmitField('Submit')
@@ -55,3 +64,8 @@ class SupportForm(FlaskForm):
     contacts = FormField(TelephoneForm)
     description = TextAreaField('Issue summary:', validators=[InputRequired()], widget=TextArea(), render_kw={'cols': '150', 'rows': '25'})
     submit = SubmitField('Submit')
+=======
+class ChangePassword(Form):
+    password = PasswordField('New Password', [InputRequired(), EqualTo('confirm', message='Passwords must match')])
+    confirm  = PasswordField('Repeat Password')
+>>>>>>> develop

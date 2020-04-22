@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from . import Base, Session
 from .catalog import Catalog
 from .db_model import DBModel
-from .project import Provided, Project
+from .project import Provided, Project, Solicited
 from .session_manager import SessionManager
 
 
@@ -125,9 +125,27 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         catalog.extend(self.solicited_favorites)
         return catalog
     
+    @SessionManager.with_session
+    def get_user_projects(self, session=None):
+        """Get all of the Projects from the User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+
+        Returns: A Catalog of all of this User's projects
+        """
+        catalog = Catalog()
+
+        provided = session.query(Provided).filter_by(poster=self).all()
+        solicited = session.query(Solicited).filter_by(poster=self).all()
+        catalog.extend(provided)
+        catalog.extend(solicited)
+
+        return catalog
+
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, confirm_password, email, name, user_type, session=None):
+    def sign_up(cls, username, password, confirm_password, email, name, user_type, bio=None, contact_info=None, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -164,6 +182,8 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         new_user.username = username
         new_user.name = name
         new_user.password = User.password_check(password, confirm_password)
+        new_user.bio = bio
+        new_user.contact_info = contact_info
 
         session.add(new_user)
         return new_user
@@ -281,3 +301,28 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
            session.query(Provided).filter_by(id=acc.id).delete()
 
         session.delete(acc)
+    @SessionManager.with_session
+    def add_bio(self, bio, session=None):
+        """Get all of the Projects from the User
+
+        Args:
+            bio (str): bio of User
+        
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.bio = bio
+        session.add(self)
+
+    @SessionManager.with_session
+    def add_contact(self, contact, session=None):
+        """Get all of the Projects from the User
+
+        Args:
+            contact (str): Contact of User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.contact_info = contact
+        session.add(self)

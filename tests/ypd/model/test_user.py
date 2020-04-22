@@ -21,7 +21,7 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 'email': 'fbaz@ycp.edu', 'name': 'baz', 'user_type': user.UserType.faculty}
+        self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 'email': 'fbaz@ycp.edu', 'name': 'baz', 'user_type': user.UserType.faculty, 'bio': 'test', 'contact_info': 'name@mail.com'}
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -171,12 +171,12 @@ class TestUser(TestCase):
         project = Provided.get(1)
         self.user.favorite_project(project)
         self.user.defavorite_project(project)
-        
+
         with self.assertRaises(ValueError):
             self.user.defavorite_project(project)
-        
+
         self.session.add(self.user)
-        self.assertEqual(len(self.user.provided_favorites), 0)        
+        self.assertEqual(len(self.user.provided_favorites), 0)
 
     def test_get_catalog(self):
         user.User.sign_up(**self.user_args)
