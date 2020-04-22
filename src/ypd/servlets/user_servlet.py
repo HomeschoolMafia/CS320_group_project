@@ -49,7 +49,7 @@ class UserView(FlaskView):
                     mail.init_app(current_app)
                     mail.send_message(subject="PASSWORD CHANGED!",
                                      recipients=[current_user.email],
-                                     body=f"""Hello \033[1m {current_user.username} \033[0m,\n\rYour password has been changed. \nIf this is not correct, please respond to this email!""",
+                                     body=f"""Hello \033[1m {current_user.username} \033[0m,\n \rYour password has been changed. \nIf this is not correct, please respond to this email!""",
                                      html=render_template("pwd_email.html", username=current_user.username))
 
                     flash("Please login again")
