@@ -1,3 +1,5 @@
+from enum import Enum, auto
+
 from flask_login import UserMixin
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
@@ -6,10 +8,16 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from . import Base, Session
 from .catalog import Catalog
-from .decorator import with_session
-from .model import Model
-from .project import Provided
+from .db_model import DBModel
+from .project import Provided, Solicited
+from .session_manager import SessionManager
 
+
+class UserType(Enum):
+    student = auto()
+    faculty = auto()
+    company = auto()
+    admin = auto()
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -25,7 +33,6 @@ class HasFavoritesMixin:
         return relationship(
             "Provided",
             secondary=self.provided_association,
-            lazy='subquery',
             passive_deletes=True)
 
 
@@ -34,10 +41,9 @@ class HasFavoritesMixin:
         return relationship(
             "Solicited",
             secondary=self.solicited_association,
-            lazy='subquery',
             passive_deletes=True)
 
-class User(Base, Model, HasFavoritesMixin, UserMixin):
+class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     """A class that represents a single user account"""
     __tablename__ = 'users'
     username = Column(String, unique=True)
@@ -51,7 +57,7 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
     can_post_provided = Column(Boolean)
     is_admin = Column(Boolean)
 
-    @with_session
+    @SessionManager.with_session
     def favorite_project(self, project, session=None):
         """Adds the given project to this user's list of favorite projects
         
@@ -80,7 +86,7 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
         else:
             favorites_to_add.append(project)
 
-    @with_session
+    @SessionManager.with_session
     def defavorite_project(self, project, session=None):
         """Adds the given project to this user's list of favorite projects
         
@@ -104,22 +110,51 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
         except ValueError as e:
             raise ValueError("Cannot defavorite project that is not favorited") from e
 
-
-    def get_favorites_catalog(self):
+    @SessionManager.with_session
+    def get_favorites_catalog(self, session=None):
         """Get all of the Projects this User has favorited as a Catalog
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
 
         Returns: A Catalog of all of this User's favorited projects
         """
+        session.add(self)
         catalog = Catalog()
-        catalog.projects.extend(self.provided_favorites)
-        catalog.projects.extend(self.solicited_favorites)
+        catalog.extend(self.provided_favorites)
+        catalog.extend(self.solicited_favorites)
         return catalog
     
-    @with_session
-    def sign_up(self, session=None):
+    @SessionManager.with_session
+    def get_user_projects(self, session=None):
+        """Get all of the Projects from the User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+
+        Returns: A Catalog of all of this User's projects
+        """
+        catalog = Catalog()
+
+        provided = session.query(Provided).filter_by(poster=self).all()
+        solicited = session.query(Solicited).filter_by(poster=self).all()
+        catalog.extend(provided)
+        catalog.extend(solicited)
+
+        return catalog
+
+    @classmethod
+    @SessionManager.with_session
+    def sign_up(cls, username, password, name, user_type, bio=None, contact_info=None, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
+
+        Args:
+            username (str): Username to log in with
+            password (str): Password to log in with
+            name (str): Display name of the account
+            user_type (UserType): Type of the account
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
@@ -127,12 +162,29 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
         Raises: 
             ValueError: If the username already exists in the database
         """
-        self.needs_review = False #TODO: set this to true when we implement the review process
-        self.password = generate_password_hash(self.password)
-        session.add(self)
+        new_user = cls()
+
+        #Set permissions
+        if not type(user_type) is UserType:
+            raise TypeError(f'Expected type {UserType} for argument user_type. Got {type(user_type)}')
+        new_user.is_admin = user_type is UserType.admin
+        can_post_both = new_user.is_admin or user_type is UserType.faculty
+        new_user.can_post_solicited = can_post_both or user_type is UserType.student
+        new_user.can_post_provided = can_post_both or user_type is UserType.company
+        # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
+        new_user.needs_review = False #Uncomment the above line once we have admin review finished
+
+        new_user.username = username
+        new_user.name = name
+        new_user.password = generate_password_hash(password)
+        new_user.bio = bio
+        new_user.contact_info = contact_info
+
+        session.add(new_user)
+        return new_user
 
     @classmethod
-    @with_session
+    @SessionManager.with_session
     def log_in(cls, username, password, session=None):
         """Attempts to login a user with the given username and password
         
@@ -152,9 +204,6 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
         """
         #try to log in
         result = session.query(User
-            ).options(
-                subqueryload(User.provided_favorites),
-                subqueryload(User.solicited_favorites)
             ).filter_by(
                 username=username,
                 needs_review=False
@@ -165,16 +214,16 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
             if check_password_hash(result.password, password):
                 return result
             else:
-                raise ValueError('Incorrect username of password')
+                raise ValueError('Incorrect username or password')
         else:
             result = session.query(User).filter_by(username=username).one_or_none()
             if result:
-                raise ValueError('User account requires review')
+                raise ValueError('Your account requires review')
             else:
                 raise ValueError('Incorrect username or password')
 
     @classmethod
-    @with_session
+    @SessionManager.with_session
     def get_by_id(cls, id, session=None):
         """Gets the User object with the specified id
         
@@ -185,3 +234,29 @@ class User(Base, Model, HasFavoritesMixin, UserMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         return session.query(User).filter_by(id=id).one_or_none()
+
+    @SessionManager.with_session
+    def add_bio(self, bio, session=None):
+        """Get all of the Projects from the User
+
+        Args:
+            bio (str): bio of User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.bio = bio
+        session.add(self)
+
+    @SessionManager.with_session
+    def add_contact(self, contact, session=None):
+        """Get all of the Projects from the User
+
+        Args:
+            contact (str): Contact of User
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        self.contact_info = contact
+        session.add(self)

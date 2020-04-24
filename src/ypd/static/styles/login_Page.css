@@ -28,6 +28,12 @@ form {
     padding: 20px;
 }
 
+.errorText {
+    font-size: 15px;
+    color: red;
+    text-align: center;
+}
+
 label,
 label span,
 input {
