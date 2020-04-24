@@ -73,10 +73,10 @@
                     <form action="{{ url_for('UserPageView:submitContact') }}" method="post" style="margin-top: 20%">
                         Add Contact<br/>
                         {% if user.contact_info == '' %}
-                            <textarea name="contact" rows="1" cols="80">{{ oldContact }}</textarea>
+                            <textarea name="contact" rows="1" cols="80">{{ oldContact }}</textarea><br/>
                             <input type="submit">
                         {% else %}
-                            <textarea name="contact" rows="1" cols="80"></textarea>
+                            <textarea name="contact" rows="1" cols="80"></textarea><br/>
                             <input type="submit">
                         {% endif %}
                     </form>
