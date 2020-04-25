@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHeader" style="margin-bottom: -80px">
+    {% if user.name == current_user.name %}
+        <h1>Your Info</h1>
+    {% else %}
+        <h1>{{ user.name }} Info</h1>
+    {% endif %}
+</div>
+<div class="mainBody">
+    <div class="pageHeaderR">
+        <h1>Projects Created</h1>
+        <div class="postBarUser"></div>
+    </div>
+    <div class="pageHeaderL">
+        <h1>{{ user.name }}</h1>
+        <div class="postBarUser"></div>
+        <!--<div>
+            <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
+                <input type="file" name="file">
+                <input type="submit" value="Submit">
+            </form>
+        </div>-->
+        <div class="bio">
+            {% if current_user.name == user.name %}
+                {% if user.bio == none %}
+                    <form action="{{ url_for('UserPageView:submitBio') }}" method="post">
+                        Add Bio<br/>
+                        <textarea name="bio" rows="15" cols="80"></textarea><br/>
+                        <input type="submit">
+                    </form>
+                {% elif user.bio == '' %}
+                    <form action="{{ url_for('UserPageView:submitBio') }}" method="post">
+                        Add Bio<br/>
+                        <textarea name="bio" rows="15" cols="80">{{ oldBio }}</textarea><br/>
+                        <input type="submit">
+                    </form>
+                {% else %}
+                    <div>
+                        <h2 style="margin-left: -95%"><u>Bio: </u></h2>
+                        <h2>{{ user.bio }}</h2>
+                    </div>
+                    <a href="{{ url_for('UserPageView:editBio', oldBio=user.bio) }}" style="margin-left: -110px">
+                        <button class = "tooltip" style="margin-left: -80%; margin-top: -10px">
+                        <span class = "tooltiptext">Click to Edit Bio</span>
+                            ✏️
+                        </button>
+                    </a>    
+                {% endif %}
+            {% else %}
+                {% if user.bio == none %}
+                    <h2 style="margin-left: -55%"><u>Bio: </u></h2>
+                    <h2>No Bio Listed Yet</h2>
+                {% else %}
+                    <div class="userBio">
+                        <h2 style="margin-left: -55%"><u>Bio: </u></h2>
+                        <h2>{{ user.bio }}</h2>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        <div class="bio" style="margin-top: 310px;">
+            {% if current_user.name == user.name %}
+                {% if user.contact_info %}
+                    <h2><u>Contact:</u> {{ user.contact_info }}</h2>
+                    <a href="{{ url_for('UserPageView:editContact', oldContact=user.contact_info) }}" style="margin-left: -110px">
+                        <button class = "tooltip" style="margin-top: -10px">
+                        <span class = "tooltiptext">Click to Edit Contact</span>
+                            ✏️
+                        </button>
+                    </a> 
+                {% else %}
+                    <form action="{{ url_for('UserPageView:submitContact') }}" method="post" style="margin-top: 20%">
+                        Add Contact<br/>
+                        {% if user.contact_info == '' %}
+                            <textarea name="contact" rows="1" cols="80">{{ oldContact }}</textarea><br/>
+                            <input type="submit">
+                        {% else %}
+                            <textarea name="contact" rows="1" cols="80"></textarea><br/>
+                            <input type="submit">
+                        {% endif %}
+                    </form>
+                {% endif %}
+            {% else %}
+                {% if user.contact_info %}
+                    <h2><u>Contact:</u> {{ user.contact_info }}</h2>
+                {% else %}
+                    <h2><u>Contact:</u> No Contact Listed</h2>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    <div class="userProjectBox">
+    {% for item in catalog %}
+        <div class="postBox">
+            <div class="postText">
+                <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
+                    <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
+                </a>
+                {% if item.poster.name == current_user.name %}
+                    <div class="userToolOp">
+                        <form class="tooltip"  action="{{ url_for('UserPageView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                            <button onclick="sumbit">
+                    {% if item.archived %}    
+                        <span class = "tooltiptext">Click to Restore Project</span>
+                            🔓 
+                    {% else %}
+                        <span class = "tooltiptext">Click to Archive Project</span>
+                            🗑️    
+                    {% endif %}
+                            </button>
+                        </form>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="postBar"></div>
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -124,12 +124,12 @@ class TestUser(TestCase):
         project = Provided.get(1)
         self.user.favorite_project(project)
         self.user.defavorite_project(project)
-        
+
         with self.assertRaises(ValueError):
             self.user.defavorite_project(project)
-        
+
         self.session.add(self.user)
-        self.assertEqual(len(self.user.provided_favorites), 0)        
+        self.assertEqual(len(self.user.provided_favorites), 0)
 
     def test_get_catalog(self):
         user.User.sign_up(**self.user_args)
