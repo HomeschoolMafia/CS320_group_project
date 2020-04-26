@@ -65,7 +65,7 @@
         <br/>
         <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
             {{project.poster.name}}
-            <a href="{{ url_for('UserPageView:view', id=project.poster.id) }}">
+            <a href="{{ url_for('UserPageView:getUser', id=project.poster.id) }}">
                 <button class = "tooltip" style="margin-left: 1%">
                 <span class = "tooltiptext">Click to Visit Page</span>   🔎
                 </button>

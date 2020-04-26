@@ -1,4 +1,0 @@
-[console_scripts]
-init_db = ypd.scripts.initialize_database:main
-ypd_server = ypd.scripts.server:main
-

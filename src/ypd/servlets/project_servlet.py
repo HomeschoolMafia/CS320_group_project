@@ -60,14 +60,15 @@ class ProjectView(FlaskView):
                                 is_provided=Tests.is_provided_test(project)))
 
     # pull data from HTML form
-    @route('/archive', methods=['GET', 'POST'])
+    @route('/archive')
     @Decorator.needs_project
     def archive(self, project):
         """Called when the user archives a project"""
         #Sets Archive flag to True/False
         project.toggle_archived(current_user)
 
-        return redirect(request.referrer)
+        return redirect(url_for('ProjectView:view', id=project.id,
+                                is_provided=Tests.is_provided_test(project)))
 
     # pull data from HTML form
     @route ('/submit', methods =('GET', 'POST'))  

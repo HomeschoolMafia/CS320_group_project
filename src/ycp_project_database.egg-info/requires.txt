@@ -1,7 +1,0 @@
-sqlalchemy
-flask
-requests
-flask-wtf
-flask-admin
-flask-login
-flask-classy

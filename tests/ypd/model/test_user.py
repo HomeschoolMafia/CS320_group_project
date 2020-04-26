@@ -20,7 +20,7 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'user_type': user.UserType.admin}
+        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'user_type': user.UserType.faculty}
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -42,7 +42,7 @@ class TestUser(TestCase):
         self.assertEqual(True, check_password_hash(results[0].password, 'bar'))
         self.assertTrue(results[0].can_post_solicited)
         self.assertTrue(results[0].can_post_provided)
-        self.assertTrue(results[0].is_admin)
+        self.assertFalse(results[0].is_admin)
         self.assertFalse(results[0].needs_review)
 
     def test_signup_same_username_fails(self):
@@ -159,19 +159,3 @@ class TestUser(TestCase):
         self.assertEqual(favorites.projects[1].poster, self.user)
         self.assertEqual(len(favorites.projects), 2)
 
-    def test_delete_user(self):
-        user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
-        self.user.delete()
-        with self.assertRaises(ValueError):
-            self.user = user.User.log_in('foo', 'bar')
-
-    def test_review(self):
-        user.User.sign_up(**self.user_args)
-        user.User.get_by_id(1).review(False)
-        with self.assertRaises(ValueError):
-            self.user = user.User.log_in('foo', 'bar')
-
-        user.User.sign_up(**self.user_args)
-        user.User.get_by_id(1).review(True)
-        self.user = user.User.log_in('foo', 'bar')

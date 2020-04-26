@@ -145,7 +145,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, name, user_type, bio='', contact_info='', session=None):
+    def sign_up(cls, username, password, name, user_type, bio=None, contact_info=None, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -221,16 +221,6 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             else:
                 raise ValueError('Incorrect username or password')
 
-    @SessionManager.with_session
-    def delete(self, session=None):
-        """Deletes the current user
-
-        Kwargs:
-            session (Session): session to perform the query on. Supplied by decorator
-        """
-        session.add(self)
-        session.delete(self)
-
     @classmethod
     @SessionManager.with_session
     def get_by_id(cls, id, session=None):
@@ -269,11 +259,8 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        if approval:
-            self.needs_review = False
-            session.add(self)
-        else:
-            self.delete()
+        self.needs_review = not approval
+        session.add(self)
 
     @SessionManager.with_session
     def add_bio(self, bio, session=None):
