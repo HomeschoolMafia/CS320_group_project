@@ -33,6 +33,6 @@ class AdminPanelView(FlaskView):
 
     @route('/new_admin/', methods=['GET', 'POST'])
     def new_admin(self):
-
+        pass
         
 
