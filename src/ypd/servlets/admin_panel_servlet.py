@@ -1,7 +1,7 @@
 from functools import wraps
 
 from flask import current_app, redirect, render_template, request, url_for
-from flask_classy import FlaskView
+from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
 from ..model.user import User
@@ -26,13 +26,13 @@ class AdminPanelView(FlaskView):
         return render_template('admin_panel.html', users_to_review=User.get_unreviewed_users(), user=current_user)
 
     def review_user(self):
-        user_id = request.args.get('user_id', type=int)
+        id = request.args.get('id', type=int)
         approval = request.args.get('approval', type=int) #we gotta do truthy/falsey again
-        User.get_by_id(user_id).review(bool(approval))
+        User.get_by_id(id).review(bool(approval))
         return redirect(url_for('AdminPanelView:view'))
 
     @route('/new_admin/', methods=['GET', 'POST'])
     def new_admin(self):
 
-        
+        pass
 
