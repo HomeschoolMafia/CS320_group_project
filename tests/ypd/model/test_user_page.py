@@ -76,5 +76,3 @@ class TestUserPage(TestCase):
         self.assertEqual('foo', projects[0].title)
         self.assertEqual('Awesome', projects[1].title)
         self.assertEqual('Cannon', projects[2].title)
-
-

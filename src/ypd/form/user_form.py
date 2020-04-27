@@ -8,6 +8,9 @@ from wtforms.widgets import TextArea
 from flask_wtf import FlaskForm, Form
 from ypd.model.user import UserType
 
+class ChatForm(FlaskForm):
+    message = TextAreaField('Message...', validators=[InputRequired()], widget=TextArea(), render_kw={'cols': '150', 'rows': '1'})
+    send = SubmitField('Send')
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])

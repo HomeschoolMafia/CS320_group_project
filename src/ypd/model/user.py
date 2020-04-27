@@ -289,25 +289,15 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Raises Value
         """
         self.password = User.password_check(password, confirm_password)
-        session.add(self)    
-    
-    @classmethod
-    @SessionManager.with_session
-    def delete_account(self, session=None):
-        
-        acc = User.get_by_username(self.username)
-    
-        if acc.can_post_provided or acc.can_post_both:
-           session.query(Provided).filter_by(id=acc.id).delete()
+        session.add(self)
 
-        session.delete(acc)
     @SessionManager.with_session
     def add_bio(self, bio, session=None):
         """Get all of the Projects from the User
 
         Args:
             bio (str): bio of User
-        
+
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """

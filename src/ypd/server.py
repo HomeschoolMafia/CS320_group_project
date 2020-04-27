@@ -31,16 +31,6 @@ admin.add_view(ModelView(User, session))
 admin.add_view(ModelView(Solicited, session))
 admin.add_view(ModelView(Provided, session))
 
-extra_dirs = ['/templates/',]
-extra_files = extra_dirs[:]
-for extra_dir in extra_dirs:
-    for dirname, dirs, files in walk(extra_dir):
-        for filename in files:
-            filename = path.join(dirname, filename)
-            if path.isfile(filename):
-                extra_files.append(filename)
-app.run(extra_files=extra_files)
-
 #Register all the webpages
 user_servlet.UserView.register(app)
 index_servlet.IndexView.register(app)

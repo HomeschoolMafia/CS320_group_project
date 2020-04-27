@@ -98,20 +98,13 @@ class TestUser(TestCase):
         with self.assertRaises(ValueError):
             user.User.log_in('foo', 'barbarba')
     
-    def test_delete_account(self):
-        acc = user.User.sign_up(**self.user_args)
-        acc.delete_account()
-
-        with self.assertRaises(NoResultFound):
-            acc.get_by_username(username=acc.username)
-
     def test_update_password(self):
         acc = user.User.sign_up(**self.user_args)
         password = '3ncap2u1at10n'
         acc.update_password(password, password)
 
         self.assertTrue(check_password_hash(acc.password, password))
-    
+
     def test_password_check(self):
         acc = user.User.sign_up(**self.user_args)
         password = 'DatBootyIsGood'
@@ -125,18 +118,6 @@ class TestUser(TestCase):
         with self.assertRaises(ValueError):
             acc.update_password(password, 'encaps')
             acc.update_password(password, password)
-
-    def test_delete_projects(self):
-        user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'barbarba')
-
-        project = Provided()
-        project.post('asdf', 'qwerty', self.user)
-        project = Provided.get(1)
-        project.delete_projects(self.user)
-
-        with self.assertRaises(ValueError):
-            Provided.get(self.user.id)
 
     def test_favorite_project(self):
         user.User.sign_up(**self.user_args)

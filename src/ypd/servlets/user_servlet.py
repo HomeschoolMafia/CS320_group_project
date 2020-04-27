@@ -1,7 +1,7 @@
 import os
 import re
-import secrets 
-import string 
+import secrets
+import string
 from datetime import datetime, timedelta
 
 from flask import (Markup, current_app, flash, redirect, render_template,
@@ -12,16 +12,31 @@ from werkzeug.security import check_password_hash
 
 from flask_classy import FlaskView, route
 from flask_mail import Mail, Message
+from flask_socketio import SocketIO, send, emit
 from ypd.form.user_form import (ChangePasswordForm, LoginForm, RecoveryForm,
                                 ReEnterPasswordForm, RegistrationForm)
 from ypd.model.user import User, UserType
 
-# from ..server import mail
-
 """A class that represents User creation routes"""
 class UserView(FlaskView):
     msg = ""
-    
+
+    # @route('/chat', methods=['POST', 'GET'])
+    # def chat(self):
+    #     return render_template('chat.html')
+
+    # @route('/originate', methods=['POST', 'GET'])
+    # def originate(self):
+    #     socketio = SocketIO(current_app)
+    #     socketio.emit('Server originated', 'Something happened on the server')
+    #     return Markup('<h1>Sent!</h1>')
+
+    # @socketio.on('messge from user', namespaces='/messages')
+    # def recieve_message_from_user(self, message):
+    #     print(request.sid)
+    #     print(f'USER MESSAGE: {message}')
+    #     emit('from flask', message.upper(), broadcast=True)
+
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
@@ -79,13 +94,10 @@ class UserView(FlaskView):
                                      recipients=[user.email],
                                      body=f"""Hello \033[1m {user.username} \033[0m,\n\rYour password has been changed to \033[1m {res} \033[0m.\nPlease change it \033[1m immdiately \033[0m after signing in. \nIf this is not correct, please respond to this email!""",
                                      html=render_template("pwd_forgot_email.html", username=user.username, res=res))
-
                     return redirect(url_for('UserView:login'))
             except TypeError as e:
                 flash(str(e))
         return render_template('forgot_password.html', form=form)
-
-
     
     # def forgotEmailOrUsername(self):
     #     form = ValidateUsernameForm()
@@ -127,7 +139,7 @@ class UserView(FlaskView):
         form = RegistrationForm()
         if form.validate_on_submit and request.method == 'POST':
             try:
-                if not any(char in form.password.data for char in string.ascii_lowercase) or not any(char in form.password.data for char in string.ascii_uppercase) or not any(char in form.password.data for char in string.digits) or not any(char in form.password.data for char in string.punctuation): 
+                if not any(char in form.password.data for char in string.printable): 
                     raise TypeError
                 user = User.sign_up(form.username.data, form.password.data, form.confirm_password.data, form.email.data, form.username.data, UserType(form.user_types.data))
                 login_user(user)
