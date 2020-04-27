@@ -9,7 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from . import Base, Session
 from .catalog import Catalog
 from .db_model import DBModel
-from .project import Provided, Solicited
+from .project import Provided, Project, Solicited
 from .session_manager import SessionManager
 
 
@@ -21,8 +21,8 @@ class UserType(Enum):
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
-    Column('users_id', Integer, ForeignKey('users.id')),
-    Column('project_id', Integer, ForeignKey('provided.id')))       
+        Column('users_id', Integer, ForeignKey('users.id')),
+        Column('project_id', Integer, ForeignKey('provided.id')))       
 
     solicited_association = Table('solicited_association', Base.metadata,
         Column('users_id', Integer, ForeignKey('users.id')),
@@ -145,7 +145,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, name, user_type, bio=None, contact_info=None, session=None):
+    def sign_up(cls, username, password, confirm_password, email, name, user_type, bio=None, contact_info=None, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -153,30 +153,35 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Args:
             username (str): Username to log in with
             password (str): Password to log in with
+            confirm_password (str): Confirmed password to log in with
+            email (str): Email to send messages to
             name (str): Display name of the account
             user_type (UserType): Type of the account
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
 
-        Raises: 
-            ValueError: If the username already exists in the database
+        Raises:
+            TypeErrors:  If user_type is invalid 
+            ValueErrors: If the username already exists in the database
         """
         new_user = cls()
 
         #Set permissions
         if not type(user_type) is UserType:
             raise TypeError(f'Expected type {UserType} for argument user_type. Got {type(user_type)}')
+        
+
         new_user.is_admin = user_type is UserType.admin
         can_post_both = new_user.is_admin or user_type is UserType.faculty
         new_user.can_post_solicited = can_post_both or user_type is UserType.student
         new_user.can_post_provided = can_post_both or user_type is UserType.company
         # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
         new_user.needs_review = False #Uncomment the above line once we have admin review finished
-
+        new_user.email = email
         new_user.username = username
         new_user.name = name
-        new_user.password = generate_password_hash(password)
+        new_user.password = User.password_check(password, confirm_password)
         new_user.bio = bio
         new_user.contact_info = contact_info
 
@@ -234,6 +239,57 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         return session.query(User).filter_by(id=id).one_or_none()
+    
+    @classmethod
+    @SessionManager.with_session
+    def get_by_username(cls, username, session=None):
+        """Gets the User object with the unique username
+        
+        Args:
+            username (str): username of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        result = session.query(User).filter_by(username=username).one()
+        
+        return result
+            
+    @classmethod
+    def password_check(self, password, confirm_password):
+        """Takes in user form password and confirmed password, and validates
+        Args:
+            password (str): Password to be stored in user
+            confirm_password (str): Password for comparing to for validation
+        Raises:    
+            ValueError: If password and confirm_password length and elements do no match
+        Returns:
+            password (hash): Password hash to be stored in account 
+        """
+        if confirm_password != password:
+            raise ValueError('New password and cofirm password do not match!!!')
+        elif len(confirm_password) < 8  or len(password) < 8:
+            raise ValueError('Password must be at least 8 characters long!')
+        # elif check_password_hash(self.password, password):
+        #     raise ValueError('Use a different password!')
+        else:
+            return generate_password_hash(password)
+
+    @SessionManager.with_session
+    def update_password(self, password, confirm_password, session=None):
+        """Updates current user object password with new password
+        
+        Args:
+            password (str): password of User object to get
+            confirm_password (str): password of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+
+        Raises Value
+        """
+        self.password = User.password_check(password, confirm_password)
+        session.add(self)
 
     @SessionManager.with_session
     def add_bio(self, bio, session=None):

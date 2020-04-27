@@ -1,5 +1,5 @@
-username,password,name,user_type
-creynolds1,hai,Cayden Reynolds,admin
-llewis9,UwU,LeQuient Lewis,faculty
-gholley,rawr xD,Gabe Holley,company
-abaldwin3,OwO,Alex Baldwin,student
+username,password,confirm_password,email,name,user_type
+creynolds1,haihaihai,haihaihai,creynolds1@ycp.edu,Cayden Reynolds,admin
+llewis9,UwUUwUUwU,UwUUwUUwU,llewis9@ycp.edu,LeQuient Lewis,faculty
+gholley,rawr xDrawr xD,rawr xDrawr xD,gholley@ycp.edu,Gabe Holley,company
+abaldwin3,OwOOwOOwO,OwOOwOOwO,abaldwin3@ycp.edu,Alex Baldwin,student

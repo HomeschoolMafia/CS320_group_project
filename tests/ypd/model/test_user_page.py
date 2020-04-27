@@ -19,11 +19,12 @@ class TestUserPage(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'bio': 'test',
-                          'contact_info': 'name@mail.com', 'user_type': user.UserType.faculty}
+        self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 
+                          'email': 'fbaz@ycp.edu', 'name': 'baz', 'user_type': user.UserType.faculty,
+                          'bio': 'test', 'contact_info': 'name@mail.com'}
 
         self.user = User(id=1, can_post_provided=True, can_post_solicited=True)
-        project.Provided().post('foo', 'bar', self.user)
+        project.Provided().post('foo', 'barbarba', self.user)
         project.Provided().post('Awesome', 'Force of Gravity', self.user)
         project.Provided().post('Cannon', 'Electric Beast', self.user)
 
@@ -38,7 +39,7 @@ class TestUserPage(TestCase):
 
     def test_submit_bio(self):
         user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
 
         bio = 'Test bio'
         self.user.add_bio(bio)
@@ -48,7 +49,7 @@ class TestUserPage(TestCase):
 
     def test_submit_contact(self):
         user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
 
         contact = 'test@mail.com'
         self.user.add_contact(contact)
@@ -57,7 +58,7 @@ class TestUserPage(TestCase):
 
     def test_get_user_projects(self):
         user.User.sign_up(**self.user_args)
-        self.user = user.User.log_in('foo', 'bar')
+        self.user = user.User.log_in('foo', 'barbarba')
 
         new_user = User(id=2, can_post_provided=True, can_post_solicited=True)
         project.Provided().post('Test', 'Fire', new_user)
@@ -75,5 +76,3 @@ class TestUserPage(TestCase):
         self.assertEqual('foo', projects[0].title)
         self.assertEqual('Awesome', projects[1].title)
         self.assertEqual('Cannon', projects[2].title)
-
-

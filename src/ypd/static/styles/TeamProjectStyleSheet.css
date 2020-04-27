@@ -191,7 +191,11 @@ fieldset {
 
 .errorText {
     font-size: 15px;
-    color: red;
+    color: rgb(255, 0, 0, 0.55);
+    text-shadow:-1px -1px 0 #000,
+                 1px -1px 0 #000,
+                -1px 1px 0 #000,
+                 1px 1px 0 #000;
     text-align: center;
 }
 
