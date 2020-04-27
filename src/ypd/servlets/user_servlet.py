@@ -21,22 +21,6 @@ from ypd.model.user import User, UserType
 class UserView(FlaskView):
     msg = ""
 
-    # @route('/chat', methods=['POST', 'GET'])
-    # def chat(self):
-    #     return render_template('chat.html')
-
-    # @route('/originate', methods=['POST', 'GET'])
-    # def originate(self):
-    #     socketio = SocketIO(current_app)
-    #     socketio.emit('Server originated', 'Something happened on the server')
-    #     return Markup('<h1>Sent!</h1>')
-
-    # @socketio.on('messge from user', namespaces='/messages')
-    # def recieve_message_from_user(self, message):
-    #     print(request.sid)
-    #     print(f'USER MESSAGE: {message}')
-    #     emit('from flask', message.upper(), broadcast=True)
-
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):

@@ -1,10 +1,12 @@
 import os
 from os import path, walk
 
-from flask import Flask, current_app
+from flask import Flask, Markup, request
+from flask_classy import route
+from flask_socketio import SocketIO, send, emit
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_login import LoginManager
+from flask_login import LoginManager, login_required
 
 from .model import Base, Session, engine
 from .model.project import Project, Provided, Solicited
@@ -18,6 +20,25 @@ Base.metadata.create_all(engine)
 #start flask
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+socketio = SocketIO(app)
+
+# @login_required
+# @route('/chat/', methods=['POST', 'GET'])
+# def chat(self):
+#     return render_template('chat.html')
+
+# @login_required
+# @route('/origin/', methods=['POST', 'GET'])
+# def originate(self):
+#     socketio.emit('Server originated', 'Something happened on the server')
+#     return Markup('<h1>Sent!</h1>')
+
+# @login_required
+# @socketio.on('messge from user', namespaces='/messages')
+# def recieve_message_from_user(self, message):
+#     print(request.sid)
+#     print(f'USER MESSAGE: {message}')
+#     emit('from flask', message.upper(), broadcast=True)
 
 #Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
@@ -51,6 +72,7 @@ def load_user(user_id):
     return User.get_by_id(user_id)
 
 if __name__=='__main__':
+    socketio.run(app)
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.run(debug=True)
