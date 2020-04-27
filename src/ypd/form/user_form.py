@@ -3,7 +3,6 @@ from wtforms import (BooleanField, FormField, IntegerField, PasswordField,
                      RadioField, StringField, SubmitField, validators)
 from wtforms.validators import (DataRequired, Email, EqualTo, InputRequired,
                                 Length)
-from ypd.model.user import UserType
 
 
 class RegistrationForm(FlaskForm):
@@ -12,8 +11,8 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('password')])
     #email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
     #contacts = FormField(TelephoneForm)
-    user_types = RadioField('User Type', validators=[InputRequired()], coerce=int,
-        choices=[(UserType.student.value, 'Student'), (UserType.faculty.value, 'Faculty'), (UserType.company.value, 'Company')])
+    # user_types = RadioField('User Type', validators=[InputRequired()], coerce=int,
+    #     choices=[(UserType.student.value, 'Student'), (UserType.faculty.value, 'Faculty'), (UserType.company.value, 'Company')])
     submit = SubmitField('Sign Up')
 
 class LoginForm(FlaskForm):

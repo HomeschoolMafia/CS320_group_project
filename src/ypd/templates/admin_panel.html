@@ -6,12 +6,28 @@
 
 <div class="mainBody">
     {% for user_to_review in users_to_review %}
-    <a href={{url_for('AdminPanelView:review_user', user_id=user_to_review.id, approval=1)}}>
-        <div class="postText">
-            <em>{{ user_to_review.name }}</em> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <div class="postBox">
+            <a href={{url_for('UserPageView:view', id=user_to_review.id)}}>
+                <div class="postText">
+                    <em>{{user_to_review.name}}</em><t style="margin-left: 70px">{{user.email}}</t>
+                </div>
+            </a>
+            <div class="userToolOp" style="margin-top: -40px">
+                <form class="tooltip"  action="{{ url_for('AdminPanelView:review_user', id=user_to_review.id, approval=1) }}" method="post">
+                    <button onclick="sumbit">
+                        <span class = "tooltiptext">Click to approve user</span>
+                        ✔️
+                    </button>
+                </form>
+                <form class="tooltip"  action="{{ url_for('AdminPanelView:review_user', id=user_to_review.id, approval=0) }}" method="post">
+                    <button onclick="sumbit">
+                        <span class = "tooltiptext">Click to deny user</span>
+                        ❌
+                    </button>
+                </form>
+            </div>
         </div>
-    </a>
-    <div class="postBar"> </div> <br>
+        <div class="postBar"> </div> <br>
     {% endfor %}
 </div>
 {% endblock %}

@@ -1,5 +1,9 @@
-username,password,name,user_type
-creynolds1,hai,Cayden Reynolds,admin
-llewis9,UwU,LeQuient Lewis,faculty
-gholley,rawr xD,Gabe Holley,company
-abaldwin3,OwO,Alex Baldwin,student
+username,password,name,is_admin,email
+creynolds1,hai,Cayden Reynolds,False,creynolds1@ycp.edu
+llewis9,UwU,LeQuient Lewis,False,llewis9@ycp.edu
+gholley,rawr xD,Gabe Holley,False,gholley@ycp.edu
+abaldwin3,OwO,Alex Baldwin,False,abaldwin3@ycp.edu
+djhake2,password,Donald Hake,False,djhake2@ycp.edu
+admin,adminway,Admin,True,creynolds1@ycp.edu
+tesla,eslatay,Tesla,False,tesla@tsla.com
+BD,diagnostics,"Becton, Dickenson and Company",False,bd@gmail.com

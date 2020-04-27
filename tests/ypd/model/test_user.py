@@ -20,7 +20,7 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'user_type': user.UserType.faculty}
+        self.user_args = {'username': 'foo', 'name': 'baz', 'password': 'bar', 'user_type': user.UserType.admin}
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -42,7 +42,7 @@ class TestUser(TestCase):
         self.assertEqual(True, check_password_hash(results[0].password, 'bar'))
         self.assertTrue(results[0].can_post_solicited)
         self.assertTrue(results[0].can_post_provided)
-        self.assertFalse(results[0].is_admin)
+        self.assertTrue(results[0].is_admin)
         self.assertFalse(results[0].needs_review)
 
     def test_signup_same_username_fails(self):

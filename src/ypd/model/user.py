@@ -1,23 +1,16 @@
 from enum import Enum, auto
 
 from flask_login import UserMixin
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, text
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import Base, Session
+from . import Base, ycp_engine
 from .catalog import Catalog
 from .db_model import DBModel
 from .project import Provided, Solicited
 from .session_manager import SessionManager
-
-
-class UserType(Enum):
-    student = auto()
-    faculty = auto()
-    company = auto()
-    admin = auto()
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -145,7 +138,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, name, user_type, bio=None, contact_info=None, session=None):
+    def sign_up(cls, username, password, name, email, is_admin=False, bio=None, contact_info=None, session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -163,15 +156,18 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             ValueError: If the username already exists in the database
         """
         new_user = cls()
+        new_user.is_admin = is_admin
 
-        #Set permissions
-        if not type(user_type) is UserType:
-            raise TypeError(f'Expected type {UserType} for argument user_type. Got {type(user_type)}')
-        new_user.is_admin = user_type is UserType.admin
-        can_post_both = new_user.is_admin or user_type is UserType.faculty
-        new_user.can_post_solicited = can_post_both or user_type is UserType.student
-        new_user.can_post_provided = can_post_both or user_type is UserType.company
-        new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
+        email_user, _, email_domain = email.partition('@')
+        if email_domain == 'ycp.edu':
+            query = text('SELECT current_student, current_faculty FROM users WHERE username = :email_user')
+            student, faculty = ycp_engine.execute(query, {'email_user': email_user}).fetchone()
+        else:
+            student, faculty = False, False
+            
+        new_user.needs_review = not(student or faculty or is_admin)
+        new_user.can_post_solicited = not new_user.needs_review
+        new_user.can_post_provided = not student
 
         new_user.username = username
         new_user.name = name
@@ -259,8 +255,8 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
         """
-        self.needs_review = not approval
         session.add(self)
+        self.needs_review = False if approval else session.delete(self)
 
     @SessionManager.with_session
     def add_bio(self, bio, session=None):

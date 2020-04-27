@@ -4,7 +4,7 @@ from flask_login import login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
 
 from ypd.form.user_form import LoginForm, RegistrationForm
-from ypd.model.user import User, UserType
+from ypd.model.user import User
 
 """A class that represents User creation routes"""
 class UserView(FlaskView):
@@ -33,7 +33,7 @@ class UserView(FlaskView):
         form = RegistrationForm()
         if request.method == 'POST' and form.validate_on_submit:
             try:
-                user = User.sign_up(form.username.data, form.password.data, form.username.data, UserType(form.user_types.data))
+                user = User.sign_up(form.username.data, form.password.data, form.username.data)
                 login_user(user, remember=True)
                 return redirect(url_for('IndexView:get'))
             except IntegrityError:

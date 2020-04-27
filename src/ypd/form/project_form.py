@@ -15,6 +15,10 @@ class SubmissionForm(FlaskForm):
     projType = RadioField('Project Type:', validators=[InputRequired()], coerce=int,
                           choices=[(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
     submit = SubmitField('Submit')
+    engineering =  SubmitField('asdf')
+    computer = asdf SubmitField('fdsa')efe
+
+    groupings = [('asdf', 'fdsa')]
 
 class EditForm(FlaskForm):
     """Project editing Form"""
