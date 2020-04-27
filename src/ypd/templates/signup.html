@@ -15,21 +15,23 @@
                 <div class="form__items">
                     <fieldset>
                         <legend>Sign-Up</legend>
-                        {{ form.csrf_token() }}
-                        {{ form.username.label(class="form__label") }}
-                        {{ form.username(class="form__input") }}
-                        {{ form.password.label(class="form__label") }}
-                        {{ form.password(class="form__input") }}
-                        {{ form.confirm_password.label(class="form__label") }}
-                        {{ form.confirm_password(class="form__input") }}
-                        {{ form.user_types(class="radio")}}
-
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}
                                 <div class="errorText">
                                     <br>{{messages[0]}}
+                                </div>
                             {% endif %}
                         {% endwith %}
+                        {{ form.csrf_token() }}
+                        {{ form.username.label(class="form__label") }}
+                        {{ form.username(class="form__input") }}
+                        {{ form.email.label(class="form__label") }}
+                        {{ form.email(class="form__input") }}
+                        {{ form.password.label(class="form__label") }}
+                        {{ form.password(class="form__input") }}
+                        {{ form.confirm_password.label(class="form__label") }}
+                        {{ form.confirm_password(class="form__input") }}
+                        {{ form.user_types (class="radio")}}
                     </fieldset>
                     {{ form.submit(id="login") }}
                     <small>

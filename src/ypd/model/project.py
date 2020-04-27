@@ -119,7 +119,7 @@ class Project(Base, DBModel, HasPosterMixin):
         else:
             if self.can_be_modified_by(user):
                 self.archived = False
-        session.add(self)   
+        session.add(self)
 
     def can_be_modified_by(self, user):
         """Check whether this project can be modified by user
@@ -151,7 +151,7 @@ class Provided(Project):
             super().post(title, description, poster)
         else:
             raise PermissionError('User does not have permissions to post provided projects')
-
+    
 class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
