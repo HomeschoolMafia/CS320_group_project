@@ -84,24 +84,6 @@ class UserView(FlaskView):
         return render_template('forgot_password.html', form=form)
 
     @login_required
-    def deleteAccount(self):
-        form = ReEnterPasswordForm()
-        try:
-            if form.validate_on_submit and request.methods == 'POST' and check_password_hash(current_user.password, form.password.data):
-                '''Deletes account for now. Want to implement timed deletion later on'''
-                mail = Mail()
-                mail.init_app(current_app)
-                mail.send_message(subject="ACCOUNT NO LONGER ACTIVE!",
-                                recipients=[current_user.email],
-                                body=f"""Hello \033[1m {current_user.username} \033[0m , \n\rYour account is no longer active and has been deleted. \nIf this is not correct, please respond to this email!""",
-                                html=render_template('delete_email.html', username=current_user.usrename))
-                current_user.delete_account()
-                return redirect(url_for('UserView:logout'))
-        except Exception as e:
-            flash(str(e))
-        return(render_template('reenter_password.html', form=form))
-
-    @login_required
     def logout(self):
         logout_user()
         return redirect(url_for('UserView:login'))
@@ -114,7 +96,7 @@ class UserView(FlaskView):
             try:
                 if not any(char in form.password.data for char in string.printable): 
                     raise TypeError
-                user = User.sign_up(form.username.data, form.password.data, form.confirm_password.data, form.email.data, form.username.data, UserType(form.user_types.data))
+                user = User.sign_up(form.username.data, form.password.data, form.confirm_password.data, form.email.data, form.username.data)
                 login_user(user)
                 return redirect(url_for('IndexView:get'))
             except IntegrityError:

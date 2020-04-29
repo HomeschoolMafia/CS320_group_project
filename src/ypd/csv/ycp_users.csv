@@ -1,6 +1,6 @@
-username,current_student,current_faculty
-creynolds1,True,False
-llewis9,True,False
-abaldwin3,True,False
-gholley,True,False
-djhake2,False,True
+username,current_student,current_faculty,name
+creynolds1,True,False,Cayden Reynolds
+llewis9,True,False,LeQuient Lewis
+abaldwin3,True,False,Alexander Baldwin
+gholley,True,False,Gabriel Holley
+djhake2,False,True,Donald Hake

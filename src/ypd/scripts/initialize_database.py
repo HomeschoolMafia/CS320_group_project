@@ -17,7 +17,8 @@ def main():
     print('Creating ycp database')
     metadata = MetaData()
     ycp_users = Table('users', metadata,
-    Column('username', String), Column('current_student', Boolean), Column('current_faculty', Boolean))
+    Column('username', String), Column('current_student', Boolean), Column('current_faculty', Boolean),
+    Column('name', String))
     metadata.create_all(ycp_engine)
 
     ycp_path = csv_dir.joinpath('ycp_users.csv')

@@ -13,40 +13,17 @@ from .model.project import Project, Provided, Solicited
 from .model.user import User
 from .servlets import *
 
-#Initialize the database
-session = Session()
-Base.metadata.create_all(engine)
-
 #start flask
 app = Flask(__name__)
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
-socketio = SocketIO(app)
 
-# @login_required
-# @route('/chat/', methods=['POST', 'GET'])
-# def chat(self):
-#     return render_template('chat.html')
+# Email configuration w/ app
+app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('YPD_MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('YPD_MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('YPD_MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
 
-# @login_required
-# @route('/origin/', methods=['POST', 'GET'])
-# def originate(self):
-#     socketio.emit('Server originated', 'Something happened on the server')
-#     return Markup('<h1>Sent!</h1>')
-
-# @login_required
-# @socketio.on('messge from user', namespaces='/messages')
-# def recieve_message_from_user(self, message):
-#     print(request.sid)
-#     print(f'USER MESSAGE: {message}')
-#     emit('from flask', message.upper(), broadcast=True)
 
 #Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
-
-# Email configuration w/ app
-'''Recommended to create environment variables for mail_username and mail_password for security/convenience reasons'''                    
-app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('YPD_MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('YPD_MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('YPD_MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
-
+session = Session()
 admin = Admin(app, name='CS320 Project Database', template_mode='bootstrap3')
 admin.add_view(ModelView(User, session))
 admin.add_view(ModelView(Solicited, session))

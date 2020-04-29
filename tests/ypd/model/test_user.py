@@ -21,7 +21,8 @@ class TestUser(TestCase):
 
     def setUp(self):
         self.session = self.Session(bind=self.engine)
-        self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 'email': 'fbaz@ycp.edu', 'name': 'baz', 'user_type': user.UserType.admin, 'bio': 'test', 'contact_info': 'name@mail.com'}
+        self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 'email': 'fbaz@ycp.edu',
+                          'name': 'baz', 'bio': 'test', 'contact_info': 'name@mail.com', 'is_admin': True}
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -187,3 +188,21 @@ class TestUser(TestCase):
         self.assertEqual(favorites.projects[1].poster, self.user)
         self.assertEqual(len(favorites.projects), 2)
 
+    def test_change_permissions(self):
+        user.User.sign_up(**self.user_args)
+        self.user = user.User.log_in('foo', 'barbarba')
+        self.user.change_permissions(False, True, False)
+        self.assertFalse(self.user.is_admin)
+        self.assertTrue(self.user.can_post_provided)
+        self.assertFalse(self.user.can_post_solicited)
+
+    def test_review_user(self):
+        user.User.sign_up(**self.user_args)
+        self.user = user.User.log_in('foo', 'barbarba')
+        self.user.review(False)
+        self.assertIsNone(self.user.get_by_id(1))
+        
+        user.User.sign_up(**self.user_args)
+        self.user = user.User.log_in('foo', 'barbarba')
+        self.user.review(True)
+        self.assertIsNotNone(self.user.get_by_id(1))

@@ -20,7 +20,7 @@ class TestUserPage(TestCase):
     def setUp(self):
         self.session = self.Session(bind=self.engine)
         self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 
-                          'email': 'fbaz@ycp.edu', 'name': 'baz', 'user_type': user.UserType.admin,
+                          'email': 'fbaz@ycp.edu', 'name': 'baz', 'is_admin': True,
                           'bio': 'test', 'contact_info': 'name@mail.com'}
 
         self.user = User(id=1, can_post_provided=True, can_post_solicited=True)

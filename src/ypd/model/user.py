@@ -138,7 +138,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, confirm_password, email, name, bio=None, contact_info=None, session=None):
+    def sign_up(cls, username, password, confirm_password, email, name, is_admin=False, bio='', contact_info='', session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -149,10 +149,12 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             confirm_password (str): Confirmed password to log in with
             email (str): Email to send messages to
             name (str): Display name of the account
-            user_type (UserType): Type of the account
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
+            is_admin (bool): Whether the account is an admin
+            bio (str): User's bio
+            contact_info (str): User's contact information
 
         Raises:
             TypeErrors:  If user_type is invalid 
@@ -164,14 +166,15 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         email_user, _, email_domain = email.partition('@')
         if email_domain == 'ycp.edu':
             query = text('SELECT current_student, current_faculty FROM users WHERE username = :email_user')
-            student, faculty = ycp_engine.execute(query, {'email_user': email_user}).fetchone()
+            student, faculty = ycp_engine.execute(query, {'email_user': email_user}).fetchone() or (False, False)
         else:
             student, faculty = False, False
             
         new_user.needs_review = not(student or faculty or is_admin)
         new_user.can_post_solicited = not new_user.needs_review
         new_user.can_post_provided = not student
-
+        
+        new_user.email = email
         new_user.username = username
         new_user.name = name
         new_user.password = User.password_check(password, confirm_password)
@@ -263,8 +266,6 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             raise ValueError('New password and cofirm password do not match!!!')
         elif len(confirm_password) < 8  or len(password) < 8:
             raise ValueError('Password must be at least 8 characters long!')
-        # elif check_password_hash(self.password, password):
-        #     raise ValueError('Use a different password!')
         else:
             return generate_password_hash(password)
 
@@ -337,3 +338,20 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         self.contact_info = contact
         session.add(self)
+
+    @SessionManager.with_session
+    def change_permissions(self, is_admin, can_post_provided, can_post_solicited, session=None):
+        """Change this user's permissions
+
+        Args:
+            is_admin (bool): whether the user should be an admin
+            can_post_provided (bool): whether the user should be able to post provided projects
+            can_post_solicited (bool): whether the user should be able to post solicited projects
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        session.add(self)
+        self.is_admin = is_admin
+        self.can_post_provided = can_post_provided
+        self.can_post_solicited = can_post_solicited

@@ -13,8 +13,49 @@
         <div class="postBarUser"></div>
     </div>
     <div class="pageHeaderL">
-        <h1>{{ user.name }}</h1>
+        <h1>{{user.name}}</h1>
         <div class="postBarUser"></div>
+        {% if current_user.is_admin and user.needs_review %}
+            <div class="userToolOp">
+                <form class="tooltip"  action="{{ url_for('AdminPanelView:review_user', id=user.id, approval=1) }}" method="post">
+                    <button onclick="sumbit">
+                        <span class = "tooltiptext">Click to approve user</span>
+                        ✔️
+                    </button>
+                </form>
+                <form class="tooltip"  action="{{ url_for('AdminPanelView:review_user', id=user.id, approval=0) }}" method="post">
+                    <button onclick="sumbit">
+                        <span class = "tooltiptext">Click to deny user</span>
+                        ❌
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+        {% if permissions_form %}
+            <form action="{{url_for('UserPageView:change_permissions', id=user.id)}}" method="POST">	
+                <div class="submissionBody">
+                    <fieldset>
+                        {% for field in permissions_form %}
+                            {% if field.label.text != 'CSRF Token' %}
+                                {% if field.type != "SubmitField" %}
+                                    {{field.label.text}}
+                                {% endif %}
+                                {{field}} <br>
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                </div>
+            </form>
+        {% elif current_user.is_admin %}
+            <div class="userToolOp">
+                <a class="tooltip" href="{{url_for('UserPageView:change_permissions', id=user.id)}}">
+                    <button>
+                        <span class = "tooltiptext">Click to change this user's permissions</span>
+                        ✏️
+                    </button>
+                </a>
+            </div>
+        {% endif %}
         <!--<div>
             <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
                 <input type="file" name="file">

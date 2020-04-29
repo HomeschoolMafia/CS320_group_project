@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <h2>Hello <b> {{name}},</b></h2> 
+    <p>Your YCP project database account has been {{'approved' if approval else 'denied'}}</p> 
+    {% if approval %}
+    <p>You may now begin posting projects</p>
+    {% endif %}
+</body>
+</html>

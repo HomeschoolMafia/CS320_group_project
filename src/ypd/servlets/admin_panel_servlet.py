@@ -3,6 +3,7 @@ from functools import wraps
 from flask import current_app, redirect, render_template, request, url_for
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
+from flask_mail import Mail
 
 from ..model.user import User
 
@@ -29,5 +30,13 @@ class AdminPanelView(FlaskView):
     def review_user(self):
         id = request.args.get('id', type=int)
         approval = request.args.get('approval', type=int) #we gotta do truthy/falsey again
-        User.get_by_id(id).review(approval)
+        user = User.get_by_id(id)
+        user.review(approval)
+        approve_deny_text = 'approved' if approval else 'denied'
+        append_text = '\nYou may now login and begin posting projects' if approval else ''
+        mail = Mail()
+        mail.init_app(current_app)
+        mail.send_message(subject="Your YDP Account",
+                          recipients=[user.email],
+                          body=f"""Hello {user.name}, \nYour YCP Project Database account has been {approve_deny_text}.{append_text}""")
         return redirect(url_for('AdminPanelView:view'))
