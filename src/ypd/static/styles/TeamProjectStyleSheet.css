@@ -35,6 +35,7 @@ fieldset {
     overflow-y: scroll;
     height: 750px;
     font-family: 'Rokkitt', serif;
+    overflow: visible;
 }
 
 .logo {
