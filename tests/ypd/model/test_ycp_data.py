@@ -30,5 +30,4 @@ class TestUser(TestCase):
 
     def test_invalid_user(self):
         ycp_data_object = ycp_data.YCPData('invalid')
-        data = ycp_data_object.get_data()
         self.assertFalse(ycp_data_object.is_valid)
