@@ -3,7 +3,8 @@ import subprocess
 from csv import DictReader
 from pathlib import Path
 
-from sqlalchemy import Boolean, Column, MetaData, String, Table, insert
+from sqlalchemy import (Boolean, Column, Integer, MetaData, String, Table,
+                        insert)
 
 from .. import config, relative_path
 from ..model import Base, Session, engine, ycp_engine
@@ -18,7 +19,7 @@ def main():
     metadata = MetaData()
     ycp_users = Table('users', metadata,
     Column('username', String), Column('current_student', Boolean), Column('current_faculty', Boolean),
-    Column('name', String))
+    Column('name', String), Column('credits', Integer), Column('major', String))
     metadata.create_all(ycp_engine)
 
     ycp_path = csv_dir.joinpath('ycp_users.csv')

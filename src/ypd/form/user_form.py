@@ -11,13 +11,24 @@ class ChatForm(FlaskForm):
     message = TextAreaField('Message...', validators=[InputRequired()], widget=TextArea(), render_kw={'cols': '150', 'rows': '1'})
     send = SubmitField('Send')
 
-class RegistrationForm(FlaskForm):
-    email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
+class EmailForm(FlaskForm):
+    email = StringField('What is your email address?')
+    submit = SubmitField('Submit')
+
+class CompanyRegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('confirm_password', message='Passwords must match')])
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80)])
+    name = StringField('Display Name', validators=[InputRequired(), Length(min=8, max=64)])
+    bio = StringField('Bio', validators=[InputRequired(), Length(min=8, max=64)])
+    contact = StringField('Contact information', validators=[InputRequired(), Length(min=8, max=64)])
+    submit = SubmitField('Submit')
+
+class YCPRegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80)])
     submit = SubmitField('Submit')
-
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])

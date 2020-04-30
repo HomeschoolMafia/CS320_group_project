@@ -1,16 +1,18 @@
 from enum import Enum, auto
 
 from flask_login import UserMixin
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table, text
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import Base, ycp_engine
+from . import Base
 from .catalog import Catalog
 from .db_model import DBModel
-from .project import Provided, Project, Solicited
+from .project import Project, Provided, Solicited
 from .session_manager import SessionManager
+from .ycp_data import YCPData
+
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -138,7 +140,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, confirm_password, email, name, is_admin=False, bio='', contact_info='', session=None):
+    def sign_up(cls, username, password, confirm_password, email, name=None, is_admin=False, bio='', contact_info='', session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -165,14 +167,24 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
         email_user, _, email_domain = email.partition('@')
         if email_domain == 'ycp.edu':
-            query = text('SELECT current_student, current_faculty FROM users WHERE username = :email_user')
-            student, faculty = ycp_engine.execute(query, {'email_user': email_user}).fetchone() or (False, False)
-        else:
+            ycp_data = YCPData(email_user)
+            if ycp_data.is_valid:
+                student, faculty, name, credits, major = ycp_data.get_data()
+                if student:
+                    class_years = ['Freshman', 'Sophomore', 'Junior', 'Senior']
+                    class_year = class_years[credits//30]
+                    bio = f'A dedicated {class_year} {major} student'
+                else:
+                    bio = f'A brilliant professor of {major}'
+                contact_info = email
+        if email_domain != 'ycp.edu' or not ycp_data.is_valid:
             student, faculty = False, False
+            if not name:
+                raise ValueError('A company account must supply a name!')
             
         new_user.needs_review = not(student or faculty or is_admin)
         new_user.can_post_solicited = not new_user.needs_review
-        new_user.can_post_provided = not student
+        new_user.can_post_provided = not student or is_admin
         
         new_user.email = email
         new_user.username = username

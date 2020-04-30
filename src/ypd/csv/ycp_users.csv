@@ -1,6 +1,6 @@
-username,current_student,current_faculty,name
-creynolds1,True,False,Cayden Reynolds
-llewis9,True,False,LeQuient Lewis
-abaldwin3,True,False,Alexander Baldwin
-gholley,True,False,Gabriel Holley
-djhake2,False,True,Donald Hake
+username,current_student,current_faculty,name,credits,major
+creynolds1,True,False,Cayden Reynolds,80,Computer Science
+llewis9,True,False,LeQuient Lewis,48,Computer Science
+abaldwin3,True,False,Alexander Baldwin,12,Computer Science
+gholley,True,False,Gabriel Holley,96,Electrical Engineering
+djhake2,False,True,Donald Hake,0,Computer Science
