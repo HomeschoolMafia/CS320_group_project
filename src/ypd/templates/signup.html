@@ -23,7 +23,7 @@
                             {% endif %}
                         {% endwith %}
                         {% for field in form %}
-                            {% if field.label.text != 'Csrf Token' %}
+                            {% if field.label.text != 'CSRF Token' %}
                                 {% if field.type != "SubmitField" %}
                                     {{ field.label.text }} <br>
                                 {% endif %}
