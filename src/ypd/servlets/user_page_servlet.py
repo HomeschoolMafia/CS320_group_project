@@ -1,18 +1,23 @@
 import os
 
-from flask import current_app, render_template, request, redirect, url_for, Flask
+from flask import current_app, render_template, request, redirect, url_for, Flask, flash
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 from wtforms import TextAreaField
 from wtforms.validators import InputRequired
 from wtforms.widgets import TextArea
+from werkzeug.utils import secure_filename
+from ypd import config, relative_path
 
 from ..model.catalog import Catalog
 from ..model.project import Solicited, Provided, Project
 from ..model.user import User
 from .tests import Tests
 
+
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = relative_path + "/static/user_pic/"
+app.config['ALLOWED_FILE'] = ['PNG', 'JPG', 'JPEG']
 
 class UserPageView(FlaskView):
     #This gets the user that's logged in info
@@ -21,7 +26,7 @@ class UserPageView(FlaskView):
         current_app.jinja_env.tests['provided'] = Tests.is_provided_test
         catalog = current_user.get_user_projects()
         
-        return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user)
+        return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user, url=app.config['UPLOAD_FOLDER'])
 
     #This gets a user's page from a project 
     @login_required
@@ -48,14 +53,6 @@ class UserPageView(FlaskView):
         catalog = current_user.get_user_projects()
         
         return render_template('userpage.html', catalog=catalog, user=current_user, oldBio=oldBio, current_user=current_user)
-
-    @route ('/submitImage', methods =('GET', 'POST'))
-    def submitImage(self):
-        #target = os.path.join(app, '../db/UserImg')
-        file = request.files('file')
-        #filename = file.filename
-        #file.save(os.path.join(target, filename))
-        return file.filename
 
     @route ('/submitContact', methods =('GET', 'POST'))
     def submitContact(self):
@@ -87,4 +84,34 @@ class UserPageView(FlaskView):
             
         project.toggle_archived(current_user)
 
+        return redirect(url_for('UserPageView:get'))
+    
+    @route('/submitImage', methods=['GET', 'POST'])
+    def submitImage(self):
+        def allowed_image(filename):
+            if not "." in filename:
+                return False
+            
+            ext = filename.rsplit(".", 1)[1]
+
+            if ext.upper() in app.config['ALLOWED_FILE']:
+                return True
+            else:
+                return False
+        
+        current_app.jinja_env.tests['provided'] = Tests.is_provided_test
+        catalog = current_user.get_user_projects()
+        
+        if request.files:
+            image = request.files['image']
+            if not allowed_image(image.filename):
+                text = "Not Allowed"
+                return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user, text=text)
+
+            current_user.add_image()
+                        
+            image.filename = current_user.username + '.png'
+            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))  
+            
+            return redirect(url_for('UserPageView:get'))
         return redirect(url_for('UserPageView:get'))

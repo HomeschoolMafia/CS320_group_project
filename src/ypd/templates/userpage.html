@@ -15,14 +15,21 @@
     <div class="pageHeaderL">
         <h1>{{ user.name }}</h1>
         <div class="postBarUser"></div>
-        <!--<div>
-            <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
-                <input type="file" name="file">
-                <input type="submit" value="Submit">
-            </form>
-        </div>-->
+        <div>
+            {% if text %}
+                {{ text }}
+            {% endif %}
+            {% if user.image %} 
+                <img src="{{url_for('static', filename='user_pic/'+ user.username +'.png')}}" alt="Logo" width="100" height="100">
+            {% else %}
+                <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
+                    <input type="file" name="image" id="image">
+                    <button type="submit">Upload</button>
+                </form>
+            {% endif %}
+        </div>
         <div class="bio">
-            {% if current_user.name == user.name %}
+            {% if user.username == current_user.username %}
                 {% if user.bio == none %}
                     <form action="{{ url_for('UserPageView:submitBio') }}" method="post">
                         Add Bio<br/>
@@ -60,7 +67,7 @@
             {% endif %}
         </div>
         <div class="bio" style="margin-top: 310px;">
-            {% if current_user.name == user.name %}
+            {% if user.username == current_user.username %}
                 {% if user.contact_info %}
                     <h2><u>Contact:</u> {{ user.contact_info }}</h2>
                     <a href="{{ url_for('UserPageView:editContact', oldContact=user.contact_info) }}" style="margin-left: -110px">
@@ -97,7 +104,7 @@
                 <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
                     <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
                 </a>
-                {% if item.poster.name == current_user.name %}
+                {% if item.poster.username == current_user.username %}
                     <div class="userToolOp">
                         <form class="tooltip"  action="{{ url_for('UserPageView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
                             <button onclick="sumbit">
