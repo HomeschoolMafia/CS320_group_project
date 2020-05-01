@@ -26,8 +26,8 @@
                             {% if field.label.text != 'CSRF Token' %}
                                 {% if field.type != "SubmitField" %}
                                     {{ field.label.text }} <br>
+                                    {{ field }} <br> <br>
                                 {% endif %}
-                                {{ field }} <br> <br>
                             {% endif %}
                         {% endfor %}
                     </fieldset>
