@@ -4,6 +4,7 @@ from flask_login import current_user, login_required
 
 from ..model.catalog import Catalog
 from ..model.project import Provided
+from ..model.user import User
 from .tests import Tests
 
 
@@ -14,11 +15,11 @@ class IndexView(FlaskView):
         search_text = request.args.get('search_text', default='')
         catalog = Catalog(search_text, True)
         catalog.apply()
-        return render_template('index.html', catalog=catalog)
+        return render_template('index.html', catalog=catalog, user=current_user)
     
     @login_required
     def get_favorites(self):
         current_app.jinja_env.tests['provided'] = Tests.is_provided_test
         catalog = current_user.get_favorites_catalog()
-        return render_template('index.html', catalog=catalog)
+        return render_template('index.html', catalog=catalog, user=current_user)
 

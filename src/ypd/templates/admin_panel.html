@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="pageHeader" style="margin-bottom: -80px">
+    <h1>Admin Panel</h1>
+</div>
+
+<div class="mainBody">
+    {% for user_to_review in users_to_review %}
+        <div class="postBox">
+            <a href={{url_for('UserPageView:view', id=user_to_review.id)}}>
+                <div class="postText">
+                    <em>{{user_to_review.name}}</em><t style="margin-left: 70px">{{user_to_review.email}}</t>
+                </div>
+            </a>
+            <div class="userToolOp" style="margin-top: -40px">
+                <a href="{{ url_for('AdminPanelView:review_user', id=user_to_review.id, approval=1) }}">
+                    <button class="tooltip">
+                        <span class = "tooltiptext">Click to approve user</span>
+                        ✔️
+                    </button>
+                </a>
+                <a href="{{ url_for('AdminPanelView:review_user', id=user_to_review.id, approval=0) }}">
+                    <button class="tooltip">
+                        <span class = "tooltiptext">Click to deny user</span>
+                        ❌
+                    </button>
+                </a>
+            </div>
+        </div>
+        <div class="postBar"> </div> <br>
+    {% endfor %}
+</div>
+{% endblock %}
