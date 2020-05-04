@@ -38,11 +38,11 @@ class Project(Base, DBModel, HasPosterMixin):
     date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
-    level = Column(Enum(gradeAttributes))
-    eletrical = Column(Integer)
-    mechanical = Column(Integer)
-    computer = Column(Integer)
-    computersci = Column(Integer)
+    '''level = Column(Enum(gradeAttributes))'''
+    eletrical = Column(Boolean)
+    mechanical = Column(Boolean)
+    computer = Column(Boolean)
+    computersci = Column(Boolean)
     maxProjSize = Column(Integer)
 
     immutable_attributes = ['id', 'poster', 'poster_id']

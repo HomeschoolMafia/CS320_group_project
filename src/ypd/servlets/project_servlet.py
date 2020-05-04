@@ -78,11 +78,10 @@ class ProjectView(FlaskView):
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
-                electrical = form.degree.data.electrical
-                mechanical = form.degree.data.mechanical
-                computer = form.degree.data
-                computersci = form.degree.data
-                print(form.degree.data)
+                electrical = form.degree.data["electrical"]
+                mechanical = form.degree.data["mechanical"]
+                computer = form.degree.data["computer"]
+                computersci = form.degree.data["computersci"]
                 maxProjSize = form.maxProjSize.data
 
                 if projType is None:
