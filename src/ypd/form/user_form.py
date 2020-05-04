@@ -2,24 +2,33 @@ from wtforms import (BooleanField, FormField, IntegerField, PasswordField,
                      RadioField, StringField, SubmitField, TextAreaField,
                      validators)
 from wtforms.validators import (DataRequired, Email, EqualTo, InputRequired,
-                                Length)
+                                Length, ValidationError)
 from wtforms.widgets import TextArea
+from flask_wtf import FlaskForm
 
-from flask_wtf import FlaskForm, Form
-from ypd.model.user import UserType
 
 class ChatForm(FlaskForm):
     message = TextAreaField('Message...', validators=[InputRequired()], widget=TextArea(), render_kw={'cols': '150', 'rows': '1'})
     send = SubmitField('Send')
 
-class RegistrationForm(FlaskForm):
+class EmailForm(FlaskForm):
+    email = StringField('What is your email address?')
+    submit = SubmitField('Submit')
+
+class CompanyRegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80)])
-    email = StringField('Email', validators=[InputRequired(), Length(min=8, max=64)])
-    user_types = RadioField('User Type', validators=[InputRequired()], coerce=int,
-        choices=[(UserType.student.value, 'Student'), (UserType.faculty.value, 'Faculty'), (UserType.company.value, 'Company')])
-    submit = SubmitField('Sign Up')
+    name = StringField('Display Name', validators=[InputRequired(), Length(min=8, max=64)])
+    bio = StringField('Bio', validators=[InputRequired(), Length(min=8, max=64)])
+    contact = StringField('Contact information', validators=[InputRequired(), Length(min=8, max=64)])
+    submit = SubmitField('Submit')
+
+class YCPRegistrationForm(FlaskForm):
+    username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80), EqualTo('confirm_password', message='Passwords must match')])
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), Length(min=8, max=80)])
+    submit = SubmitField('Submit')
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=8, max=64)])
@@ -27,7 +36,7 @@ class LoginForm(FlaskForm):
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
     
-class TelephoneForm(Form):
+class TelephoneForm(FlaskForm):
     country_code = IntegerField('Country Code', validators=[DataRequired()])
     area_code    = IntegerField('Area Code/Exchange', validators=[DataRequired()])
     number       = StringField('Number')
@@ -60,3 +69,11 @@ class SupportForm(FlaskForm):
     contacts = FormField(TelephoneForm)
     description = TextAreaField('Issue summary:', validators=[InputRequired()], widget=TextArea(), render_kw={'cols': '150', 'rows': '25'})
     submit = SubmitField('Submit')
+
+class ChangePermissionsForm(FlaskForm):
+    """Form to change a user's permissions"""
+    is_admin = BooleanField('Admin:')
+    can_post_solicited = BooleanField('Can post solicited projects:')
+    can_post_provided = BooleanField('Can post provided projects:')
+    submit = SubmitField('Submit')
+

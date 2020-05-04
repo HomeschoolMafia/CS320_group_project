@@ -251,7 +251,7 @@ ul {
 
 .tooltip {
     position: relative;
-    display: inline-block;
+    display: inline;
     border-bottom: 1px dotted black;
 }
   

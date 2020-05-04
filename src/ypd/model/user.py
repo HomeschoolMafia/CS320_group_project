@@ -6,18 +6,13 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship, subqueryload
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from . import Base, Session
+from . import Base
 from .catalog import Catalog
 from .db_model import DBModel
-from .project import Provided, Project, Solicited
+from .project import Project, Provided, Solicited
 from .session_manager import SessionManager
+from .ycp_data import YCPData
 
-
-class UserType(Enum):
-    student = auto()
-    faculty = auto()
-    company = auto()
-    admin = auto()
 
 class HasFavoritesMixin:
     provided_association = Table('provided_association', Base.metadata,
@@ -145,7 +140,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
 
     @classmethod
     @SessionManager.with_session
-    def sign_up(cls, username, password, confirm_password, email, name, user_type, bio=None, contact_info=None, session=None):
+    def sign_up(cls, username, password, confirm_password, email, name=None, is_admin=False, bio='', contact_info='', session=None):
         """Create a new user entry in the database. In order to sign up a User,
         a User object must first be created, with all of the fields except needs_review
         populated
@@ -156,28 +151,41 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             confirm_password (str): Confirmed password to log in with
             email (str): Email to send messages to
             name (str): Display name of the account
-            user_type (UserType): Type of the account
 
         Kwargs:
             session (Session): session to perform the query on. Supplied by decorator
+            is_admin (bool): Whether the account is an admin
+            bio (str): User's bio
+            contact_info (str): User's contact information
 
         Raises:
             TypeErrors:  If user_type is invalid 
             ValueErrors: If the username already exists in the database
         """
         new_user = cls()
+        new_user.is_admin = is_admin
 
-        #Set permissions
-        if not type(user_type) is UserType:
-            raise TypeError(f'Expected type {UserType} for argument user_type. Got {type(user_type)}')
+        email_user, _, email_domain = email.partition('@')
+        if email_domain == 'ycp.edu':
+            ycp_data = YCPData(email_user)
+            if ycp_data.is_valid:
+                student, faculty, name, credits, major = ycp_data.get_data()
+                if student:
+                    class_years = ['Freshman', 'Sophomore', 'Junior', 'Senior']
+                    class_year = class_years[credits//30]
+                    bio = f'A dedicated {class_year} {major} student'
+                else:
+                    bio = f'A brilliant professor of {major}'
+                contact_info = email
+        if email_domain != 'ycp.edu' or not ycp_data.is_valid:
+            student, faculty = False, False
+            if not name:
+                raise ValueError('A company account must supply a name!')
+            
+        new_user.needs_review = not(student or faculty or is_admin)
+        new_user.can_post_solicited = not new_user.needs_review
+        new_user.can_post_provided = not student or is_admin
         
-
-        new_user.is_admin = user_type is UserType.admin
-        can_post_both = new_user.is_admin or user_type is UserType.faculty
-        new_user.can_post_solicited = can_post_both or user_type is UserType.student
-        new_user.can_post_provided = can_post_both or user_type is UserType.company
-        # new_user.needs_review = not new_user.is_admin #All new accounts require review except admins
-        new_user.needs_review = False #Uncomment the above line once we have admin review finished
         new_user.email = email
         new_user.username = username
         new_user.name = name
@@ -270,8 +278,6 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             raise ValueError('New password and cofirm password do not match!!!')
         elif len(confirm_password) < 8  or len(password) < 8:
             raise ValueError('Password must be at least 8 characters long!')
-        # elif check_password_hash(self.password, password):
-        #     raise ValueError('Use a different password!')
         else:
             return generate_password_hash(password)
 
@@ -290,6 +296,34 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         self.password = User.password_check(password, confirm_password)
         session.add(self)
+
+    @classmethod
+    @SessionManager.with_session
+    def get_unreviewed_users(cls, session=None):
+        """Gets all Users that have not been reviewed by an admin
+        
+        Args:
+            id (int): id of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+
+        Returns: The list of users that have not been reviewed
+        """
+        return session.query(cls).filter_by(needs_review=True).all()
+
+    @SessionManager.with_session
+    def review(self, approval, session=None):
+        """Review a user
+        
+        Args:
+            approval (bool): Whether to approve or deny the user
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        session.add(self)
+        self.needs_review = False if approval else session.delete(self)
 
     @SessionManager.with_session
     def add_bio(self, bio, session=None):
@@ -316,3 +350,20 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         """
         self.contact_info = contact
         session.add(self)
+
+    @SessionManager.with_session
+    def change_permissions(self, is_admin, can_post_provided, can_post_solicited, session=None):
+        """Change this user's permissions
+
+        Args:
+            is_admin (bool): whether the user should be an admin
+            can_post_provided (bool): whether the user should be able to post provided projects
+            can_post_solicited (bool): whether the user should be able to post solicited projects
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        session.add(self)
+        self.is_admin = is_admin
+        self.can_post_provided = can_post_provided
+        self.can_post_solicited = can_post_solicited

@@ -74,7 +74,7 @@ class ProjectView(FlaskView):
     def submit(self):
         form = SubmissionForm()
 
-        if form.validate_on_submit:
+        if form.validate_on_submit():
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
