@@ -1,8 +1,10 @@
 from functools import wraps
 
-from flask import (current_app, flash, redirect, render_template, request,url_for)
+from flask import (current_app, flash, redirect, render_template, request,
+                   url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
+from flask_mail import Mail
 
 from ..form.project_form import EditForm, SubmissionForm
 from ..model.project import Provided, Solicited
@@ -74,7 +76,7 @@ class ProjectView(FlaskView):
     def submit(self):
         form = SubmissionForm()
 
-        if form.validate_on_submit():
+        if request.method == 'POST':
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
@@ -96,8 +98,14 @@ class ProjectView(FlaskView):
     def edit(self, project):
         form = EditForm()
 
-        if form.validate_on_submit():
+        if request.method == 'POST':
             project.edit(current_user, **form.data)
+            if current_user.id != project.poster.id:
+                mail = Mail()
+                mail.init_app(current_app)
+                mail.send_message(subject="Your YDP Project",
+                    recipients=[project.poster.email],
+                    body=f"""Hello {project.poster.name},\n Your YCP Project Database project '{project.title}' has been modified by an admin""")
             return redirect(url_for('ProjectView:view', id=project.id,
                                     is_provided=Tests.is_provided_test(project)))
         else:
