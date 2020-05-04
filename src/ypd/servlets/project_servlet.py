@@ -5,7 +5,7 @@ from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
 from ..form.project_form import EditForm, SubmissionForm
-from ..model.project import Provided, Solicited
+from ..model.project import Provided, Solicited, gradeAttributes
 from ..model.user import User
 from .tests import Tests
 
@@ -78,6 +78,12 @@ class ProjectView(FlaskView):
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
+                electrical = form.degree.data.electrical
+                mechanical = form.degree.data.mechanical
+                computer = form.degree.data
+                computersci = form.degree.data
+                print(form.degree.data)
+                maxProjSize = form.maxProjSize.data
 
                 if projType is None:
                     flash("You must select a project type") #We have to validate radio fields manually
@@ -86,7 +92,7 @@ class ProjectView(FlaskView):
                     project = Provided()
                 else:
                     project = Solicited()
-                project.post(title, description, current_user)
+                project.post(title, description, current_user, electrical, mechanical, computer, computersci, maxProjSize)
                 return redirect(url_for('IndexView:get',
                                         is_provided=(projType==form.PROVIDED), id=project.id))
         return render_template('set_project_data.html', form=form)

@@ -30,7 +30,7 @@
         </a>
     </div>
 
-    {% if project.can_be_modified_by(user) %}
+    {% if project.can_be_modified_by(user) and project.archived == False %}
         <div class="projectButton">
             <a href="{{url_for('ProjectView:edit', id=project.id, is_provided=(project is provided))}}">
                 <button class = "tooltip">
