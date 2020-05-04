@@ -39,7 +39,7 @@ class Project(Base, DBModel, HasPosterMixin):
     archived = Column(Boolean)
     needsReview = Column(Boolean)
     '''level = Column(Enum(gradeAttributes))'''
-    eletrical = Column(Boolean)
+    electrical = Column(Boolean)
     mechanical = Column(Boolean)
     computer = Column(Boolean)
     computersci = Column(Boolean)
@@ -166,7 +166,7 @@ class Provided(Project):
             session (Session): session to perform the query on. Supplied by decorator
         """
         if poster.can_post_provided:
-            super().post(title, description, poster, electrical=electrical, mechanical=mechanical, computer=computer, computersci=computersci, maxProjSize=maxProjSize)
+            super().post(title, description, poster, electrical, mechanical, computer, computersci, maxProjSize)
         else:
             raise PermissionError('User does not have permissions to post provided projects')
     
@@ -186,6 +186,6 @@ class Solicited(Project):
             session (Session): session to perform the query on. Supplied by decorator
         """
         if poster.can_post_solicited:
-            super().post(title, description, poster, electrical=electrical, mechanical=mechanical, computer=computer, computersci=computersci, maxProjSize=maxProjSize)
+            super().post(title, description, poster, electrical, mechanical, computer, computersci, maxProjSize)
         else:
             raise PermissionError('User does not have permissions to post solicited projects')

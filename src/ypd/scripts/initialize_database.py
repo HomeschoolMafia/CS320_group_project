@@ -62,6 +62,10 @@ def main():
         solicited_reader = DictReader(file)
         for row in solicited_reader:
             row['poster'] = session.query(User).filter_by(username=row['poster']).one()
+            row['electrical'] = True if row['electrical'] == 'True' else False
+            row['mechanical'] = True if row['mechanical'] == 'True' else False
+            row['computer'] = True if row['computer'] == 'True' else False
+            row['computersci'] = True if row['computersci'] == 'True' else False
             Solicited().post(**row)
 
     print('finished!')
