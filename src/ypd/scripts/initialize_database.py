@@ -8,7 +8,7 @@ from sqlalchemy import (Boolean, Column, Integer, MetaData, String, Table,
 
 from .. import config, relative_path
 from ..model import Base, Session, engine, ycp_engine
-from ..model.project import Provided, Solicited
+from ..model.project import Provided, Solicited, GradeAttributes
 from ..model.user import User
 
 
@@ -50,6 +50,7 @@ def main():
         provided_reader = DictReader(file)
         for row in provided_reader:
             row['poster'] = session.query(User).filter_by(username=row['poster']).one()
+            row['grade'] = GradeAttributes(int(row['grade']))
             row['electrical'] = True if row['electrical'] == 'True' else False
             row['mechanical'] = True if row['mechanical'] == 'True' else False
             row['computer'] = True if row['computer'] == 'True' else False
@@ -62,6 +63,7 @@ def main():
         solicited_reader = DictReader(file)
         for row in solicited_reader:
             row['poster'] = session.query(User).filter_by(username=row['poster']).one()
+            row['grade'] = GradeAttributes(int(row['grade']))
             row['electrical'] = True if row['electrical'] == 'True' else False
             row['mechanical'] = True if row['mechanical'] == 'True' else False
             row['computer'] = True if row['computer'] == 'True' else False

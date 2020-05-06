@@ -5,7 +5,7 @@ from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
 from ..form.project_form import EditForm, SubmissionForm
-from ..model.project import Provided, Solicited, gradeAttributes, degreeAttributes
+from ..model.project import Provided, Solicited, GradeAttributes, DegreeAttributes
 from ..model.user import User
 from .tests import Tests
 
@@ -78,11 +78,12 @@ class ProjectView(FlaskView):
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
-                electrical = degreeAttributes.electrical.value in form.degree.data
-                mechanical = degreeAttributes.mechanical.value in form.degree.data
-                computer = degreeAttributes.computer.value in form.degree.data
-                computersci = degreeAttributes.computersci.value in form.degree.data
-                grade = form.grade.data
+                electrical = DegreeAttributes.electrical.value in form.degree.data
+                mechanical = DegreeAttributes.mechanical.value in form.degree.data
+                computer = DegreeAttributes.computer.value in form.degree.data
+                computersci = DegreeAttributes.computersci.value in form.degree.data
+                grade = GradeAttributes(form.grade.data)
+                print(f'Grade Value: {grade}')
                 maxProjSize = form.maxProjSize.data
 
                 if projType is None:

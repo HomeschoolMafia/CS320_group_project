@@ -12,19 +12,19 @@ from . import Base
 from .db_model import DBModel
 from .session_manager import SessionManager
 
-class degreeAttributes(enum.Enum):
+class DegreeAttributes(enum.Enum):
     """Level attribute enums"""
     electrical = enum.auto()
     mechanical = enum.auto()
     computer = enum.auto()
     computersci = enum.auto()
 
-class gradeAttributes(enum.Enum):
+class GradeAttributes(enum.Enum):
     """Level attribute enums"""
-    freshman = enum.auto()
-    sophmore = enum.auto()
-    junior = enum.auto()
-    senior = enum.auto()
+    Freshman = enum.auto()
+    Sophmore = enum.auto()
+    Junior = enum.auto()
+    Senior = enum.auto()
     
 class HasPosterMixin:
     @declared_attr.cascading
@@ -45,7 +45,7 @@ class Project(Base, DBModel, HasPosterMixin):
     date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
-    grade = Column(Enum(gradeAttributes))
+    grade = Column(Enum(GradeAttributes))
     electrical = Column(Boolean)
     mechanical = Column(Boolean)
     computer = Column(Boolean)
@@ -76,7 +76,7 @@ class Project(Base, DBModel, HasPosterMixin):
         self.mechanical = mechanical
         self.computer = computer
         self.computersci = computersci
-        self.grade = gradeAttributes
+        self.grade = grade
         self.maxProjSize = maxProjSize
         session.add(self)
         
