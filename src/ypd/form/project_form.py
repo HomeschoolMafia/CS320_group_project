@@ -17,7 +17,7 @@ class SubmissionForm(FlaskForm):
     projType = RadioField('Project Type:', validators=[InputRequired()], coerce=int,
                           choices=[(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
     maxProjSize = IntegerField("Maximum Number of People Needed: ")
-    degree = SelectMultipleField('Suggested Degree Path: ', coerce=int,
+    degree = SelectMultipleField('Suggested Degree Path: ', coerce=int, validators=[InputRequired()],
                                 choices=[(DegreeAttributes.electrical.value, 'Electrical Engineering'), 
                                 (DegreeAttributes.mechanical.value, 'Mechanical Engineering'), 
                                 (DegreeAttributes.computer.value, 'Computer Engineering'), 

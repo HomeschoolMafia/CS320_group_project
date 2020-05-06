@@ -82,8 +82,12 @@ class ProjectView(FlaskView):
                 mechanical = DegreeAttributes.mechanical.value in form.degree.data
                 computer = DegreeAttributes.computer.value in form.degree.data
                 computersci = DegreeAttributes.computersci.value in form.degree.data
-                grade = GradeAttributes(form.grade.data)
 
+                if form.grade.data is None:
+                    flash("You must enter a minimum grade requirement.")
+                    return render_template('set_project_data.html', form=form)
+                else: 
+                    grade = GradeAttributes(form.grade.data)
                 if form.maxProjSize.data is None:
                     flash("You must enter a project size.")
                     return render_template('set_project_data.html', form=form)
