@@ -83,8 +83,7 @@ class ProjectView(FlaskView):
                 computer = DegreeAttributes.computer.value in form.degree.data
                 computersci = DegreeAttributes.computersci.value in form.degree.data
                 grade = GradeAttributes(form.grade.data)
-                print(f'Grade Value: {grade}')
-                maxProjSize = form.maxProjSize.data
+                maxProjSize = form.maxProjSize.data if form.maxProjSize.data is not None else 1
 
                 if projType is None:
                     flash("You must select a project type") #We have to validate radio fields manually
