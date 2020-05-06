@@ -1,7 +1,8 @@
 from datetime import datetime
 
 import csv
-
+import enum
+from sqlalchemy import Enum
 from sqlalchemy import Boolean, Column, DateTime, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import relationship
@@ -11,6 +12,20 @@ from . import Base
 from .db_model import DBModel
 from .session_manager import SessionManager
 
+class DegreeAttributes(enum.Enum):
+    """Level attribute enums"""
+    electrical = enum.auto()
+    mechanical = enum.auto()
+    computer = enum.auto()
+    computersci = enum.auto()
+
+class GradeAttributes(enum.Enum):
+    """Level attribute enums"""
+    Freshman = enum.auto()
+    Sophmore = enum.auto()
+    Junior = enum.auto()
+    Senior = enum.auto()
+    
 class HasPosterMixin:
     @declared_attr.cascading
     def poster_id(self):
@@ -30,11 +45,17 @@ class Project(Base, DBModel, HasPosterMixin):
     date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
+    grade = Column(Enum(GradeAttributes))
+    electrical = Column(Boolean)
+    mechanical = Column(Boolean)
+    computer = Column(Boolean)
+    computersci = Column(Boolean)
+    maxProjSize = Column(Integer)
 
     immutable_attributes = ['id', 'poster', 'poster_id']
 
     @SessionManager.with_session
-    def post(self, title, description, poster, session=None):
+    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1, session=None):
         """Posts this project to the database
 
         Args:
@@ -46,12 +67,17 @@ class Project(Base, DBModel, HasPosterMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         self.title = title
-    
         self.description = description
         self.poster_id = poster.id
         self.date = datetime.utcnow() #we might want to only assign this when the project is approved
         self.archived = False
         self.needsReview = False #TODO: When we implement the review workflow, we'll set this to True here
+        self.electrical = electrical
+        self.mechanical = mechanical
+        self.computer = computer
+        self.computersci = computersci
+        self.grade = grade
+        self.maxProjSize = maxProjSize
         session.add(self)
         
     @classmethod  
@@ -131,12 +157,11 @@ class Project(Base, DBModel, HasPosterMixin):
         """
         return user == self.poster or user.is_admin
 
-
 class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'
 
-    def post(self, title, description, poster):
+    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1):
         """Posts this project to the database
 
         Args:
@@ -148,7 +173,7 @@ class Provided(Project):
             session (Session): session to perform the query on. Supplied by decorator
         """
         if poster.can_post_provided:
-            super().post(title, description, poster)
+            super().post(title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize)
         else:
             raise PermissionError('User does not have permissions to post provided projects')
     
@@ -156,7 +181,7 @@ class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
 
-    def post(self, title, description, poster):
+    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1):
         """Posts this project to the database
 
         Args:
@@ -168,6 +193,6 @@ class Solicited(Project):
             session (Session): session to perform the query on. Supplied by decorator
         """
         if poster.can_post_solicited:
-            super().post(title, description, poster)
+            super().post(title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize)
         else:
             raise PermissionError('User does not have permissions to post solicited projects')

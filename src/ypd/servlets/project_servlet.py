@@ -5,7 +5,7 @@ from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
 from ..form.project_form import EditForm, SubmissionForm
-from ..model.project import Provided, Solicited
+from ..model.project import Provided, Solicited, GradeAttributes, DegreeAttributes
 from ..model.user import User
 from .tests import Tests
 
@@ -74,11 +74,25 @@ class ProjectView(FlaskView):
     def submit(self):
         form = SubmissionForm()
 
-        if form.validate_on_submit():
+        if request.method == 'POST':
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
+                electrical = DegreeAttributes.electrical.value in form.degree.data
+                mechanical = DegreeAttributes.mechanical.value in form.degree.data
+                computer = DegreeAttributes.computer.value in form.degree.data
+                computersci = DegreeAttributes.computersci.value in form.degree.data
 
+                if form.grade.data is None:
+                    flash("You must enter a minimum grade requirement.")
+                    return render_template('set_project_data.html', form=form)
+                else: 
+                    grade = GradeAttributes(form.grade.data)
+                if form.maxProjSize.data is None:
+                    flash("You must enter a project size.")
+                    return render_template('set_project_data.html', form=form)
+                else:
+                    maxProjSize = form.maxProjSize.data
                 if projType is None:
                     flash("You must select a project type") #We have to validate radio fields manually
                     return render_template('set_project_data.html', form=form)
@@ -86,7 +100,7 @@ class ProjectView(FlaskView):
                     project = Provided()
                 else:
                     project = Solicited()
-                project.post(title, description, current_user)
+                project.post(title, description, current_user, electrical, mechanical, computer, computersci, grade, maxProjSize)
                 return redirect(url_for('IndexView:get',
                                         is_provided=(projType==form.PROVIDED), id=project.id))
         return render_template('set_project_data.html', form=form)
