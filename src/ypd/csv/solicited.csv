@@ -1,4 +1,4 @@
-title,description,poster,electrical,mechanical,computer,computersci,maxProjSize
-DON'T PANIC,Never forget your towel,creynolds1,True,True,False,False,1
-So long,And thanks for all the fish,llewis9,True,True,False,False,1
-I took my car to a quantum mechanic to get the speedometer fixed,"Now I know exactly how fast it's going, but I can't find it anywhere",djhake2,True,True,False,False,1
+title,description,poster,electrical,mechanical,computer,computersci,grade,maxProjSize
+DON'T PANIC,Never forget your towel,creynolds1,True,True,False,False,Freshman,1
+So long,And thanks for all the fish,llewis9,True,True,False,False,Sophmore,1
+I took my car to a quantum mechanic to get the speedometer fixed,"Now I know exactly how fast it's going, but I can't find it anywhere",djhake2,True,True,False,False,Senior,1

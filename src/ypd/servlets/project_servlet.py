@@ -5,7 +5,7 @@ from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
 from ..form.project_form import EditForm, SubmissionForm
-from ..model.project import Provided, Solicited, gradeAttributes
+from ..model.project import Provided, Solicited, gradeAttributes, degreeAttributes
 from ..model.user import User
 from .tests import Tests
 
@@ -74,14 +74,15 @@ class ProjectView(FlaskView):
     def submit(self):
         form = SubmissionForm()
 
-        if form.validate_on_submit():
+        if request.method == 'POST':
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
-                electrical = form.degree.data["electrical"]
-                mechanical = form.degree.data["mechanical"]
-                computer = form.degree.data["computer"]
-                computersci = form.degree.data["computersci"]
+                electrical = degreeAttributes.electrical.value in form.degree.data
+                mechanical = degreeAttributes.mechanical.value in form.degree.data
+                computer = degreeAttributes.computer.value in form.degree.data
+                computersci = degreeAttributes.computersci.value in form.degree.data
+                grade = form.grade.data
                 maxProjSize = form.maxProjSize.data
 
                 if projType is None:
@@ -91,7 +92,7 @@ class ProjectView(FlaskView):
                     project = Provided()
                 else:
                     project = Solicited()
-                project.post(title, description, current_user, electrical, mechanical, computer, computersci, maxProjSize)
+                project.post(title, description, current_user, electrical, mechanical, computer, computersci, grade, maxProjSize)
                 return redirect(url_for('IndexView:get',
                                         is_provided=(projType==form.PROVIDED), id=project.id))
         return render_template('set_project_data.html', form=form)

@@ -12,6 +12,13 @@ from . import Base
 from .db_model import DBModel
 from .session_manager import SessionManager
 
+class degreeAttributes(enum.Enum):
+    """Level attribute enums"""
+    electrical = enum.auto()
+    mechanical = enum.auto()
+    computer = enum.auto()
+    computersci = enum.auto()
+
 class gradeAttributes(enum.Enum):
     """Level attribute enums"""
     freshman = enum.auto()
@@ -38,7 +45,7 @@ class Project(Base, DBModel, HasPosterMixin):
     date = Column(DateTime)
     archived = Column(Boolean)
     needsReview = Column(Boolean)
-    '''level = Column(Enum(gradeAttributes))'''
+    grade = Column(Enum(gradeAttributes))
     electrical = Column(Boolean)
     mechanical = Column(Boolean)
     computer = Column(Boolean)
@@ -48,7 +55,7 @@ class Project(Base, DBModel, HasPosterMixin):
     immutable_attributes = ['id', 'poster', 'poster_id']
 
     @SessionManager.with_session
-    def post(self, title, description, poster, electrical, mechanical, computer, computersci, maxProjSize=1, session=None):
+    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1, session=None):
         """Posts this project to the database
 
         Args:
@@ -69,7 +76,7 @@ class Project(Base, DBModel, HasPosterMixin):
         self.mechanical = mechanical
         self.computer = computer
         self.computersci = computersci
-        self.level = gradeAttributes
+        self.grade = gradeAttributes
         self.maxProjSize = maxProjSize
         session.add(self)
         
@@ -154,7 +161,7 @@ class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'
 
-    def post(self, title, description, poster, electrical, mechanical, computer, computersci, maxProjSize=1):
+    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1):
         """Posts this project to the database
 
         Args:
@@ -166,7 +173,7 @@ class Provided(Project):
             session (Session): session to perform the query on. Supplied by decorator
         """
         if poster.can_post_provided:
-            super().post(title, description, poster, electrical, mechanical, computer, computersci, maxProjSize)
+            super().post(title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize)
         else:
             raise PermissionError('User does not have permissions to post provided projects')
     
@@ -174,7 +181,7 @@ class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
 
-    def post(self, title, description, poster, electrical, mechanical, computer, computersci, maxProjSize=1):
+    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1):
         """Posts this project to the database
 
         Args:
@@ -186,6 +193,6 @@ class Solicited(Project):
             session (Session): session to perform the query on. Supplied by decorator
         """
         if poster.can_post_solicited:
-            super().post(title, description, poster, electrical, mechanical, computer, computersci, maxProjSize)
+            super().post(title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize)
         else:
             raise PermissionError('User does not have permissions to post solicited projects')

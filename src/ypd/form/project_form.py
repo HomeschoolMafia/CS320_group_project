@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import (BooleanField, IntegerField, RadioField, StringField, SubmitField, TextAreaField, SelectMultipleField)
 from wtforms.validators import InputRequired, Length
 from wtforms.widgets import TextArea, CheckboxInput, ListWidget
-from ypd.model.project import gradeAttributes
+from ypd.model.project import gradeAttributes, degreeAttributes
 
 class SubmissionForm(FlaskForm):
     """Submission Form"""
@@ -17,14 +17,14 @@ class SubmissionForm(FlaskForm):
     projType = RadioField('Project Type:', validators=[InputRequired()], coerce=int,
                           choices=[(PROVIDED, 'Provided Project'), (SOLICITED,'Solicited Project')])
     maxProjSize = IntegerField("Maximum Number of People Needed: ")
-    degree = SelectMultipleField('Suggested Degree Path: ',
-                                choices=[('electrical', 'Electrical Engineering'), 
-                                ('mechanical', 'Mechanical Engineering'), 
-                                ('computer', 'Computer Engineering'), 
-                                ('computersci', 'Computer Science')], 
+    degree = SelectMultipleField('Suggested Degree Path: ', coerce=int,
+                                choices=[(degreeAttributes.electrical.value, 'Electrical Engineering'), 
+                                (degreeAttributes.mechanical.value, 'Mechanical Engineering'), 
+                                (degreeAttributes.computer.value, 'Computer Engineering'), 
+                                (degreeAttributes.computersci.value , 'Computer Science')], 
                                 widget=ListWidget(prefix_label=False),
                                 option_widget=CheckboxInput())
-    level = RadioField('Suggested Minimum Grade: ', validators=[InputRequired()], coerce=int, 
+    grade = RadioField('Suggested Minimum Grade: ', validators=[InputRequired()], coerce=int, 
                                 choices=[(gradeAttributes.freshman.value, 'Freshman'), 
                                 (gradeAttributes.sophmore.value, 'Sophmore'), 
                                 (gradeAttributes.junior.value, 'Junior'), 
