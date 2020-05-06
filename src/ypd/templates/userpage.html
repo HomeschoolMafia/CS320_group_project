@@ -13,87 +13,121 @@
         <div class="postBarUser"></div>
     </div>
     <div class="pageHeaderL">
-        <h1>{{ user.name }}</h1>
+        <h1>{{user.name}}</h1>
         <div class="postBarUser"></div>
-        <div>
-            {% if text %}
-                {{ text }}
-            {% endif %}
-            {% if user.image %} 
-                <img src="{{url_for('static', filename='user_pic/'+ user.username +'.png')}}" alt="Logo" width="100" height="100">
-            {% else %}
-                <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
-                    <input type="file" name="image" id="image">
-                    <button type="submit">Upload</button>
+        {% if current_user.is_admin and user.needs_review %}
+            <div class="userToolOp">
+                <form class="tooltip"  action="{{ url_for('AdminPanelView:review_user', id=user.id, approval=1) }}" method="post">
+                    <button onclick="sumbit">
+                        <span class = "tooltiptext">Click to approve user</span>
+                        ✔️
+                    </button>
                 </form>
+                <form class="tooltip"  action="{{ url_for('AdminPanelView:review_user', id=user.id, approval=0) }}" method="post">
+                    <button onclick="sumbit">
+                        <span class = "tooltiptext">Click to deny user</span>
+                        ❌
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+        {% if permissions_form %}
+            <form action="{{url_for('UserPageView:change_permissions', id=user.id)}}" method="POST">	
+                <div class="submissionBody">
+                    <fieldset>
+                        {% for field in permissions_form %}
+                            {% if field.label.text != 'CSRF Token' %}
+                                {% if field.type != "SubmitField" %}
+                                    {{field.label.text}}
+                                {% endif %}
+                                {{field}} <br>
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                </div>
+            </form>
+        {% elif current_user.is_admin %}
+            <div class="userToolOp">
+                <a class="tooltip" href="{{url_for('UserPageView:change_permissions', id=user.id)}}">
+                    <button>
+                        <span class = "tooltiptext">Click to change this user's permissions</span>
+                        ✏️
+                    </button>
+                </a>
+            </div>
+        {% endif %}
+        <div>
+            {% if current_user.name == user.name or current_user.is_admin %}
+                {% if edit %}
+                    Add New Picture
+                {% endif %}
+                {% if text %}
+                    {{ text }}
+                {% endif %}
+                {% if user.image and edit != True %} 
+                    <img src="{{url_for('static', filename='user_pic/'+ user.username +'.png')}}" alt="Logo" width="100" height="100">
+                    <div class="userToolOp">
+                        <a class="tooltip" href="{{url_for('UserPageView:editImage', id=user.id)}}">
+                            <button>
+                                <span class = "tooltiptext">Click to Change Image</span>
+                                    ✏️
+                            </button>
+                        </a>
+                    </div>
+                {% else %}
+                    <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
+                        <input type="file" name="image" id="image">
+                        <button type="submit">Upload</button>
+                    </form>
+                {% endif %}
             {% endif %}
         </div>
         <div class="bio">
-            {% if user.username == current_user.username %}
-                {% if user.bio == none %}
-                    <form action="{{ url_for('UserPageView:submitBio') }}" method="post">
-                        Add Bio<br/>
-                        <textarea name="bio" rows="15" cols="80"></textarea><br/>
-                        <input type="submit">
-                    </form>
-                {% elif user.bio == '' %}
-                    <form action="{{ url_for('UserPageView:submitBio') }}" method="post">
-                        Add Bio<br/>
-                        <textarea name="bio" rows="15" cols="80">{{ oldBio }}</textarea><br/>
-                        <input type="submit">
-                    </form>
-                {% else %}
-                    <div>
-                        <h2 style="margin-left: -95%"><u>Bio: </u></h2>
-                        <h2>{{ user.bio }}</h2>
-                    </div>
-                    <a href="{{ url_for('UserPageView:editBio', oldBio=user.bio) }}" style="margin-left: -110px">
-                        <button class = "tooltip" style="margin-left: -80%; margin-top: -10px">
+            <h2 style="margin-left: -55%">
+                <u>Bio: </u>
+                {% if (current_user == user or current_user.is_admin) and not edit_bio %}
+                    <a href="{{ url_for('UserPageView:editBio', id=user.id) }}" style="margin-left: 10px">
+                        <button class = "tooltip" style="margin-left: 10%; margin-top: -10px">
                         <span class = "tooltiptext">Click to Edit Bio</span>
                             ✏️
                         </button>
                     </a>    
                 {% endif %}
+            </h2>
+            {% if edit_bio %}
+                <form action="{{ url_for('UserPageView:submitBio', id=user.id) }}" method="post">
+                    Edit bio<br/>
+                    <textarea name="bio" rows="15" cols="80">{{user.bio}}</textarea><br/>
+                    <input type="submit">
+                </form>
+            {% elif not user.bio %}
+                <h2>No bio listed</h2>
             {% else %}
-                {% if user.bio == none %}
-                    <h2 style="margin-left: -55%"><u>Bio: </u></h2>
-                    <h2>No Bio Listed Yet</h2>
-                {% else %}
-                    <div class="userBio">
-                        <h2 style="margin-left: -55%"><u>Bio: </u></h2>
-                        <h2>{{ user.bio }}</h2>
-                    </div>
-                {% endif %}
+                <h2>{{user.bio}}</h2>
             {% endif %}
         </div>
         <div class="bio" style="margin-top: 310px;">
-            {% if user.username == current_user.username %}
-                {% if user.contact_info %}
-                    <h2><u>Contact:</u> {{ user.contact_info }}</h2>
-                    <a href="{{ url_for('UserPageView:editContact', oldContact=user.contact_info) }}" style="margin-left: -110px">
+            <h2 style="margin-left: -25%;">
+                <u>Contact information: </u>
+                {% if current_user.name == user.name or current_user.is_admin %}
+                    <a href="{{ url_for('UserPageView:editContact', id=user.id) }}" style="margin-left: 10px">
                         <button class = "tooltip" style="margin-top: -10px">
                         <span class = "tooltiptext">Click to Edit Contact</span>
                             ✏️
                         </button>
-                    </a> 
-                {% else %}
-                    <form action="{{ url_for('UserPageView:submitContact') }}" method="post" style="margin-top: 20%">
-                        Add Contact<br/>
-                        {% if user.contact_info == '' %}
-                            <textarea name="contact" rows="1" cols="80">{{ oldContact }}</textarea><br/>
-                            <input type="submit">
-                        {% else %}
-                            <textarea name="contact" rows="1" cols="80"></textarea><br/>
-                            <input type="submit">
-                        {% endif %}
-                    </form>
+                    </a>
                 {% endif %}
+            </h2>
+            {% if edit_contact %}
+                <form action="{{ url_for('UserPageView:submitContact', id=user.id) }}" method="post" style="margin-top: 20%">
+                    Edit contact information<br/>
+                    <textarea name="contact" rows="5" cols="80">{{user.contact_info}}</textarea><br/>
+                    <input type="submit">
+                </form>
+            {% elif not user.contact_info %}
+                <h2>No contact information listed</h2>
             {% else %}
-                {% if user.contact_info %}
-                    <h2><u>Contact:</u> {{ user.contact_info }}</h2>
-                {% else %}
-                    <h2><u>Contact:</u> No Contact Listed</h2>
-                {% endif %}
+                <h2>{{user.contact_info}}</h2>
             {% endif %}
         </div>
     </div>
@@ -104,9 +138,9 @@
                 <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
                     <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
                 </a>
-                {% if item.poster.username == current_user.username %}
+                {% if item.poster == current_user or current_user.is_admin %}
                     <div class="userToolOp">
-                        <form class="tooltip"  action="{{ url_for('UserPageView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                        <form class="tooltip"  action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
                             <button onclick="sumbit">
                     {% if item.archived %}    
                         <span class = "tooltiptext">Click to Restore Project</span>

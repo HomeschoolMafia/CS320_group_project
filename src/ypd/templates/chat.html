@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YCP Project Database Chat</title>
+</head>
+<body>
+    <script>
+        $(document).ready(function(){
+            var socket = io.connect('http://127.0.0.1:5000')
+
+            socket.on('connect', function() {
+                socket.send('User has connected!')
+            });
+        });
+    </script>
+    <ul id="Messages"></ul>
+    <input type="text" id="myMessage">
+    <button id="sendButton">Send</button>
+</body>
+</html>

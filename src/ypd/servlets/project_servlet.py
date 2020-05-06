@@ -1,7 +1,6 @@
 from functools import wraps
 
-from flask import (current_app, flash, redirect, render_template, request,
-                   url_for)
+from flask import (current_app, flash, redirect, render_template, request,url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 
@@ -56,8 +55,8 @@ class ProjectView(FlaskView):
         else:
             current_user.defavorite_project(project)
 
-        return redirect(url_for('ProjectView:view', id=project.id,
-                                is_provided=Tests.is_provided_test(project)))
+        return redirect(url_for('ProjectView:view', id=project.id, 
+                                                    is_provided=Tests.is_provided_test(project)))
 
     # pull data from HTML form
     @route('/archive')
@@ -75,7 +74,7 @@ class ProjectView(FlaskView):
     def submit(self):
         form = SubmissionForm()
 
-        if form.validate_on_submit:
+        if request.method == 'POST':
                 projType = form.projType.data
                 title = form.title.data
                 description = form.description.data
