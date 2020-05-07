@@ -38,7 +38,8 @@ class UserPageView(FlaskView):
 
     @route ('/submitBio', methods=['POST'])
     def submitBio(self, user):
-        if user != current_user:
+        #current_user is a local proxy object, so we have to compare by id
+        if user.id != current_user.id:
             mail = Mail()
             mail.init_app(current_app)
             mail.send_message(subject="Your YDP Account",
@@ -63,7 +64,8 @@ class UserPageView(FlaskView):
 
     @route ('/submitContact', methods=['POST'])
     def submitContact(self, user):
-        if user != current_user:
+        #current_user is a local proxy object, so we have to compare by id
+        if user.id != current_user.id:
             mail = Mail()
             mail.init_app(current_app)
             mail.send_message(subject="Your YDP Account",
