@@ -1,11 +1,14 @@
 from functools import wraps
 
-from flask import (current_app, flash, redirect, render_template, request,url_for)
+from flask import (current_app, flash, redirect, render_template, request,
+                   url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
+from wtforms import SelectMultipleField
 
 from ..form.project_form import EditForm, SubmissionForm
-from ..model.project import Provided, Solicited, GradeAttributes, DegreeAttributes
+from ..model.project import (DegreeAttributes, GradeAttributes, Provided,
+                             Solicited)
 from ..model.user import User
 from .tests import Tests
 
@@ -116,12 +119,18 @@ class ProjectView(FlaskView):
     def edit(self, project):
         form = EditForm()
 
-        if form.validate_on_submit():
-            project.edit(current_user, **form.data)
+        if request.method == 'POST':
+            edit_data = dict(form.data)
+            for attribute in DegreeAttributes:
+                edit_data[attribute.name] = attribute.value in form.degree.data
+            edit_data['grade'] = GradeAttributes(edit_data['grade'])
+            project.edit(current_user, **edit_data)
             return redirect(url_for('ProjectView:view', id=project.id,
                                     is_provided=Tests.is_provided_test(project)))
         else:
             for field in form:
                 if hasattr(project, field.name):
                     field.data = getattr(project, field.name)
+            form.grade.data = project.grade.value
+            form.degree.data = [attribute.value for attribute in DegreeAttributes if getattr(project, attribute.name)]
             return render_template('set_project_data.html', form=form, project=project) 

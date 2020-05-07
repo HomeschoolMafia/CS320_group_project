@@ -36,4 +36,18 @@ class EditForm(FlaskForm):
     title = StringField('Title:', validators=[InputRequired()])
     description = TextAreaField('Project Summary:', validators=[InputRequired()],
                                 widget=TextArea(), render_kw={'cols': '150', 'rows': '25'})
+
+    maxProjSize = IntegerField("Maximum Number of People Needed: ")
+    degree = SelectMultipleField('Suggested Degree Path: ', coerce=int, validators=[InputRequired()],
+                                choices=[(DegreeAttributes.electrical.value, 'Electrical Engineering'), 
+                                (DegreeAttributes.mechanical.value, 'Mechanical Engineering'), 
+                                (DegreeAttributes.computer.value, 'Computer Engineering'), 
+                                (DegreeAttributes.computersci.value , 'Computer Science')], 
+                                widget=ListWidget(prefix_label=False),
+                                option_widget=CheckboxInput())
+    grade = RadioField('Suggested Minimum Grade: ', validators=[InputRequired()], coerce=int, 
+                                choices=[(GradeAttributes.Freshman.value, 'Freshman'), 
+                                (GradeAttributes.Sophmore.value, 'Sophmore'), 
+                                (GradeAttributes.Junior.value, 'Junior'), 
+                                (GradeAttributes.Senior.value, 'Senior')])
     submit = SubmitField('Submit')
