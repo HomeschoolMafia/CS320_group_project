@@ -4,7 +4,11 @@ from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
+<<<<<<< HEAD
 from wtforms import SelectMultipleField
+=======
+from flask_mail import Mail
+>>>>>>> develop
 
 from ..form.project_form import EditForm, SubmissionForm
 from ..model.project import (DegreeAttributes, GradeAttributes, Provided,
@@ -125,6 +129,12 @@ class ProjectView(FlaskView):
                 edit_data[attribute.name] = attribute.value in form.degree.data
             edit_data['grade'] = GradeAttributes(edit_data['grade'])
             project.edit(current_user, **edit_data)
+            if current_user.id != project.poster.id:
+                mail = Mail()
+                mail.init_app(current_app)
+                mail.send_message(subject="Your YDP Project",
+                    recipients=[project.poster.email],
+                    body=f"""Hello {project.poster.name},\n Your YCP Project Database project '{project.title}' has been modified by an admin""")
             return redirect(url_for('ProjectView:view', id=project.id,
                                     is_provided=Tests.is_provided_test(project)))
         else:
