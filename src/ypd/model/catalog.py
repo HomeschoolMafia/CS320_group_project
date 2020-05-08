@@ -30,7 +30,6 @@ class Catalog:
         elif search_grade is GradeAttributes.Junior: max_grade_index=3
         elif search_grade is GradeAttributes.Senior: max_grade_index=4
         self.grades_to_search = self.grades_to_search[:max_grade_index]
-        print(max_ProjSize)
     @SessionManager.with_session
     def apply(self, session=None):
         """Apply the search and build the list of projects. 
