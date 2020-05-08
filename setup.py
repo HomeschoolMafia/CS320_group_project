@@ -9,7 +9,7 @@ INSTALL_REQUIRES = [
     'flask-login',
     'flask-classy',
     'flask-mail',
-    'flask-socketio'
+    'python-socketio'
 ]
 
 DEV_REQUIRES = [

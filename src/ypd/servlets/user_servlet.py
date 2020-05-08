@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 from flask import (Markup, current_app, flash, redirect, render_template,
                    request, url_for)
+from flask_socketio import SocketIO, emit, send
 from flask_login import current_user, login_required, login_user, logout_user
 from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
@@ -20,7 +21,27 @@ from ypd.model.user import User, UserType
 """A class that represents User creation routes"""
 class UserView(FlaskView):
     msg = ""
+    socketio.init_app(current_app)
+    @login_required
+    @app.route('/chat')
+    def sessions():
+        pass
 
+    @route('/chat')
+    def chatroom(self):
+        return render_template('chat.html', user = current_user)
+
+
+    @login_required
+    def messageReceived(methods=['GET', 'POST']):
+        print('message was received!!!')
+
+    @login_required
+    @socketio.on('my event')
+    def handle_my_custom_event(json, methods=['GET', 'POST']):
+        print('received my event: ' + str(json))
+        socketio.emit('my response', json, callback=messageReceived)
+    
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):

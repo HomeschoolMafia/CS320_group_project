@@ -1,12 +1,13 @@
 import os
 from os import path, walk
 
-from flask import Flask, Markup, request
+from flask import Flask, Markup, request, render_template
 from flask_classy import route
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, send, emit, join_room, leave_room
+from collections import defaultdict
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from flask_login import LoginManager, login_required
+from flask_login import LoginManager, login_required, current_user
 
 from .model import Base, Session, engine
 from .model.project import Project, Provided, Solicited
@@ -19,28 +20,12 @@ Base.metadata.create_all(engine)
 
 #start flask
 app = Flask(__name__)
-app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+# app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+app.config['DEBUG'] = True
 socketio = SocketIO(app)
 
-# @login_required
-# @route('/chat/', methods=['POST', 'GET'])
-# def chat(self):
-#     return render_template('chat.html')
-
-# @login_required
-# @route('/origin/', methods=['POST', 'GET'])
-# def originate(self):
-#     socketio.emit('Server originated', 'Something happened on the server')
-#     return Markup('<h1>Sent!</h1>')
-
-# @login_required
-# @socketio.on('messge from user', namespaces='/messages')
-# def recieve_message_from_user(self, message):
-#     print(request.sid)
-#     print(f'USER MESSAGE: {message}')
-#     emit('from flask', message.upper(), broadcast=True)
-
-#Pass in Databse models to admin page for editing/viewing
+# Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
 
 # Email configuration w/ app
@@ -71,8 +56,27 @@ login_manager.needs_refresh_message_category = "info"
 def load_user(user_id):
     return User.get_by_id(user_id)
 
+messages = defaultdict(list)
+channels = ["Programming"]
+
+@app.route("/chatroom/")
+def chatroom():
+    return render_template("chat.html", channels=channels, messages=messages)
+
+@socketio.on("send message")
+def message(data):
+    print(data)
+    emit("broadcast message",  {"message": message}, broadcast=True)
+
+@socketio.on('join')
+def on_join(data):
+    username = current_user
+    channel = data['channel']
+    join_room(channel)
+    #send(username + ' has entered the room.', channel=channel)
+
 if __name__=='__main__':
     socketio.run(app)
     app.jinja_env.auto_reload = True
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.run(debug=True)
+    app.run()
