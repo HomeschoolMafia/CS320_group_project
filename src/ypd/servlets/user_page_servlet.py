@@ -98,7 +98,7 @@ class UserPageView(FlaskView):
             return 'Access denied', 403
     
     @route('/submitImage', methods=['GET', 'POST'])
-    def submitImage(self, user):
+    def submitImage(self, catalog, user):
         def allowed_image(filename):
             if not "." in filename:
                 return False

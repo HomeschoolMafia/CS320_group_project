@@ -45,7 +45,7 @@ class ProjectView(FlaskView):
     @route('/view')
     @Decorator.needs_project
     def view(self, project):        
-        return render_template('project.html', project=project, user=current_user, GradeAttributes=GradeAttributes)
+        return render_template('project.html', project=project, user=current_user)
 
     @route('/favorite')
     @Decorator.needs_project
