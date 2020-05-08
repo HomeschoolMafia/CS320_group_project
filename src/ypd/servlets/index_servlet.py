@@ -13,7 +13,7 @@ class IndexView(FlaskView):
     def get(self):
         current_app.jinja_env.tests['provided'] = Tests.is_provided_test
         search_text = request.args.get('search_text', default='')
-        catalog = Catalog(search_text, False)
+        catalog = Catalog(search_text, True)
         catalog.apply()
         return render_template('index.html', catalog=catalog, user=current_user)
     

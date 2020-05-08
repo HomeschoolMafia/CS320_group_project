@@ -26,7 +26,7 @@ class AdminPanelView(FlaskView):
     def view(self):
         return render_template('admin_panel.html', users_to_review=User.get_unreviewed_users(), user=current_user)
 
-    @route('/review_user', methods=['POST'])
+    @route('/review_user')
     def review_user(self):
         id = request.args.get('id', type=int)
         approval = request.args.get('approval', type=int) #we gotta do truthy/falsey again

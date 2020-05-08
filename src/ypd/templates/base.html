@@ -39,13 +39,47 @@
             </div>
         </div>
     </div>
+    <form action="/index", method = 'GET'></form>
+        <div class="advancedDropdown">
+            <button>Advanced Search Options:</button>
+            <div class="advancedDropdown-content">
+                <Label>Degree:</Label><br>
+                &emsp;<input type="checkbox" id="electrical" name="degree" value="electrical">
+                <label for="electrical">Electrical Engineering</Label><br>
+                &emsp;<input type="checkbox" id="mechanical" name="degree" value="mechanical">
+                <label for="mechanical">Mechanical Engineering</label><br>
+                &emsp;<input type="checkbox" id="computer" name="degree" value="computer">
+                <label for="computer">Computer Engineering</label><br>
+                &emsp;<input type="checkbox" id="computersci" name="degree" value="computersci">
+                <label for="computersci">Computer Science</label><br>
+                <label>Current Year:</label><br>
+                &emsp;<input type="radio" id="freshman" name="year" value="freshman">
+                <label for="freshman">Freshman</label><br>
+                &emsp;<input type="radio" id="sophmore" name="year" value="sophmore">
+                <label for="sophmore">Sophmore</label><br>
+                &emsp;<input type="radio" id="junior" name="year" value=junior">
+                <label for="junior">Junior</label><br>
+                &emsp;<input type="radio" id="senior" name="year" value="senior">
+                <label for="senior">Senior</label><br>
 
-    <div class="searchBar">
-        <form action="/index", method = 'GET'>
-            <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
-            <input type="submit" value="Search">
-        </form>
-    </div>    
+                <label>Number of people needed(Ex. 1,2,3...):</label><br>
+                &emsp;<input type="number" id="projSize" name="projSize" min="1" max="50"><br>
+                <label>Select Project Type:</label><br>    
+                &emsp;<input type="radio" id="provided" name="projType" value="provided">
+                <label for="provided">Provided Projects</label><br>
+                &emsp;<input type="radio" id="solicited" name="projType" value="solicited">
+                <label for="solicited">Solicited Projects</label><br>
+
+                <label>Select to view Archived Projects:</label><br>
+                &emsp;<input type="checkbox" id="archived" name="archived" value="archived">
+                <label for="archived">Archived</label><br>    
+            </div>
+        </div>
+        <div class="searchBar">
+                <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
+                <input type="submit" value="Search">
+        </div>  
+    </form>  
     {% if not current_user %}
         <div class="errorText">      
             No current_user passed to template
