@@ -1,16 +1,20 @@
 import os
 from functools import wraps
 
-from flask import current_app, redirect, render_template, request, url_for
+from flask import current_app, render_template, request, redirect, url_for, Flask, flash, Response, current_app
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 from flask_mail import Mail
+from wtforms import TextAreaField
+from wtforms.validators import InputRequired
+from wtforms.widgets import TextArea
+from werkzeug.utils import secure_filename
+from ypd import config, relative_path
 
 from ..form.user_form import ChangePermissionsForm
 from ..model.catalog import Catalog
 from ..model.user import User
 from .tests import Tests
-
 
 class UserPageView(FlaskView):
     class Decorator:
@@ -27,7 +31,7 @@ class UserPageView(FlaskView):
                     return f'User with id {id} not found', 404
                 return func(*args, **kwargs)
             return wrapper
-
+        
     decorators = [Decorator.user_required, login_required]
 
     #This gets a user's page from a user id 
@@ -53,14 +57,6 @@ class UserPageView(FlaskView):
     def editBio(self, user):
         catalog = user.get_user_projects()
         return render_template('userpage.html', catalog=catalog, user=user, edit_bio=True, current_user=current_user)
-
-    @route ('/submitImage', methods =('GET', 'POST'))
-    def submitImage(self):
-        #target = os.path.join(app, '../db/UserImg')
-        file = request.files('file')
-        #filename = file.filename
-        #file.save(os.path.join(target, filename))
-        return file.filename
 
     @route ('/submitContact', methods=['POST'])
     def submitContact(self, user):
@@ -100,3 +96,37 @@ class UserPageView(FlaskView):
                 return render_template('userpage.html', catalog=catalog, user=user, permissions_form=form, current_user=current_user)
         else:
             return 'Access denied', 403
+    
+    @route('/submitImage', methods=['GET', 'POST'])
+    def submitImage(self, user):
+        def allowed_image(filename):
+            if not "." in filename:
+                return False
+            
+            ext = filename.rsplit(".", 1)[1]
+
+            if ext.upper() in current_app.config['ALLOWED_FILE']:
+                return True
+            else:
+                return False
+
+        if request.files['image']:
+            image = request.files['image']
+            if not allowed_image(image.filename):
+                text = "Not Allowed"
+                return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user, text=text)
+
+            current_user.add_image()
+                        
+            image.filename = current_user.username + '.png'
+            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image.filename))  
+            
+            return redirect(url_for('UserPageView:view', id=user.id))
+        return redirect(url_for('UserPageView:view', id=user.id))
+    
+    @route('/editImage', methods=['GET', 'POST'])
+    def editImage(self, user):
+        catalog = user.get_user_projects()
+        edit = True
+        return render_template('userpage.html', catalog=catalog, user=user, edit_contact=True, current_user=current_user, edit=edit)
+        

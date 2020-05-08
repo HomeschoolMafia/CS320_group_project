@@ -44,6 +44,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     username = Column(String, unique=True)
     password = Column(String)
     bio = Column(String)
+    image = Column(Boolean)
     email = Column(String)
     contact_info = Column(String)
     name = Column(String)
@@ -349,6 +350,17 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
             session (Session): session to perform the query on. Supplied by decorator
         """
         self.contact_info = contact
+        session.add(self)
+
+    @SessionManager.with_session
+    def add_image(self, session=None):
+        """Set image to TRUE
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+
+        self.image = True
         session.add(self)
 
     @SessionManager.with_session

@@ -9,11 +9,12 @@
     <div class="postBox">
         <div class="logoIn">
             <div class="logoInPad">
-                <!--<img src="{{ item.logo }}" alt="Logo" width="25" height="30">--></div>
+                <img src="{{url_for('static', filename='user_pic/'+ item.poster.username +'.png')}}" alt="" width="25" height="25">
+            </div>
         </div>
-        <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
+        <a href="{{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}">
             <div class="postText">
-                <em>{{ item.poster.name }}</em><t style="margin-left: 2%">{{ item.title }}
+                <em>{{ item.poster.name }}</em><t style="margin-left: 2%">{{ item.title }}</t>
             </div>
         </a>
         <div class="postBar"></div>

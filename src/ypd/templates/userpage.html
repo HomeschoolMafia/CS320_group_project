@@ -56,12 +56,32 @@
                 </a>
             </div>
         {% endif %}
-        <!--<div>
-            <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
-                <input type="file" name="file">
-                <input type="submit" value="Submit">
-            </form>
-        </div>-->
+        <div>
+            {% if current_user.name == user.name or current_user.is_admin %}
+                {% if edit %}
+                    Add New Picture
+                {% endif %}
+                {% if text %}
+                    {{ text }}
+                {% endif %}
+                {% if user.image and edit != True %} 
+                    <img src="{{url_for('static', filename='user_pic/'+ user.username +'.png')}}" alt="Logo" width="100" height="100">
+                    <div class="userToolOp">
+                        <a class="tooltip" href="{{url_for('UserPageView:editImage', id=user.id)}}">
+                            <button>
+                                <span class = "tooltiptext">Click to Change Image</span>
+                                    ✏️
+                            </button>
+                        </a>
+                    </div>
+                {% else %}
+                    <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
+                        <input type="file" name="image" id="image">
+                        <button type="submit">Upload</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
         <div class="bio">
             <h2 style="margin-left: -55%">
                 <u>Bio: </u>
