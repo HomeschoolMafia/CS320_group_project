@@ -78,40 +78,40 @@ class ProjectView(FlaskView):
     def submit(self):
         form = SubmissionForm()
         explicit_project_type = current_user.can_post_solicited and         current_user.can_post_provided
-            if not explicit_project_type:
-                del form.projType
-            
-            if request.method == 'POST':
-                title = form.title.data
-                description = form.description.data
-                electrical = DegreeAttributes.electrical.value in form.degree.data
-                mechanical = DegreeAttributes.mechanical.value in form.degree.data
-                computer = DegreeAttributes.computer.value in form.degree.data
-                computersci = DegreeAttributes.computersci.value in form.degree.data
+        if not explicit_project_type:
+            del form.projType
 
-                if form.grade.data is None:
-                    flash("You must enter a minimum grade requirement.")
+        if request.method == 'POST':
+            title = form.title.data
+            description = form.description.data
+            electrical = DegreeAttributes.electrical.value in form.degree.data
+            mechanical = DegreeAttributes.mechanical.value in form.degree.data
+            computer = DegreeAttributes.computer.value in form.degree.data
+            computersci = DegreeAttributes.computersci.value in form.degree.data
+
+            if form.grade.data is None:
+                flash("You must enter a minimum grade requirement.")
+                return render_template('set_project_data.html', form=form)
+            else: 
+                grade = GradeAttributes(form.grade.data)
+            if form.maxProjSize.data is None:
+                flash("You must enter a project size.")
+                return render_template('set_project_data.html', form=form)
+            else:
+                maxProjSize = form.maxProjSize.data
+            if explicit_project_type:
+                if form.projType.data is None:
+                    flash("You must select a project type") #We have to validate radio fields manually
                     return render_template('set_project_data.html', form=form)
-                else: 
-                    grade = GradeAttributes(form.grade.data)
-                if form.maxProjSize.data is None:
-                    flash("You must enter a project size.")
-                    return render_template('set_project_data.html', form=form)
+                elif form.projType.data == form.PROVIDED:
+                    project = Provided()
                 else:
-                    maxProjSize = form.maxProjSize.data
-                if explicit_project_type:
-                    if form.projType.data is None:
-                        flash("You must select a project type") #We have to validate radio fields manually
-                        return render_template('set_project_data.html', form=form)
-                    elif form.projType.data == form.PROVIDED:
-                        project = Provided()
-                    else:
-                        project = Solicited()
-                else:
-                    project = Provided() if current_user.can_post_provided else Solicited()
-                project.post(title, description, current_user, electrical, mechanical, computer, computersci, grade, maxProjSize)
-                return redirect(url_for('IndexView:get',
-                                        is_provided=(1 if project is Provided else 0), id=project.id))
+                    project = Solicited()
+            else:
+                project = Provided() if current_user.can_post_provided else Solicited()
+            project.post(title, description, current_user, electrical, mechanical, computer, computersci, grade, maxProjSize)
+            return redirect(url_for('IndexView:get',
+                                    is_provided=(1 if project is Provided else 0), id=project.id))
         return render_template('set_project_data.html', form=form)
 
     @route('/edit', methods=('GET', 'POST'))

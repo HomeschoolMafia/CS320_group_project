@@ -1,7 +1,7 @@
 import os
 from functools import wraps
 
-from flask import current_app, render_template, request, redirect, url_for, Flask, flash, Response
+from flask import current_app, render_template, request, redirect, url_for, Flask, flash, Response, current_app
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 from flask_mail import Mail
@@ -15,11 +15,6 @@ from ..form.user_form import ChangePermissionsForm
 from ..model.catalog import Catalog
 from ..model.user import User
 from .tests import Tests
-
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = relative_path + "/static/user_pic/"
-app.config['ALLOWED_FILE'] = ['PNG', 'JPG', 'JPEG']
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 class UserPageView(FlaskView):
     class Decorator:
@@ -110,7 +105,7 @@ class UserPageView(FlaskView):
             
             ext = filename.rsplit(".", 1)[1]
 
-            if ext.upper() in app.config['ALLOWED_FILE']:
+            if ext.upper() in current_app.config['ALLOWED_FILE']:
                 return True
             else:
                 return False
@@ -124,7 +119,7 @@ class UserPageView(FlaskView):
             current_user.add_image()
                         
             image.filename = current_user.username + '.png'
-            image.save(os.path.join(app.config['UPLOAD_FOLDER'], image.filename))  
+            image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image.filename))  
             
             return redirect(url_for('UserPageView:view', id=user.id))
         return redirect(url_for('UserPageView:view', id=user.id))
