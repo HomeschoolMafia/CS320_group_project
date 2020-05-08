@@ -53,4 +53,3 @@ class IndexView(FlaskView):
         current_app.jinja_env.tests['provided'] = Tests.is_provided_test
         catalog = current_user.get_favorites_catalog()
         return render_template('index.html', catalog=catalog, user=current_user)
-
