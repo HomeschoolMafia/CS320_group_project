@@ -4,11 +4,8 @@ from flask import (current_app, flash, redirect, render_template, request,
                    url_for)
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
-<<<<<<< HEAD
 from wtforms import SelectMultipleField
-=======
 from flask_mail import Mail
->>>>>>> develop
 
 from ..form.project_form import EditForm, SubmissionForm
 from ..model.project import (DegreeAttributes, GradeAttributes, Provided,
