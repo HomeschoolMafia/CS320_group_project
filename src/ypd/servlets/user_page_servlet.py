@@ -1,7 +1,7 @@
 import os
 from functools import wraps
 
-from flask import current_app, render_template, request, redirect, url_for, Flask, flash
+from flask import current_app, render_template, request, redirect, url_for, Flask, flash, Response
 from flask_classy import FlaskView, route
 from flask_login import current_user, login_required
 from flask_mail import Mail
@@ -19,6 +19,7 @@ from .tests import Tests
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = relative_path + "/static/user_pic/"
 app.config['ALLOWED_FILE'] = ['PNG', 'JPG', 'JPEG']
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 class UserPageView(FlaskView):
     class Decorator:
@@ -111,8 +112,8 @@ class UserPageView(FlaskView):
                 return True
             else:
                 return False
-                
-        if request.files:
+
+        if request.files['image']:
             image = request.files['image']
             if not allowed_image(image.filename):
                 text = "Not Allowed"

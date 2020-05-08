@@ -20,6 +20,7 @@ app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 # Email configuration w/ app
 app.config.update({"MAIL_SERVER": 'smtp.gmail.com', 'MAIL_PORT': 587, 'MAIL_USERNAME': os.environ.get('YPD_MAIL_USERNAME'), 'MAIL_PASSWORD': os.environ.get('YPD_MAIL_PASSWORD'), 'MAIL_DEFAULT_SENDER': os.environ.get('YPD_MAIL_USERNAME'), 'MAIL_USE_TLS' : True, 'MAIL_USE_SSL': False})
 
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 #Pass in Databse models to admin page for editing/viewing
 app.config['FLASK_ADMIN_SWATCH'] = 'cerulean'
