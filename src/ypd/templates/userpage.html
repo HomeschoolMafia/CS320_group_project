@@ -118,7 +118,7 @@
                     </a>
                 {% endif %}
             </h2>
-            {% if edit_contact %}
+            {% if edit_contact and not edit %}
                 <form action="{{ url_for('UserPageView:submitContact', id=user.id) }}" method="post" style="margin-top: 20%">
                     Edit contact information<br/>
                     <textarea name="contact" rows="5" cols="80">{{user.contact_info}}</textarea><br/>
@@ -135,10 +135,10 @@
     {% for item in catalog %}
         <div class="postBox">
             <div class="postText">
-                <a href={{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}>
+                <a href="{{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}">
                     <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
                 </a>
-                {% if item.poster == current_user or current_user.is_admin %}
+                {% if item.poster.name == current_user.name or current_user.is_admin %}
                     <div class="userToolOp">
                         <form class="tooltip"  action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
                             <button onclick="sumbit">
