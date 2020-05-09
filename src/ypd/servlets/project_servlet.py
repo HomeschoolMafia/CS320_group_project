@@ -69,10 +69,7 @@ class ProjectView(FlaskView):
         """Called when the user archives a project"""
         #Sets Archive flag to True/False
         project.toggle_archived(current_user)
-        if request.method == 'POST':
-            return redirect(url_for('UserPageView:view', id=project.poster.id))
-        return redirect(url_for('ProjectView:view', id=project.id,
-                                is_provided=Tests.is_provided_test(project)))
+        return redirect(request.referrer)
 
     # pull data from HTML form
     @route ('/submit', methods =('GET', 'POST'))  

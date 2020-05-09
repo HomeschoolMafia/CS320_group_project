@@ -58,13 +58,13 @@
         {% endif %}
         <div>
             {% if current_user.name == user.name or current_user.is_admin %}
-                {% if edit %}
+                {% if edit_image %}
                     Add New Picture
                 {% endif %}
                 {% if text %}
                     {{ text }}
                 {% endif %}
-                {% if user.image and edit != True %} 
+                {% if user.image and edit_image != True %} 
                     <img src="{{url_for('static', filename='user_pic/'+ user.username +'.png')}}" alt="Logo" width="100" height="100">
                     <div class="userToolOp">
                         <a class="tooltip" href="{{url_for('UserPageView:editImage', id=user.id)}}">
@@ -118,7 +118,7 @@
                     </a>
                 {% endif %}
             </h2>
-            {% if edit_contact and not edit %}
+            {% if edit_contact %}
                 <form action="{{ url_for('UserPageView:submitContact', id=user.id) }}" method="post" style="margin-top: 20%">
                     Edit contact information<br/>
                     <textarea name="contact" rows="5" cols="80">{{user.contact_info}}</textarea><br/>
@@ -138,19 +138,29 @@
                 <a href="{{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}">
                     <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
                 </a>
-                {% if item.poster.name == current_user.name or current_user.is_admin %}
+                {% if item.poster.id == current_user.id or current_user.is_admin %}
                     <div class="userToolOp">
-                        <form class="tooltip"  action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                        
+                    {% if item.archived %}  
+                        {% if current_user.is_admin %}
+                            <form class="tooltip" action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                        {% else %}
+                                <form class="tooltip">
+                        {% endif %}
                             <button onclick="sumbit">
-                    {% if item.archived %}    
-                        <span class = "tooltiptext">Click to Restore Project</span>
-                            🔓 
-                    {% else %}
-                        <span class = "tooltiptext">Click to Archive Project</span>
-                            🗑️    
-                    {% endif %}
+                                <span class = "tooltiptext">{{'Click to restore project' if current_user.is_admin else 'Project is archived'}}</span>
+                                🔓
                             </button>
-                        </form>
+                        </form>  
+                    {% else %}
+                    <form class="tooltip"  action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                        <button onclick="sumbit">
+                            <span class = "tooltiptext">Click to Archive Project</span>
+                            🗑️
+                        </button>
+                    </form>    
+                    {% endif %}
+
                     </div>
                 {% endif %}
             </div>
