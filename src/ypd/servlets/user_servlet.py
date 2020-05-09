@@ -22,7 +22,6 @@ from ypd.model.ycp_data import YCPData
 """A class that represents User creation routes"""
 class UserView(FlaskView):
     msg = ""
-
     # Routes work
     @route('/login/', methods=['POST', 'GET'])
     def login(self):
@@ -40,6 +39,8 @@ class UserView(FlaskView):
     @route('/change/', methods=['POST', 'GET'])
     @login_required
     def changePassword(self):
+        bold_start = "\033[1m"
+        bold_end = "\033[0m"
         form = ChangePasswordForm()
         if request.method == 'POST' and check_password_hash(current_user.password, form.old_password.data):
             try:
@@ -50,7 +51,7 @@ class UserView(FlaskView):
                     mail.init_app(current_app)
                     mail.send_message(subject="PASSWORD CHANGED!",
                                      recipients=[current_user.email],
-                                     body=f"""Hello \033[1m {current_user.username} \033[0m,\n \rYour password has been changed. \nIf this is not correct, please respond to this email!""",)
+                                     html=render_template('pwd_update_email.html', username=current_user.username))
 
                     flash("Please login again")
                     return redirect(url_for('UserView:logout'))
@@ -77,7 +78,7 @@ class UserView(FlaskView):
                     mail.init_app(current_app)
                     mail.send_message(subject="PASSWORD CHANGED!",
                                      recipients=[user.email],
-                                     body=f"""Hello \033[1m {user.username} \033[0m,\n\rYour password has been changed to \033[1m {res} \033[0m.\nPlease change it \033[1m immdiately \033[0m after signing in. \nIf this is not correct, please respond to this email!""")
+                                     html=render_template('pwd_forgot_email.html', username=form.username.data, res=res))
                     return redirect(url_for('UserView:login'))
             except TypeError as e:
                 flash(str(e))
