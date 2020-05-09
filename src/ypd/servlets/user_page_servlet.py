@@ -127,6 +127,5 @@ class UserPageView(FlaskView):
     @route('/editImage', methods=['GET', 'POST'])
     def editImage(self, user):
         catalog = user.get_user_projects()
-        edit = True
-        return render_template('userpage.html', catalog=catalog, user=user, edit_contact=True, current_user=current_user, edit=edit)
+        return render_template('userpage.html', catalog=catalog, user=user, current_user=current_user, edit_image=True)
         
