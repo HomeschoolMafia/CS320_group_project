@@ -10,7 +10,7 @@ from flask_login import LoginManager, login_required
 from ypd import relative_path
 
 from .model import Base, Session, engine
-from .model.project import Project, Provided, Solicited
+from .model.project import Project, Provided, Solicited, GradeAttributes
 from .model.user import User
 from .servlets import *
 
@@ -48,6 +48,9 @@ login_manager.needs_refresh_message = (
     u"To protect your account, please reauthenticate to access this page."
 )
 login_manager.needs_refresh_message_category = "info"
+@app.context_processor
+def grade_attribute():
+    return dict(GradeAttributes = GradeAttributes)
 
 @login_manager.user_loader
 def load_user(user_id):

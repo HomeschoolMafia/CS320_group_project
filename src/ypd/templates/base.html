@@ -39,39 +39,39 @@
             </div>
         </div>
     </div>
-    <form action="/index", method = 'GET'></form>
+    <form action="/index", method = 'GET'>
         <div class="advancedDropdown">
             <button>Advanced Search Options:</button>
             <div class="advancedDropdown-content">
                 <Label>Degree:</Label><br>
-                &emsp;<input type="checkbox" id="electrical" name="degree" value="electrical">
+                &emsp;<input type="checkbox" id="electrical" name="electrical" value=1>
                 <label for="electrical">Electrical Engineering</Label><br>
-                &emsp;<input type="checkbox" id="mechanical" name="degree" value="mechanical">
+                &emsp;<input type="checkbox" id="mechanical" name="mechanical" value=1>
                 <label for="mechanical">Mechanical Engineering</label><br>
-                &emsp;<input type="checkbox" id="computer" name="degree" value="computer">
+                &emsp;<input type="checkbox" id="computer" name="computer" value=1>
                 <label for="computer">Computer Engineering</label><br>
-                &emsp;<input type="checkbox" id="computersci" name="degree" value="computersci">
+                &emsp;<input type="checkbox" id="computersci" name="computersci" value=1>
                 <label for="computersci">Computer Science</label><br>
                 <label>Current Year:</label><br>
-                &emsp;<input type="radio" id="freshman" name="year" value="freshman">
+                &emsp;<input type="radio" id="freshman" name="year" value={{GradeAttributes.Freshman.value}}>
                 <label for="freshman">Freshman</label><br>
-                &emsp;<input type="radio" id="sophmore" name="year" value="sophmore">
+                &emsp;<input type="radio" id="sophmore" name="year" value={{GradeAttributes.Sophmore.value}}>
                 <label for="sophmore">Sophmore</label><br>
-                &emsp;<input type="radio" id="junior" name="year" value=junior">
+                &emsp;<input type="radio" id="junior" name="year" value={{GradeAttributes.Junior.value}}>
                 <label for="junior">Junior</label><br>
-                &emsp;<input type="radio" id="senior" name="year" value="senior">
+                &emsp;<input type="radio" id="senior" name="year" value={{GradeAttributes.Senior.value}}>
                 <label for="senior">Senior</label><br>
 
                 <label>Number of people needed(Ex. 1,2,3...):</label><br>
-                &emsp;<input type="number" id="projSize" name="projSize" min="1" max="50"><br>
+                &emsp;<input type="number" id="projSize" name="projSize" value=1><br>
                 <label>Select Project Type:</label><br>    
-                &emsp;<input type="radio" id="provided" name="projType" value="provided">
+                &emsp;<input type="radio" id="provided" name="projType" value=1>
                 <label for="provided">Provided Projects</label><br>
-                &emsp;<input type="radio" id="solicited" name="projType" value="solicited">
+                &emsp;<input type="radio" id="solicited" name="projType" value=0>
                 <label for="solicited">Solicited Projects</label><br>
 
                 <label>Select to view Archived Projects:</label><br>
-                &emsp;<input type="checkbox" id="archived" name="archived" value="archived">
+                &emsp;<input type="checkbox" id="archived" name="archived" value=1>
                 <label for="archived">Archived</label><br>    
             </div>
         </div>
