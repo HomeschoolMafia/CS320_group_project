@@ -21,12 +21,13 @@ class TestUserPage(TestCase):
         self.session = self.Session(bind=self.engine)
         self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 
                           'email': 'fbaz@ycp.edu', 'name': 'baz', 'is_admin': True,
-                          'bio': 'test', 'contact_info': 'name@mail.com'}
+                          'bio': 'test', 'contact_info': 'name@mail.com', 'image': False, 'needs_review': False,
+                          'can_post_solicited': True, 'can_post_provided': True}
 
         self.user = User(id=1, can_post_provided=True, can_post_solicited=True)
-        project.Provided().post('foo', 'barbarba', self.user)
-        project.Provided().post('Awesome', 'Force of Gravity', self.user)
-        project.Provided().post('Cannon', 'Electric Beast', self.user)
+        project.Provided().post('foo', 'barbarba', 'mechanical', 'computersci', self.user)
+        project.Provided().post('Awesome', 'Force of Gravity', 'electrical', 'mechanical', self.user)
+        project.Provided().post('Cannon', 'Electric Beast', 'computersci', self.user)
 
     def tearDown(self):
         users = self.session.query(user.User).all()
@@ -45,7 +46,6 @@ class TestUserPage(TestCase):
         self.user.add_bio(bio)
         self.session.add(self.user)
         self.assertEqual(self.user.bio, bio)
-
 
     def test_submit_contact(self):
         user.User.sign_up(**self.user_args)
@@ -76,3 +76,11 @@ class TestUserPage(TestCase):
         self.assertEqual('foo', projects[0].title)
         self.assertEqual('Awesome', projects[1].title)
         self.assertEqual('Cannon', projects[2].title)
+
+    def test_submit_image(self):
+        user.User.sign_up(**self.user_args)
+        self.user = user.User.log_in('foo', 'barbarba')
+
+        self.assertFalse(self.user.image)
+        self.user.add_image()
+        self.assertTrue(self.user.image)
