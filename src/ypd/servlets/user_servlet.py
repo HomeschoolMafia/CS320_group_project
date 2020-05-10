@@ -97,15 +97,16 @@ class UserView(FlaskView):
             match = re.match('(.*)@(.*?\..+)', form.email.data)
             if match:
                 try:
-                    User.get_by_email(session['email'])
+                    print(form.email.data)
+                    User.get_by_email(form.email.data)
                 except:
-                    flash('There is already an account with that email')
-                else:
                     session['email'] = form.email.data
                     if match[2] == 'ycp.edu' and YCPData(match[1]).is_valid:
                         return redirect(url_for('UserView:ycp_signup'))
                     else:
                         return redirect(url_for('UserView:company_signup'))
+                else:
+                    flash('There is already an account with that email')
             else:
                 flash('Please enter a valid email')
             

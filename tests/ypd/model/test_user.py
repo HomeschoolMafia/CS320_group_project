@@ -99,6 +99,7 @@ class TestUser(TestCase):
         self.user_args['email'] = 'asdf@gmail.com'
         self.user_args['username'] = 'username_0'
         user.User.sign_up(**self.user_args)
+        self.user_args['email'] = 'asdf1@gmail.com'
         self.user_args['username'] = 'username_1'
         user.User.sign_up(**self.user_args)
 
@@ -121,6 +122,11 @@ class TestUser(TestCase):
     def test_get_by_username(self):
         user.User.sign_up(**self.user_args)
         acc = user.User.get_by_username(username=user.User.username)
+        self.assertEqual('foo', acc.username)
+
+    def test_get_by_email(self):
+        user.User.sign_up(**self.user_args)
+        acc = user.User.get_by_email(email=user.User.email)
         self.assertEqual('foo', acc.username)
 
     def test_login_successful(self):
