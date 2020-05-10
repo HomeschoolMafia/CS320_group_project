@@ -14,6 +14,29 @@
     </div>
     <div class="pageHeaderL">
         <h1>{{user.name}}</h1>
+        {% if permissions_form %}
+            <form action="{{url_for('UserPageView:change_permissions', id=user.id)}}" method="POST">
+                <div class="submissionBody" style="position: absolute;">
+                    <fieldset>
+                        {% for field in permissions_form %}
+                            {% if field.label.text != 'CSRF Token' %}
+                                {% if field.type != "SubmitField" %}
+                                    {{field.label.text}}
+                                {% endif %}
+                                {{field}} <br>
+                            {% endif %}
+                        {% endfor %}
+                    </fieldset>
+                </div>
+            </form>
+        {% elif current_user.is_admin %}
+                <a class="tooltip" href="{{url_for('UserPageView:change_permissions', id=user.id)}}" style="margin-right: -300px">
+                    <button>
+                        <span class = "tooltiptext">Click to change this user's permissions</span>
+                            ✏️
+                    </button>
+                </a>
+        {% endif %}
         <div class="postBarUser"></div>
         {% if current_user.is_admin and user.needs_review %}
             <div class="userToolOp">
@@ -29,31 +52,6 @@
                         ❌
                     </button>
                 </form>
-            </div>
-        {% endif %}
-        {% if permissions_form %}
-            <form action="{{url_for('UserPageView:change_permissions', id=user.id)}}" method="POST">	
-                <div class="submissionBody">
-                    <fieldset>
-                        {% for field in permissions_form %}
-                            {% if field.label.text != 'CSRF Token' %}
-                                {% if field.type != "SubmitField" %}
-                                    {{field.label.text}}
-                                {% endif %}
-                                {{field}} <br>
-                            {% endif %}
-                        {% endfor %}
-                    </fieldset>
-                </div>
-            </form>
-        {% elif current_user.is_admin %}
-            <div class="userToolOp">
-                <a class="tooltip" href="{{url_for('UserPageView:change_permissions', id=user.id)}}">
-                    <button>
-                        <span class = "tooltiptext">Click to change this user's permissions</span>
-                            ✏️
-                    </button>
-                </a>
             </div>
         {% endif %}
         <div>
@@ -75,7 +73,8 @@
                         </a>
                     </div>
                 {% else %}
-                    <form action="{{ url_for('UserPageView:submitImage') }}" method="post" enctype="multipart/form-data">
+                    Add Picture
+                    <form action="{{ url_for('UserPageView:submitImage', id=user.id) }}" method="post" enctype="multipart/form-data">
                         <input type="file" name="image" id="image">
                         <button type="submit">Upload</button>
                     </form>
@@ -136,7 +135,7 @@
         <div class="postBox">
             <div class="postText">
                 <a href="{{url_for('ProjectView:view', id=item.id, is_provided=(item is provided))}}">
-                    <em>{{ item.poster.name }}</em><t style="margin-left: 70px">{{ item.title }}</t>
+                    <em>{{ item.poster.name }}</em><t style="margin-left: 70px; margin-right: 50px">{{ item.title }}</t>
                 </a>
                 {% if item.poster.id == current_user.id or current_user.is_admin %}
                     <div class="userToolOp">
