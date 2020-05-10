@@ -46,7 +46,6 @@ class TestUserPage(TestCase):
         self.session.add(self.user)
         self.assertEqual(self.user.bio, bio)
 
-
     def test_submit_contact(self):
         user.User.sign_up(**self.user_args)
         self.user = user.User.log_in('foo', 'barbarba')
@@ -76,3 +75,11 @@ class TestUserPage(TestCase):
         self.assertEqual('foo', projects[0].title)
         self.assertEqual('Awesome', projects[1].title)
         self.assertEqual('Cannon', projects[2].title)
+
+    def test_submit_image(self):
+        user.User.sign_up(**self.user_args)
+        self.user = user.User.log_in('foo', 'barbarba')
+
+        self.assertFalse(self.user.image)
+        self.user.add_image()
+        self.assertTrue(self.user.image)

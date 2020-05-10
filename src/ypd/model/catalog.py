@@ -4,7 +4,7 @@ from sqlalchemy import or_
 
 
 class Catalog:
-    def __init__(self, search_archived=False, search_term='', select_provided=True, max_ProjSize=1, search_grade=GradeAttributes.Senior, **kwargs):
+    def __init__(self, search_term='', select_provided=True, search_archived=False, max_ProjSize=1, search_grade=GradeAttributes.Senior, **kwargs):
         """A catalog is a list of projects selected from all projects stored in the database.
 
         Args:
