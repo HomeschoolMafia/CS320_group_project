@@ -143,7 +143,6 @@
                     {% if item.archived %}  
                         {% if current_user.is_admin %}
                             <form class="tooltip" action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
-                            </form>
                         {% else %}
                                 <form class="tooltip">
                         {% endif %}
