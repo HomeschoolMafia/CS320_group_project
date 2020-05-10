@@ -21,13 +21,12 @@ class TestUserPage(TestCase):
         self.session = self.Session(bind=self.engine)
         self.user_args = {'username': 'foo', 'password': 'barbarba', 'confirm_password': 'barbarba', 
                           'email': 'fbaz@ycp.edu', 'name': 'baz', 'is_admin': True,
-                          'bio': 'test', 'contact_info': 'name@mail.com', 'image': False, 'needs_review': False,
-                          'can_post_solicited': True, 'can_post_provided': True}
+                          'bio': 'test', 'contact_info': 'name@mail.com'}
 
         self.user = User(id=1, can_post_provided=True, can_post_solicited=True)
-        project.Provided().post('foo', 'barbarba', 'mechanical', 'computersci', self.user)
-        project.Provided().post('Awesome', 'Force of Gravity', 'electrical', 'mechanical', self.user)
-        project.Provided().post('Cannon', 'Electric Beast', 'computersci', self.user)
+        project.Provided().post('foo', 'barbarba', self.user)
+        project.Provided().post('Awesome', 'Force of Gravity', self.user)
+        project.Provided().post('Cannon', 'Electric Beast', self.user)
 
     def tearDown(self):
         users = self.session.query(user.User).all()
