@@ -16,7 +16,7 @@
         <h1>{{user.name}}</h1>
         {% if permissions_form %}
             <form action="{{url_for('UserPageView:change_permissions', id=user.id)}}" method="POST">
-                <div class="submissionBody" style="position: absolute">
+                <div class="submissionBody" style="position: absolute;">
                     <fieldset>
                         {% for field in permissions_form %}
                             {% if field.label.text != 'CSRF Token' %}
