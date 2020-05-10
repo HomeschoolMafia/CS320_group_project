@@ -99,6 +99,7 @@ class TestUser(TestCase):
         self.user_args['email'] = 'asdf@gmail.com'
         self.user_args['username'] = 'username_0'
         user.User.sign_up(**self.user_args)
+        self.user_args['email'] = 'asdf1@gmail.com'
         self.user_args['username'] = 'username_1'
         user.User.sign_up(**self.user_args)
 
