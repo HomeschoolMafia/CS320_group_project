@@ -122,6 +122,9 @@ class ProjectView(FlaskView):
             for attribute in DegreeAttributes:
                 edit_data[attribute.name] = attribute.value in form.degree.data
             edit_data['grade'] = GradeAttributes(edit_data['grade'])
+            if form.maxProjSize.data is None:
+                flash("You must enter a project size.")
+                return render_template('set_project_data.html', form=form, project=project)
             project.edit(current_user, **edit_data)
             if current_user.id != project.poster.id:
                 mail = Mail()

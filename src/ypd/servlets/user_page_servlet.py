@@ -80,7 +80,7 @@ class UserPageView(FlaskView):
     def change_permissions(self, user):
         if current_user.is_admin:
             form = ChangePermissionsForm()
-            if form.validate_on_submit():
+            if request.method == 'POST':
                 user.change_permissions(form.is_admin.data, form.can_post_provided.data, form.can_post_solicited.data)
                 mail = Mail()
                 mail.init_app(current_app)
@@ -114,11 +114,11 @@ class UserPageView(FlaskView):
             image = request.files['image']
             if not allowed_image(image.filename):
                 text = "Not Allowed"
-                return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user, text=text)
+                return render_template('userpage.html', catalog=catalog, user=user, current_user=current_user, text=text)
 
-            current_user.add_image()
+            user.add_image()
                         
-            image.filename = current_user.username + '.png'
+            image.filename = user.username + '.png'
             image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image.filename))  
             
             return redirect(url_for('UserPageView:view', id=user.id))
