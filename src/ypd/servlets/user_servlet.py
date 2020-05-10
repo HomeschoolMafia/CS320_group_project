@@ -96,11 +96,18 @@ class UserView(FlaskView):
         if request.method == 'POST':
             match = re.match('(.*)@(.*?\..+)', form.email.data)
             if match:
-                session['email'] = form.email.data
-                if match[2] == 'ycp.edu' and YCPData(match[1]).is_valid:
-                    return redirect(url_for('UserView:ycp_signup'))
+                try:
+                    User.get_by_email(session['email'])
+                except:
+                    flash('There is already an account with that email')
                 else:
-                    return redirect(url_for('UserView:company_signup'))
+                    session['email'] = form.email.data
+                    if match[2] == 'ycp.edu' and YCPData(match[1]).is_valid:
+                        return redirect(url_for('UserView:ycp_signup'))
+                    else:
+                        return redirect(url_for('UserView:company_signup'))
+            else:
+                flash('Please enter a valid email')
             
 
         return render_template('signup.html', form=form, submit_url=url_for('UserView:signup'))

@@ -43,8 +43,10 @@ class IndexView(FlaskView):
         search_projSize = int(request.args.get('projSize', default=1))
         search_projType = int(request.args.get('projType', default=1))
 
-        catalog = Catalog(search_archived, search_text, select_provided=search_projType, search_grade=search_grade, max_ProjSize=search_projSize, 
-                        electrical=search_electrical, mechanical=search_mechanical, computer=search_computer, computersci=search_computersci)
+        catalog = Catalog(search_text, search_archived=search_archived, select_provided=search_projType,
+                          search_grade=search_grade, max_ProjSize=search_projSize, 
+                          electrical=search_electrical, mechanical=search_mechanical,
+                          computer=search_computer, computersci=search_computersci)
         catalog.apply()
         return render_template('index.html', catalog=catalog, user=current_user, GradeAttributes=GradeAttributes)
     

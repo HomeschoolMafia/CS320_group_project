@@ -55,7 +55,8 @@ class Project(Base, DBModel, HasPosterMixin):
     immutable_attributes = ['id', 'poster', 'poster_id']
 
     @SessionManager.with_session
-    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1, session=None):
+    def post(self, title, description, poster, electrical=False, mechanical=False, computer=False, computersci=False,
+             grade=GradeAttributes.Freshman, maxProjSize=1, session=None):
         """Posts this project to the database
 
         Args:
@@ -161,7 +162,8 @@ class Provided(Project):
     """Class that represents a provided project"""
     __tablename__ = 'provided'
 
-    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1):
+    def post(self, title, description, poster, electrical=False, mechanical=False, computer=False, computersci=False,
+             grade=GradeAttributes.Freshman, maxProjSize=1, session=None):
         """Posts this project to the database
 
         Args:
@@ -181,7 +183,8 @@ class Solicited(Project):
     """Class that represents a solicited project"""
     __tablename__ = 'solicited'
 
-    def post(self, title, description, poster, electrical, mechanical, computer, computersci, grade, maxProjSize=1):
+    def post(self, title, description, poster, electrical=False, mechanical=False, computer=False, computersci=False,
+             grade=GradeAttributes.Freshman, maxProjSize=1, session=None):
         """Posts this project to the database
 
         Args:
