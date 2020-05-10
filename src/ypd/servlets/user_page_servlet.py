@@ -109,7 +109,7 @@ class UserPageView(FlaskView):
                 return True
             else:
                 return False
-
+        catalog = user.get_user_projects()
         if request.files['image']:
             image = request.files['image']
             if not allowed_image(image.filename):
