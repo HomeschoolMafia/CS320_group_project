@@ -80,7 +80,7 @@ class UserPageView(FlaskView):
     def change_permissions(self, user):
         if current_user.is_admin:
             form = ChangePermissionsForm()
-            if form.validate_on_submit():
+            if request.method == 'POST':
                 user.change_permissions(form.is_admin.data, form.can_post_provided.data, form.can_post_solicited.data)
                 mail = Mail()
                 mail.init_app(current_app)

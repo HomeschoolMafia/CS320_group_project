@@ -133,3 +133,5 @@ dmypy.json
 
 #database
 *.db
+
+**/user_pic/*.png
