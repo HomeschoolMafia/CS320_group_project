@@ -114,11 +114,11 @@ class UserPageView(FlaskView):
             image = request.files['image']
             if not allowed_image(image.filename):
                 text = "Not Allowed"
-                return render_template('userpage.html', catalog=catalog, user=current_user, current_user=current_user, text=text)
+                return render_template('userpage.html', catalog=catalog, user=user, current_user=current_user, text=text)
 
-            current_user.add_image()
+            user.add_image()
                         
-            image.filename = current_user.username + '.png'
+            image.filename = user.username + '.png'
             image.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image.filename))  
             
             return redirect(url_for('UserPageView:view', id=user.id))
