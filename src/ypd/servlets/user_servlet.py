@@ -150,8 +150,8 @@ class UserView(FlaskView):
                 if not any(char in form.password.data for char in string.printable): 
                     raise TypeError
                 user = User.sign_up(form.username.data, form.password.data, form.confirm_password.data, email,
-                    bio=form.bio.data, contact=form.contact.data, name=form.name.data)
-                login_user(user)
+                    bio=form.bio.data, contact_info=form.contact.data, name=form.name.data)
+                flash("Welcome to YCP Project Database! Your account requires a review. We'll let you know when you can sign in")
                 return redirect(url_for('IndexView:get'))
             except IntegrityError:
                 flash(Markup(f'<b>{form.username.data}</b> is taken'))
