@@ -144,23 +144,23 @@
                     {% if item.archived %}  
                         {% if current_user.is_admin %}
                             <form class="tooltip" action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                            </form>
                         {% else %}
                                 <form class="tooltip">
                         {% endif %}
-                            <button onclick="sumbit">
-                                <span class = "tooltiptext">{{'Click to restore project' if current_user.is_admin else 'Project is archived'}}</span>
-                                🔓
-                            </button>
-                        </form>  
+                                    <button onclick="sumbit">
+                                        <span class = "tooltiptext">{{'Click to restore project' if current_user.is_admin else 'Project is archived'}}</span>
+                                            🔓
+                                    </button>
+                                </form>  
                     {% else %}
-                    <form class="tooltip"  action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
-                        <button onclick="sumbit">
-                            <span class = "tooltiptext">Click to Archive Project</span>
-                            🗑️
-                        </button>
-                    </form>    
+                            <form class="tooltip"  action="{{ url_for('ProjectView:archive', id=item.id, is_provided=(item is provided)) }}" method="post">
+                                <button onclick="sumbit">
+                                    <span class = "tooltiptext">Click to Archive Project</span>
+                                        🗑️
+                                </button>
+                            </form>    
                     {% endif %}
-
                     </div>
                 {% endif %}
             </div>
