@@ -127,7 +127,8 @@
             {% elif not user.contact_info %}
                 <h2>No contact information listed</h2>
             {% else %}
-                <h2>{{user.contact_info}}</h2>
+                <a></a>
+                <a href="mailto:{{user.contact_info}}"></a>
             {% endif %}
         </div>
     </div>

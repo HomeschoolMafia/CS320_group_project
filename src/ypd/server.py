@@ -17,7 +17,7 @@ from .servlets import *
 #start flask
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = relative_path + "/static/user_pic/"
-app.config['ALLOWED_FILE'] = ['PNG', 'JPG', 'JPEG']
+app.config['ALLOWED_FILE'] = ['PNG', 'JPG', 'JPEG', 'GIF']
 app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
 # Email configuration w/ app
