@@ -123,6 +123,11 @@ class TestUser(TestCase):
         acc = user.User.get_by_username(username=user.User.username)
         self.assertEqual('foo', acc.username)
 
+    def test_get_by_email(self):
+        user.User.sign_up(**self.user_args)
+        acc = user.User.get_by_email(email=user.User.email)
+        self.assertEqual('foo', acc.username)
+
     def test_login_successful(self):
         user.User.sign_up(**self.user_args)
 

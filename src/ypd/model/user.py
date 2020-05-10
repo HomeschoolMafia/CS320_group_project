@@ -45,7 +45,7 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
     password = Column(String)
     bio = Column(String)
     image = Column(Boolean)
-    email = Column(String)
+    email = Column(String, unique=True)
     contact_info = Column(String)
     name = Column(String)
     needs_review = Column(Boolean)
@@ -263,6 +263,19 @@ class User(Base, DBModel, HasFavoritesMixin, UserMixin):
         result = session.query(User).filter_by(username=username).one()
         
         return result
+
+    @classmethod
+    @SessionManager.with_session
+    def get_by_email(cls, email, session=None):
+        """Gets the User object with the unique username
+        
+        Args:
+            email (str): email of User object to get
+
+        Kwargs:
+            session (Session): session to perform the query on. Supplied by decorator
+        """
+        return session.query(User).filter_by(email=email).one()
             
     @classmethod
     def password_check(self, password, confirm_password):

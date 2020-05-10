@@ -100,7 +100,6 @@ class UserView(FlaskView):
                     return redirect(url_for('UserView:ycp_signup'))
                 else:
                     return redirect(url_for('UserView:company_signup'))
-            
 
         return render_template('signup.html', form=form, submit_url=url_for('UserView:signup'))
 
