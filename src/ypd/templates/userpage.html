@@ -16,7 +16,7 @@
         <h1>{{user.name}}</h1>
         {% if permissions_form %}
             <form action="{{url_for('UserPageView:change_permissions', id=user.id)}}" method="POST">
-                <div class="submissionBody" style="position: absolute;">
+                <div class="submissionBody" style="position: absolute">
                     <fieldset>
                         {% for field in permissions_form %}
                             {% if field.label.text != 'CSRF Token' %}
@@ -73,7 +73,9 @@
                         </a>
                     </div>
                 {% else %}
-                    Add Picture
+                    {% if not edit_image %}
+                        Add Picture
+                    {% endif %}
                     <form action="{{ url_for('UserPageView:submitImage', id=user.id) }}" method="post" enctype="multipart/form-data">
                         <input type="file" name="image" id="image">
                         <button type="submit">Upload</button>
