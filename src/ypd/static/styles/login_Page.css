@@ -15,7 +15,7 @@ body * {
 
 .container {
     margin: 0 auto;
-    width: 320px;
+    width: 390px;
     margin-top: 20vh;
     padding: 20px;
     background-color: rgb(56, 196, 68, 0.8);
@@ -23,14 +23,14 @@ body * {
 }
 
 form {
-    width: 280px;
+    width: 350px;
     background-color: rgb(56, 146, 68, 0.6);
     padding: 20px;
 }
 
 .errorText {
     font-size: 15px;
-    color: red;
+    color: rgb(255, 0, 0, 0.75);
     text-align: center;
 }
 
@@ -69,11 +69,15 @@ legend {
 input#password,
 input#username,
 input#email,
-input#confirm_password{
+input#confirm_password,
+input#confirm_new,
+input#old_password,
+input#new_password{
     margin-top: 10px;
     margin-bottom: 20px;
-    width: 200px;
+    width: 75%;
     padding: 5px;
+    margin-left: 25px;
     color: black;
     border: 2px solid gainsboro;
     box-shadow: 5px 10px rgba(120, 120, 120, 0.2);

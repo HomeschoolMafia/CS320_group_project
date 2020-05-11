@@ -1,20 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
+    <head>  
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="shortcut icon" href="/assets/favico.ico" type="image/x-con">
-        <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='styles/login_Page.css')}}">
-        <title> YCP Project Database </title>
+        <link rel="stylesheet" type="text/css" href={{url_for( 'static', filename='styles/login_Page.css' )}}>
+        <title>YCP Project Database</title>
     </head>
     <body>
         <div class="container">
             <h1>Welcome To YCP <br>Project Database</h1>
-            <form class="form" action="{{submit_url}}" method="POST">
+            <form class="form" action="{{ url_for('UserView:changePassword')}}" method="POST">
                 <div class="form__items">
                     <fieldset>
-                        <legend>Sign-Up</legend>
+                        <legend>Change Password</legend>
                         {% with messages = get_flashed_messages() %}
                             {% if messages %}
                                 <div class="errorText">
@@ -22,21 +22,14 @@
                                 </div>
                             {% endif %}
                         {% endwith %}
-                        {% for field in form %}
-                            {% if field.label.text != 'CSRF Token' %}
-                                {% if field.type != "SubmitField" %}
-                                    {{ field.label.text }} <br>
-                                    {{ field }} <br> <br>
-                                {% endif %}
-                            {% endif %}
-                        {% endfor %}
+                        {{ form.csrf_token() }}
+                        {{ form.old_password.label(class="form__label") }} {{ form.old_password(class="form__input") }}
+                        {{ form.new_password.label(class="form__label") }} {{ form.new_password(class="form__input") }}
+                        {{ form.confirm_new.label(class="form__label") }}  {{ form.confirm_new(class="form__input") }}
                     </fieldset>
                     {{ form.submit(id="login") }}
-                    <small>
-                        Have an account? <a href="{{ url_for('UserView:login') }}"> Log In</a>
-                    </small>
                 </div>
             </form>
-        </div>
+        </div>        
     </body>
 </html>

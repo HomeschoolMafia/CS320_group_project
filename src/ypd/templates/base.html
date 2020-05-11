@@ -26,25 +26,65 @@
                     <div class="bar"></div>
                     <div class="bar"></div>
                     <div class="bar"></div>
-                    <div class="bar"></div>
                 </center>
             </div>
             <div class="dropDown-Content">
-                <a href="{{ url_for('IndexView:get')}}">Project Listing</a>
+                <a href="{{ url_for('IndexView:get')}}">Project index</a>
                 <a href="{{ url_for('IndexView:get_favorites')}}">View favorites</a>
                 <a href="{{ url_for('ProjectView:submit')}}">Post A Project</a>
-                <a href="{{ url_for('UserPageView:get')}}">Your Info</a>
+                {% if current_user and current_user.is_admin %} <a href="{{ url_for('AdminPanelView:view')}}">Admin Panel</a> {% endif %}
+                <a href="{{ url_for('UserPageView:view')}}">Your Info</a>
+                <a href="{{ url_for('UserView:changePassword')}}">Change Password</a>
                 <a href="{{ url_for('UserView:logout')}}">Logout</a>
             </div>
         </div>
     </div>
+    <form action="/index", method = 'GET'>
+        <div class="advancedDropdown">
+            <button>Advanced Search Options:</button>
+            <div class="advancedDropdown-content">
+                <Label>Degree:</Label><br>
+                &emsp;<input type="checkbox" id="electrical" name="electrical" value=1>
+                <label for="electrical">Electrical Engineering</Label><br>
+                &emsp;<input type="checkbox" id="mechanical" name="mechanical" value=1>
+                <label for="mechanical">Mechanical Engineering</label><br>
+                &emsp;<input type="checkbox" id="computer" name="computer" value=1>
+                <label for="computer">Computer Engineering</label><br>
+                &emsp;<input type="checkbox" id="computersci" name="computersci" value=1>
+                <label for="computersci">Computer Science</label><br>
+                <label>Current Year:</label><br>
+                &emsp;<input type="radio" id="freshman" name="year" value={{GradeAttributes.Freshman.value}}>
+                <label for="freshman">Freshman</label><br>
+                &emsp;<input type="radio" id="sophmore" name="year" value={{GradeAttributes.Sophmore.value}}>
+                <label for="sophmore">Sophmore</label><br>
+                &emsp;<input type="radio" id="junior" name="year" value={{GradeAttributes.Junior.value}}>
+                <label for="junior">Junior</label><br>
+                &emsp;<input type="radio" id="senior" name="year" value={{GradeAttributes.Senior.value}}>
+                <label for="senior">Senior</label><br>
 
-    <div class="searchBar">
-        <form action="/index", method = 'GET'>
-            <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
-            <input type="submit" value="Search">
-        </form>
-    </div>    
+                <label>Number of people needed(Ex. 1,2,3...):</label><br>
+                &emsp;<input type="number" id="projSize" name="projSize" value=1><br>
+                <label>Select Project Type:</label><br>    
+                &emsp;<input type="radio" id="provided" name="projType" value=1>
+                <label for="provided">Provided Projects</label><br>
+                &emsp;<input type="radio" id="solicited" name="projType" value=0>
+                <label for="solicited">Solicited Projects</label><br>
+
+                <label>Select to view Archived Projects:</label><br>
+                &emsp;<input type="checkbox" id="archived" name="archived" value=1>
+                <label for="archived">Archived</label><br>    
+            </div>
+        </div>
+        <div class="searchBar">
+                <input type="text" name="search_text" size="12" placeholder="Search.." value="{{search_text}}" />
+                <input type="submit" value="Search">
+        </div>  
+    </form>  
+    {% if not current_user %}
+        <div class="errorText">      
+            No current_user passed to template
+        </div>
+    {% endif %}
     {% block content %}{% endblock %}
     
 </body>

@@ -3,16 +3,35 @@ import subprocess
 from csv import DictReader
 from pathlib import Path
 
+from sqlalchemy import (Boolean, Column, Integer, MetaData, String, Table,
+                        insert)
+
 from .. import config, relative_path
-from ..model import Base, Session, engine
-from ..model.user import User, UserType
-from ..model.project import Provided, Solicited
+from ..model import Base, Session, engine, ycp_engine
+from ..model.project import Provided, Solicited, GradeAttributes
+from ..model.user import User
 
 
 def main():
     csv_dir=Path(f'{relative_path}/csv')
 
-    print('Creating database')
+    print('Creating ycp database')
+    metadata = MetaData()
+    ycp_users = Table('users', metadata,
+    Column('username', String), Column('current_student', Boolean), Column('current_faculty', Boolean),
+    Column('name', String), Column('credits', Integer), Column('major', String))
+    metadata.create_all(ycp_engine)
+
+    ycp_path = csv_dir.joinpath('ycp_users.csv')
+    with ycp_path.open() as file:
+        ycp_reader = DictReader(file)
+        ins = ycp_users.insert()
+        for row in ycp_reader:
+            row['current_student'] = True if row['current_student'] == 'True' else False
+            row['current_faculty'] = True if row['current_faculty'] == 'True' else False
+            ycp_engine.execute(ins.values(**row))
+
+    print('Creating ypd database')
     session = Session()
     Base.metadata.create_all(engine)
 
@@ -22,7 +41,7 @@ def main():
     with users_path.open() as file:
         users_reader = DictReader(file)
         for row in users_reader:
-            row['user_type'] = UserType[row['user_type']]
+            row['is_admin'] = True if row['is_admin'] == 'True' else False
             User.sign_up(**row)
 
     print('Adding provided projects...')
@@ -31,6 +50,11 @@ def main():
         provided_reader = DictReader(file)
         for row in provided_reader:
             row['poster'] = session.query(User).filter_by(username=row['poster']).one()
+            row['grade'] = GradeAttributes(int(row['grade']))
+            row['electrical'] = True if row['electrical'] == 'True' else False
+            row['mechanical'] = True if row['mechanical'] == 'True' else False
+            row['computer'] = True if row['computer'] == 'True' else False
+            row['computersci'] = True if row['computersci'] == 'True' else False
             Provided().post(**row)
 
     print('Adding solicited projects...')
@@ -39,6 +63,11 @@ def main():
         solicited_reader = DictReader(file)
         for row in solicited_reader:
             row['poster'] = session.query(User).filter_by(username=row['poster']).one()
+            row['grade'] = GradeAttributes(int(row['grade']))
+            row['electrical'] = True if row['electrical'] == 'True' else False
+            row['mechanical'] = True if row['mechanical'] == 'True' else False
+            row['computer'] = True if row['computer'] == 'True' else False
+            row['computersci'] = True if row['computersci'] == 'True' else False
             Solicited().post(**row)
 
     print('finished!')

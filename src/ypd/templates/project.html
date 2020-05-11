@@ -30,7 +30,7 @@
         </a>
     </div>
 
-    {% if project.can_be_modified_by(user) %}
+    {% if project.can_be_modified_by(user) and project.archived == False %}
         <div class="projectButton">
             <a href="{{url_for('ProjectView:edit', id=project.id, is_provided=(project is provided))}}">
                 <button class = "tooltip">
@@ -65,7 +65,7 @@
         <br/>
         <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
             {{project.poster.name}}
-            <a href="{{ url_for('UserPageView:getUser', id=project.poster.id) }}">
+            <a href="{{ url_for('UserPageView:view', id=project.poster.id) }}">
                 <button class = "tooltip" style="margin-left: 1%">
                 <span class = "tooltiptext">Click to Visit Page</span>   🔎
                 </button>
@@ -78,7 +78,30 @@
             {{project.description}}
         </div>
         <br/><br/>
+        Maximum project size:
+        <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
+            {{project.maxProjSize}}
+        </div>
+        <br/><br/>
+        Suggested grade year:
+        <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
+            {{project.grade.name}}
+        </div>
+        <br/><br/>
+        Required Disciplines:
+        <div style="margin-top: -2px; margin-bottom: -15px;">
+            <ul>
+                <li>{{"Electrical Engineering" if project.electrical}}</li>
+                <li>{{"Mechanical Engineering" if project.mechanical}}</li>
+                <li>{{"Computer Engineering" if project.computer}}</li>
+                <li>{{"Computer Science" if project.computersci}}</li>
+            </ul>
+        </div>
+        <br/><br/>
         Contact:
+        <div style="text-indent: 50px; margin-top: -2px; margin-bottom: -15px;">
+            {{project.poster.contact_info}}
+        </div>
     </div>
 </div>
 {% endblock %}

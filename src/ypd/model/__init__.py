@@ -6,5 +6,7 @@ from sqlalchemy.pool import SingletonThreadPool
 from ypd import config
 
 Base = declarative_base()
-engine = create_engine(config['db']['url'], connect_args={'check_same_thread': False}, poolclass=SingletonThreadPool)
+engine = create_engine(config['db']['ypd'], connect_args={'check_same_thread': False}, poolclass=SingletonThreadPool)
 Session = sessionmaker(bind=engine, expire_on_commit=False)
+
+ycp_engine =create_engine(config['db']['ycp'], connect_args={'check_same_thread': False}, poolclass=SingletonThreadPool)
